@@ -1,0 +1,26 @@
+{
+  "name": "wallet-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/wallet-e2e/src",
+  "targets": {
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/wallet-e2e/cypress.config.ts",
+        "testingType": "e2e",
+        "devServerTarget": "wallet:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "wallet:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["wallet"]
+}
