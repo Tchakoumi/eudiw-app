@@ -1,12 +1,23 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import './styles.css';
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Welcome to wallet!</title>
+        <title>Home</title>
+        <link rel="manifest" href="manifest.json" />
+        <link rel="icon" type="image/x-icon" href="icon-192x192.png" />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: light)"
+          content="white"
+        />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: dark)"
+          content="black"
+        />
       </Head>
       <main className="app">
         <Component {...pageProps} />
