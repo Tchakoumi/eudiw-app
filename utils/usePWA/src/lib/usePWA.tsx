@@ -1,14 +1,47 @@
-import styles from './usePWA.module.css';
+import { useEffect, useState } from 'react';
 
-/* eslint-disable-next-line */
-export interface UsePWAProps {}
+export function usePWA() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [deferredPrompt, setDeferredPrompt] = useState<any | null>(null);
+  const [isInstalling, setIsInstalling] = useState<boolean>(false);
+  useEffect(() => {
+    //TODO: find-out how to type the event on `handleBeforeInstallPrompt`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleBeforeInstallPrompt = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
 
-export function UsePWA(props: UsePWAProps) {
-  return (
-    <div className={styles['container']}>
-      <h1>Welcome to UsePWA!</h1>
-    </div>
-  );
+    const checkIsAppInstalled = () => {
+      setDeferredPrompt(null);
+    };
+
+    const cleanup = () => {
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
+      window.removeEventListener('appinstalled', checkIsAppInstalled);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', checkIsAppInstalled);
+
+    return cleanup;
+  }, []);
+
+  async function installApp() {
+    setIsInstalling(true);
+    deferredPrompt.prompt().then(() => {
+      setIsInstalling(false);
+    });
+  }
+
+  return {
+    isInstalled: !deferredPrompt,
+    isInstallable: !!deferredPrompt && !isInstalling,
+    isInstalling: isInstalling && !!deferredPrompt,
+    installApp,
+  };
 }
-
-export default UsePWA;
