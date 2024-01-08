@@ -2,6 +2,7 @@ import { ThemeProvider } from '@mui/material';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useTheme } from '../utils/theme';
+import '../public/styles/global.css';
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
