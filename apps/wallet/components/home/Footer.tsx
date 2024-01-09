@@ -8,9 +8,11 @@ import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import Image from 'next/image';
 import line from '../../public/Line.png';
 import { useTheme } from '../../utils/theme';
+import { useRouter } from 'next/router';
 
 export default function Footer() {
   const theme = useTheme();
+  const { push } = useRouter();
   return (
     <Box
       sx={{
@@ -34,10 +36,15 @@ export default function Footer() {
       {[
         { icon: wallet, title: 'Wallet' },
         { icon: connected, title: 'Contacts' },
-        { icon: qr, title: 'QR Code' },
+        {
+          icon: qr,
+          title: 'QR Code',
+          isMain: true,
+          action: () => push('scan'),
+        },
         { icon: list, title: 'Activities' },
         { icon: settings, title: 'Settings' },
-      ].map(({ icon, title }, index) => (
+      ].map(({ icon, title, action, isMain }, index) => (
         <Box
           key={index}
           sx={{
@@ -48,18 +55,20 @@ export default function Footer() {
         >
           <Tooltip arrow title={title}>
             <IconButton
-              //   onClick={() => alert(title)}
-              size={index === 2 ? 'large' : 'medium'}
+              onClick={() => (action ? action() : null)}
+              size={isMain ? 'large' : 'medium'}
               sx={{
                 width: 'fit-content',
-                position: index === 2 ? 'absolute' : 'relative',
-                top: index === 2 ? '-20px' : 0,
-                backgroundColor:
-                  index === 2 ? theme.palette.primary.main : 'initial',
-                border: index === 2 ? '7px solid #F5F7F9' : 'none',
+                position: isMain ? 'absolute' : 'relative',
+                top: isMain ? '-20px' : 0,
+                backgroundColor: isMain
+                  ? theme.palette.primary.main
+                  : 'initial',
+                border: isMain ? '7px solid #F5F7F9' : 'none',
                 '&:hover': {
-                  backgroundColor:
-                    index === 2 ? theme.palette.primary.main : 'initial',
+                  backgroundColor: isMain
+                    ? theme.palette.primary.main
+                    : 'initial',
                 },
               }}
             >
