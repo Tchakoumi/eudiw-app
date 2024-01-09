@@ -46,7 +46,7 @@ export default function Index() {
           </Box>
           <QrScanner
             onScan={(data: string) =>
-              push(`/scan-details?connection-string=${data}`)
+              push(`/scan-details?connection_string=${data}`)
             }
             onError={() => alert('world')}
             aspectRatio="4:3"
