@@ -1,8 +1,9 @@
+import { InstallPWAContextProvider } from '@datev/usePWA';
 import { ThemeProvider } from '@mui/material';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { useTheme } from '../utils/theme';
 import '../public/styles/global.css';
+import { useTheme } from '../utils/theme';
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
@@ -23,9 +24,11 @@ function CustomApp({ Component, pageProps }: AppProps) {
         />
       </Head>
       <main className="app">
-        <ThemeProvider theme={useTheme()}>
-          <Component {...pageProps} />
-        </ThemeProvider>
+        <InstallPWAContextProvider>
+          <ThemeProvider theme={useTheme()}>
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </InstallPWAContextProvider>
       </main>
     </>
   );

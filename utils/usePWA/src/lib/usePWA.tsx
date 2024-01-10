@@ -1,20 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useInstallPWA } from '../installPWAContext/installPWAContextProvider';
 
 export function usePWA() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [deferredPrompt, setDeferredPrompt] = useState<any | null>(null);
-  const [isInstalling, setIsInstalling] = useState<boolean>(false);
+  const { deferredPrompt, is_installing, installPWADispatch } = useInstallPWA();
   useEffect(() => {
     //TODO: find-out how to type the event on `handleBeforeInstallPrompt`
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleBeforeInstallPrompt = (e: any) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      setDeferredPrompt(e);
+      installPWADispatch({ payload: e, type: 'SET_PROMPT' });
     };
 
     const checkIsAppInstalled = () => {
-      setDeferredPrompt(null);
+      installPWADispatch({ payload: null, type: 'SET_PROMPT' });
     };
 
     const cleanup = () => {
@@ -23,25 +22,29 @@ export function usePWA() {
         handleBeforeInstallPrompt
       );
       window.removeEventListener('appinstalled', checkIsAppInstalled);
+      installPWADispatch({ type: 'CLEANUP' });
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', checkIsAppInstalled);
 
     return cleanup;
-  }, []);
+  }, [installPWADispatch]);
 
   async function installApp() {
-    setIsInstalling(true);
+    installPWADispatch({ payload: true, type: 'UPDATE_INSTALLATION_STATUS' });
     deferredPrompt.prompt().then(() => {
-      setIsInstalling(false);
+      installPWADispatch({
+        payload: false,
+        type: 'UPDATE_INSTALLATION_STATUS',
+      });
     });
   }
 
   return {
     isInstalled: !deferredPrompt,
-    isInstallable: !!deferredPrompt && !isInstalling,
-    isInstalling: isInstalling && !!deferredPrompt,
+    isInstallable: !!deferredPrompt && !is_installing,
+    isInstalling: is_installing && !!deferredPrompt,
     installApp,
   };
 }
