@@ -12,18 +12,22 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { useTheme } from '../../utils/theme';
 import { useRouter } from 'next/router';
 
 export default function ConnectionDialog({
   connectionLink,
   isDialogOpen,
+  closeDialog,
 }: {
   connectionLink: string;
   isDialogOpen: boolean;
+  closeDialog: () => void;
 }) {
   const { push } = useRouter();
+  const theme = useTheme();
   return (
-    <Dialog open={isDialogOpen}>
+    <Dialog open={isDialogOpen} onClose={closeDialog}>
       <DialogTitle sx={{ paddingRight: '8px' }}>
         <Box
           sx={{
@@ -34,7 +38,7 @@ export default function ConnectionDialog({
         >
           <Typography>DATEV eG</Typography>
           <Tooltip arrow title="Close">
-            <IconButton size="small">
+            <IconButton size="small" onClick={closeDialog}>
               <Icon icon={close} />
             </IconButton>
           </Tooltip>
@@ -43,6 +47,10 @@ export default function ConnectionDialog({
       <DialogContent>
         <DialogContentText>
           Would you like to establish a connection?
+          <Typography
+            component="span"
+            sx={{ color: theme.palette.primary.dark }}
+          >{`Connection string: ${connectionLink}`}</Typography>
         </DialogContentText>
       </DialogContent>
       <DialogActions>
