@@ -1,10 +1,10 @@
+import { QrScanner } from '@datev/qr-scanner';
 import back from '@iconify/icons-fluent/arrow-left-48-filled';
 import swapCamera from '@iconify/icons-fluent/arrow-sync-24-regular';
 import { Icon } from '@iconify/react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { QrScanner } from 'react-qrcode-scanner';
 import ConnectionDialog from '../../components/scanDetails/connectionDialog';
 import { useTheme } from '../../utils/theme';
 
@@ -14,7 +14,7 @@ export default function Index() {
   const [connectionString, setConnectionString] = useState<string>('');
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] =
     useState<boolean>(false);
-  const [facingMode, setFacingMode] = useState<'environment' | 'face'>(
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>(
     'environment'
   );
   return (
@@ -57,16 +57,15 @@ export default function Index() {
               </Typography>
               <Box sx={{ display: 'grid', justifyItems: 'center' }}>
                 <Typography>Please scan the QR Code</Typography>
-                <Typography>You'll be forwarded directly</Typography>
+                <Typography>{`You'll be forwarded directly`}</Typography>
               </Box>
             </Box>
             <QrScanner
-              onScan={(data: string) => {
+              onResult={(result: string) => {
                 setIsDetailsDialogOpen(true);
-                setConnectionString(data);
+                setConnectionString(result);
               }}
-              onError={() => alert('world')}
-              aspectRatio="4:3"
+              onError={(error) => console.log(error.message)}
               facingMode={facingMode}
             />
           </Box>
@@ -92,7 +91,7 @@ export default function Index() {
               }}
               onClick={() =>
                 setFacingMode((prev) =>
-                  prev === 'environment' ? 'face' : 'environment'
+                  prev === 'environment' ? 'user' : 'environment'
                 )
               }
             >
