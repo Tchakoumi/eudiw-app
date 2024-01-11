@@ -15,12 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@datev/react-qrcode-scanner": [
-        "utils/react-qrcode-scanner/src/index.ts"
-      ],
-      "@datev/react-qrcode-scanner/server": [
-        "utils/react-qrcode-scanner/src/server.ts"
-      ],
+      "@datev/qr-scanner": ["utils/qr-scanner/src/index.ts"],
       "@datev/usePWA": ["utils/usePWA/src/index.ts"]
     }
   },
