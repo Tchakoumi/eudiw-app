@@ -2,3 +2,6 @@
 /dist
 /coverage
 /.nx/cache
+
+# Project-specific paths to ignore
+/apps/wallet/.next
