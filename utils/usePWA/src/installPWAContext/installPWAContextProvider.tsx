@@ -1,11 +1,11 @@
 import { Reducer, useContext, useReducer } from 'react';
-import InstallPWAContext from './InstallPWAContext';
+import InstallPWAContext, { initialState } from './InstallPWAContext';
 
 import {
-    Action,
-    InstallPWA,
-    InstallPWAContextProviderProps,
-    State,
+  Action,
+  InstallPWA,
+  InstallPWAContextProviderProps,
+  State,
 } from './installPWA.interface';
 
 const installPWAReducer: Reducer<InstallPWA, Action> = (
@@ -17,14 +17,10 @@ const installPWAReducer: Reducer<InstallPWA, Action> = (
       return { ...state, deferredPrompt: action.payload };
     }
     case 'UPDATE_INSTALLATION_STATUS': {
-      return { ...state, is_installing: action.payload };
+      return { ...state, isInstalling: action.payload };
     }
     case 'CLEANUP': {
-      return {
-        deferredPrompt: null,
-        installPWADispatch: () => null,
-        is_installing: false,
-      };
+      return initialState;
     }
     default:
       return state;
@@ -34,19 +30,12 @@ const installPWAReducer: Reducer<InstallPWA, Action> = (
 export function InstallPWAContextProvider({
   children,
 }: InstallPWAContextProviderProps): JSX.Element {
-  const initialState: InstallPWA = {
-    deferredPrompt: null,
-    is_installing: false,
-    installPWADispatch: () => null,
-  };
-
   const [installPWAState, installPWADispatch] = useReducer(
     installPWAReducer,
     initialState
   );
   const value = {
-    deferredPrompt: installPWAState.deferredPrompt,
-    is_installing: installPWAState.is_installing,
+    ...installPWAState,
     installPWADispatch,
   };
 
