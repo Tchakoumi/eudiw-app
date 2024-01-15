@@ -1,5 +1,5 @@
 import { Reducer, useContext, useReducer } from 'react';
-import InstallPWAContext, { initialState } from './InstallPWAContext';
+import InstallPWAContext, { initialState } from './installPWAContext';
 
 import {
   Action,

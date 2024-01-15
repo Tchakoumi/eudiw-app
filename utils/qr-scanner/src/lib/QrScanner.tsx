@@ -1,6 +1,6 @@
 import { BrowserMultiFormatReader, Exception as Exp } from '@zxing/library';
 import { useEffect, useRef } from 'react';
-import { IQrScannerProps } from './QrScannerProps';
+import { IQrScannerProps } from './qrScannerProps';
 
 export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
   const videoRef = useRef<HTMLVideoElement>(null);
