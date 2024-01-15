@@ -1,18 +1,19 @@
 import { useEffect } from 'react';
 import { useInstallPWA } from '../installPWAContext/installPWAContextProvider';
 
+type EventHandler = EventListenerOrEventListenerObject;
+
 export function usePWA() {
   const { deferredPrompt, is_installing, installPWADispatch } = useInstallPWA();
   useEffect(() => {
-    //TODO: find-out how to type the event on `handleBeforeInstallPrompt`
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handleBeforeInstallPrompt: EventHandler = (e) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       installPWADispatch({ payload: e, type: 'SET_PROMPT' });
     };
 
-    const checkIsAppInstalled = () => {
+    const checkIsAppInstalled: EventHandler = () => {
       installPWADispatch({ payload: null, type: 'SET_PROMPT' });
     };
 
