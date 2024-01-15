@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useInstallPWA } from '../installPWAContext/installPWAContextProvider';
+import { BeforeInstallPromptEvent } from '../installPWAContext/installPWA.interface';
 
 type EventHandler = EventListenerOrEventListenerObject;
 
@@ -10,7 +11,7 @@ export function usePWA() {
     const handleBeforeInstallPrompt: EventHandler = (e) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      installPWADispatch({ payload: e, type: 'SET_PROMPT' });
+      installPWADispatch({ payload: e as BeforeInstallPromptEvent, type: 'SET_PROMPT' });
     };
 
     const handleAppInstalled: EventHandler = () => {
@@ -34,7 +35,7 @@ export function usePWA() {
 
   async function installApp() {
     installPWADispatch({ payload: true, type: 'UPDATE_INSTALLATION_STATUS' });
-    deferredPrompt.prompt().then(() => {
+    deferredPrompt?.prompt().then(() => {
       installPWADispatch({
         payload: false,
         type: 'UPDATE_INSTALLATION_STATUS',
