@@ -13,7 +13,7 @@ export function usePWA() {
       installPWADispatch({ payload: e, type: 'SET_PROMPT' });
     };
 
-    const checkIsAppInstalled: EventHandler = () => {
+    const handleAppInstalled: EventHandler = () => {
       installPWADispatch({ payload: null, type: 'SET_PROMPT' });
     };
 
@@ -22,12 +22,12 @@ export function usePWA() {
         'beforeinstallprompt',
         handleBeforeInstallPrompt
       );
-      window.removeEventListener('appinstalled', checkIsAppInstalled);
+      window.removeEventListener('appinstalled', handleAppInstalled);
       installPWADispatch({ type: 'CLEANUP' });
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', checkIsAppInstalled);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return cleanup;
   }, [installPWADispatch]);
