@@ -4,7 +4,7 @@ import { useInstallPWA } from '../installPWAContext/installPWAContextProvider';
 type EventHandler = EventListenerOrEventListenerObject;
 
 export function usePWA() {
-  const { deferredPrompt, is_installing, installPWADispatch } = useInstallPWA();
+  const { deferredPrompt, isInstalling, installPWADispatch } = useInstallPWA();
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleBeforeInstallPrompt: EventHandler = (e) => {
@@ -44,8 +44,8 @@ export function usePWA() {
 
   return {
     isInstalled: !deferredPrompt,
-    isInstallable: !!deferredPrompt && !is_installing,
-    isInstalling: is_installing && !!deferredPrompt,
+    isInstallable: !!deferredPrompt && !isInstalling,
+    isInstalling: isInstalling && !!deferredPrompt,
     installApp,
   };
 }

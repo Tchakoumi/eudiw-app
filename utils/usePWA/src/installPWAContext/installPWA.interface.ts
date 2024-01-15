@@ -11,7 +11,7 @@ export type Action =
 export interface InstallPWA {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deferredPrompt: any | null;
-  is_installing: boolean;
+  isInstalling: boolean;
   installPWADispatch: React.Dispatch<Action>;
 }
 

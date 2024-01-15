@@ -3,7 +3,7 @@ import { InstallPWA } from './installPWA.interface';
 
 export const initialState: InstallPWA = {
   deferredPrompt: null,
-  is_installing: false,
+  isInstalling: false,
   installPWADispatch: () => null,
 };
 const InstallPWAContext = createContext(initialState);
