@@ -5,16 +5,13 @@ on:
   pull_request:
     branches: ['main']
 
-env:
-  NODE: [18.x, 20.x]
-
 jobs:
   style:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: ${{ env.NODE }}
+        node-version: [18.x, 20.x]
 
     steps:
       - name: Checkout code
@@ -42,7 +39,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ${{ env.NODE }}
+        node-version: [18.x, 20.x]
 
     steps:
       - name: Checkout code
@@ -67,7 +64,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ${{ env.NODE }}
+        node-version: [18.x, 20.x]
 
     steps:
       - name: Checkout code
@@ -92,7 +89,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ${{ env.NODE }}
+        node-version: [18.x, 20.x]
 
     steps:
       - name: Checkout code
