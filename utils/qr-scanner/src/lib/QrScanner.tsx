@@ -1,4 +1,8 @@
-import { BrowserMultiFormatReader, Exception as Exp } from '@zxing/library';
+import {
+  BrowserMultiFormatReader,
+  Exception as Exp,
+  NotFoundException,
+} from '@zxing/library';
 import { useEffect, useRef } from 'react';
 import { IQrScannerProps } from './qrScannerProps';
 
@@ -19,7 +23,7 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
       videoRef.current,
       (result, error) => {
         if (result) {
-          const data = () => {
+          const getData = () => {
             try {
               let data: T;
               try {
@@ -37,15 +41,17 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
               throw new Exp('Unknown error');
             }
           };
-          props.onResult(data(), result);
-        }
-        if (
-          error &&
-          props.onError != null &&
-          // not found error is not an error
-          error.getKind() !== 'NotFoundException'
-        )
-          props.onError(error);
+          props.onResult(getData(), result);
+        } else if (error) {
+          if (!props.onError)
+            console.warn('QrScanner: Unhandled execption');
+          else if (
+            // not found error is not an error
+            !(error instanceof NotFoundException)
+          )
+            props.onError(error);
+
+        } 
       }
     );
     return () => {
