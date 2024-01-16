@@ -1,10 +1,10 @@
 import { ThemeProvider } from '@mui/material';
-import { ReactNode } from 'react';
 import { useRoutes } from 'react-router-dom';
+import '../assets/styles/global.css';
 import { routes } from '../routes';
 import { useTheme } from '../utils/theme';
 
-export default function App({ children }: { children?: ReactNode }) {
+export default function App() {
   const routing = useRoutes(routes);
   return <ThemeProvider theme={useTheme()}>{routing}</ThemeProvider>;
 }
