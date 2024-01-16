@@ -1,4 +1,4 @@
-import NxWelcome from './app/nx-welcome';
+import Home from './pages/Home';
 
 export interface IRoute {
   path: string;
@@ -8,7 +8,7 @@ export interface IRoute {
 
 export const routes: IRoute[] = [
   {
-    element: <NxWelcome title="wallet-react" />,
-    path: '/home',
+    element: <Home />,
+    path: '/',
   },
 ];
