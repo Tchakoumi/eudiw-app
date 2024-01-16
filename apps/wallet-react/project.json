@@ -1,0 +1,85 @@
+{
+  "name": "wallet-react",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/wallet-react/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/wallet-react",
+        "index": "apps/wallet-react/src/index.html",
+        "baseHref": "/",
+        "main": "apps/wallet-react/src/main.tsx",
+        "tsConfig": "apps/wallet-react/tsconfig.app.json",
+        "assets": [
+          "apps/wallet-react/src/favicon.ico",
+          "apps/wallet-react/src/assets"
+        ],
+        "styles": ["apps/wallet-react/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "apps/wallet-react/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/wallet-react/src/environments/environment.ts",
+              "with": "apps/wallet-react/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "wallet-react:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "wallet-react:build:development"
+        },
+        "production": {
+          "buildTarget": "wallet-react:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "wallet-react:build"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/wallet-react/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
