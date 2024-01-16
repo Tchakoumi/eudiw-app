@@ -32,19 +32,19 @@ jobs:
       - name: Lint code
         run:
           # TODO: npx nx affected:lint --base=main
-          npx nx run-many --target=lint --all
+          npx nx run-many --target=lint --all --parallel
 
       - name: Build
         run:
           # TODO: npx nx affected:build --base=main
-          npx nx run-many --target=build --all
+          npx nx run-many --target=build --all --parallel
 
       - name: Test
         run:
           # TODO: npx nx affected:test --base=main
-          npx nx run-many --target=test --all
+          npx nx run-many --target=test --all --parallel
 
       - name: Test (e2e)
         run:
           # TODO: npx nx affected:e2e --base=main
-          npx nx run-many --target=e2e --all
+          npx nx run-many --target=e2e --all --parallel
