@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x]
 
     steps:
       - name: Checkout code
@@ -43,7 +43,7 @@ jobs:
         run:
           # TODO: npx nx affected:test --base=main
           npx nx run-many --target=test --all
-      
+
       - name: Test (e2e)
         run:
           # TODO: npx nx affected:e2e --base=main

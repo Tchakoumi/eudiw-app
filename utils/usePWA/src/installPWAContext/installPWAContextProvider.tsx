@@ -2,10 +2,10 @@ import { Reducer, useContext, useReducer } from 'react';
 import InstallPWAContext from './InstallPWAContext';
 
 import {
-    Action,
-    InstallPWA,
-    InstallPWAContextProviderProps,
-    State,
+  Action,
+  InstallPWA,
+  InstallPWAContextProviderProps,
+  State,
 } from './installPWA.interface';
 
 const installPWAReducer: Reducer<InstallPWA, Action> = (
