@@ -13,15 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js (${{ matrix.node-version }})
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
+          node-version: lts
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Check style
+      - name: Check formatting
         run: npx prettier --check "**/*.{js,ts,jsx,tsx,css,scss,json,yml,yaml}"
 
       - name: Lint code
@@ -40,7 +41,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js (${{ matrix.node-version }})
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
@@ -65,7 +66,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js (${{ matrix.node-version }})
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
