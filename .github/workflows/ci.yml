@@ -6,7 +6,7 @@ on:
     branches: ['main']
 
 env:
-  node-version: [18.x, 20.x]
+  NODE: [18.x, 20.x]
 
 jobs:
   style:
@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ${{ env.node-version }}
+        node-version: ${{ env.NODE }}
 
     steps:
       - name: Checkout code
@@ -42,7 +42,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ${{ env.node-version }}
+        node-version: ${{ env.NODE }}
 
     steps:
       - name: Checkout code
@@ -67,7 +67,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ${{ env.node-version }}
+        node-version: ${{ env.NODE }}
 
     steps:
       - name: Checkout code
@@ -92,7 +92,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ${{ env.node-version }}
+        node-version: ${{ env.NODE }}
 
     steps:
       - name: Checkout code
