@@ -1,12 +1,12 @@
-name: CI/CD
+name: CI
 
 on:
-  push:
+  push: null
   pull_request:
     branches: ['main']
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
 
     strategy:
@@ -46,5 +46,5 @@ jobs:
       
       - name: Test (e2e)
         run:
-          # TODO: npx nx affected:test --base=main
+          # TODO: npx nx affected:e2e --base=main
           npx nx run-many --target=e2e --all
