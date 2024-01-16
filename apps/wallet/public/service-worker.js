@@ -11,6 +11,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable */
+
 // If the loader is already loaded, just stop.
 if (!self.define) {
   let registry = {};
