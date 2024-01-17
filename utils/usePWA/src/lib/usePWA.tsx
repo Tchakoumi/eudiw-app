@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useInstallPWA } from '../installPWAContext/InstallPWAContextProvider';
+import { useInstallPWA } from '../installPWAContext/InstallPWAProvider';
 import { BeforeInstallPromptEvent } from '../installPWAContext/installPWA.interface';
 
 type EventHandler = EventListenerOrEventListenerObject;
