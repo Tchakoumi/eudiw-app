@@ -10,14 +10,15 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
 
   const handleDecodeError = useCallback(
     (error: Exception) => {
-      if (!props.onError) {
-        setError(error);
-        console.warn('QrScanner: Unhandled exception!');
-      } else {
+      let customErrorMessage: string | null = null;
+      if (!props.onError) console.warn('QrScanner: Unhandled exception!');
+      else {
         const errorMessage = props.onError(error);
-        if (typeof errorMessage === 'string')
-          setError(new Exception(errorMessage));
+        if (typeof errorMessage === 'string') customErrorMessage = errorMessage;
       }
+      setError(
+        customErrorMessage !== null ? new Exception(customErrorMessage) : error
+      );
     },
     [props]
   );
