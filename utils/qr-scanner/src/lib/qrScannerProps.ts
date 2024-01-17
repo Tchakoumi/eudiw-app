@@ -12,7 +12,7 @@ export interface IQrScannerProps<T = unknown> {
      * The returned value will modify the display error message.
      * If no string is returned the default exception message is displayed.
      * */
-    onError?: (error: Exception) => string | undefined;
+    onError?: (error: Exception) => string | void;
     /** Validate the qr codes data */
     validate?: (data: unknown) => T;
     /**
