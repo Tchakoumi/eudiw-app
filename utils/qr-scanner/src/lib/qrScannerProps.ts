@@ -1,4 +1,4 @@
-import { Exception, Result } from '..';
+import { Exception, Result } from '@zxing/library';
 
 export interface IQrScannerProps<T = unknown> {
     /**
@@ -7,8 +7,12 @@ export interface IQrScannerProps<T = unknown> {
      * @param rawResult The result of the qr-code
      */
     onResult: (result: T, rawResult: Result) => void;
-    /** This event gets fired when a exception occurs */
-    onError?: (error: Exception) => void;
+    /** This event gets fired when an exception occurs. 
+     * 
+     * The returned value will modify the display error message.
+     * If no string is returned the default exception message is displayed.
+     * */
+    onError?: (error: Exception) => string | undefined;
     /** Validate the qr codes data */
     validate?: (data: unknown) => T;
     /**
