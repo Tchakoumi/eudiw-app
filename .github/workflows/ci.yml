@@ -22,11 +22,11 @@ jobs:
         run: npm ci
 
       - name: Check formatting
-        run: npx prettier --check "**/*.{js,ts,jsx,tsx,css,scss,json,yml,yaml}"
+        run: npx nx format:check --all
 
       - name: Lint code
         run:
-          # TODO: npx nx affected:lint --base=main
+          # TODO: npx nx affected:lint
           npx nx run-many --target=lint --all --parallel
 
   build:
@@ -51,7 +51,7 @@ jobs:
 
       - name: Build
         run:
-          # TODO: npx nx affected:build --base=main
+          # TODO: npx nx affected:build
           npx nx run-many --target=build --all --parallel
 
   test:
@@ -76,10 +76,10 @@ jobs:
 
       - name: Test
         run:
-          # TODO: npx nx affected:test --base=main
+          # TODO: npx nx affected:test
           npx nx run-many --target=test --all --parallel
 
       - name: Test (e2e)
         run:
-          # TODO: npx nx affected:e2e --base=main
+          # TODO: npx nx affected:e2e
           npx nx run-many --target=e2e --all --parallel
