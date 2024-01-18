@@ -6,4 +6,4 @@
 # Project-specific paths to ignore
 /apps/wallet/.next
 /apps/wallet/public/service-worker.js
-/apps/wallet/public/workbox-2cbdcaae.js
+/apps/wallet/public/workbox-*.js

@@ -22,7 +22,7 @@ const nextConfig = withPWA({
   // Configure image optimization for SSG with next/export
   // Leave unoptimized as a workaround
   images: {
-    unoptimized: true
+    unoptimized: true,
   },
 });
 
