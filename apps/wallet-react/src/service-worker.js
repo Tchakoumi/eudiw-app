@@ -6,7 +6,12 @@ const addResourcesToCache = async (resources) => {
 
 const putInCache = async (request, response) => {
   const cache = await caches.open('v2');
-  if (request.url.startsWith('http')) await cache.put(request, response);
+  // only cache requests from http or https,
+  // this originated as extension requests
+  // will also be cached and 
+  // creates problems on the cache.put command
+  if (request.url.startsWith('http') || request.url.startsWith('https'))
+    await cache.put(request, response);
 };
 
 const cacheFirst = async ({ request, fallbackUrl }) => {
