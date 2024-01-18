@@ -17,7 +17,8 @@
         "tsConfig": "apps/wallet-react/tsconfig.app.json",
         "assets": [
           "apps/wallet-react/src/favicon.ico",
-          "apps/wallet-react/src/assets"
+          "apps/wallet-react/src/assets",
+          "apps/wallet-react/src/service-worker.js"
         ],
         "styles": ["apps/wallet-react/src/styles.css"],
         "scripts": [],
