@@ -17,7 +17,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           npm ci
-          npx nx build:wallet-react:production
+          npx nx run wallet-react:build
 
       - name: Setup Pages 📄🔧
         id: pages
