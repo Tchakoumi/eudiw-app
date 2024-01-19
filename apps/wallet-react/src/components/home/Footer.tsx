@@ -3,13 +3,33 @@ import connected from '@iconify/icons-fluent/connected-20-regular';
 import qr from '@iconify/icons-fluent/qr-code-28-filled';
 import settings from '@iconify/icons-fluent/settings-48-regular';
 import wallet from '@iconify/icons-fluent/wallet-48-regular';
-import { Icon } from '@iconify/react';
+import { Icon, IconifyIcon } from '@iconify/react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import line from '../../assets/line.png';
 import { useTheme } from '../../utils/theme';
 import { useNavigate } from 'react-router-dom';
 
+interface INavElements {
+  icon: IconifyIcon;
+  title: string;
+  isMain?: boolean;
+  action?: () => void;
+}
+
 export default function Footer() {
+  const NAV_ELEMENTS: INavElements[] = [
+    { icon: wallet, title: 'Wallet' },
+    { icon: connected, title: 'Contacts' },
+    {
+      icon: qr,
+      title: 'QR Code',
+      isMain: true,
+      action: () => push('scan'),
+    },
+    { icon: list, title: 'Activities' },
+    { icon: settings, title: 'Settings' },
+  ];
+
   const theme = useTheme();
   const push = useNavigate();
   return (
@@ -32,18 +52,7 @@ export default function Footer() {
           transform: 'translate(-50%, -50%)',
         }}
       />
-      {[
-        { icon: wallet, title: 'Wallet' },
-        { icon: connected, title: 'Contacts' },
-        {
-          icon: qr,
-          title: 'QR Code',
-          isMain: true,
-          action: () => push('scan'),
-        },
-        { icon: list, title: 'Activities' },
-        { icon: settings, title: 'Settings' },
-      ].map(({ icon, title, action, isMain }, index) => (
+      {NAV_ELEMENTS.map(({ icon, title, action, isMain }, index) => (
         <Box
           key={index}
           sx={{
