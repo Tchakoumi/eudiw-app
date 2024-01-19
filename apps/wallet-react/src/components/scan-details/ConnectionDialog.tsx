@@ -15,15 +15,17 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../utils/theme';
 
+interface IConnectionDialog {
+  connectionLink: string;
+  isDialogOpen: boolean;
+  closeDialog: () => void;
+}
+
 export default function ConnectionDialog({
   connectionLink,
   isDialogOpen,
   closeDialog,
-}: {
-  connectionLink: string;
-  isDialogOpen: boolean;
-  closeDialog: () => void;
-}) {
+}: IConnectionDialog) {
   const push = useNavigate();
   const theme = useTheme();
   return (
