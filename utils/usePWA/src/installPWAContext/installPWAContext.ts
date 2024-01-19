@@ -1,10 +1,11 @@
 import { createContext } from 'react';
 import { InstallPWA } from './installPWA.interface';
 
-const InstallPWAContext = createContext<InstallPWA>({
+export const initialState: InstallPWA = {
   deferredPrompt: null,
-  is_installing: false,
+  isInstalling: false,
   installPWADispatch: () => null,
-});
+};
+const InstallPWAContext = createContext(initialState);
 
 export default InstallPWAContext;
