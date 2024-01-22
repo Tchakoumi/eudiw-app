@@ -6,6 +6,6 @@ describe('wallet-e2e', () => {
     // cy.login('my-email@something.com', 'myPassword');
 
     // Function helper example, see `../support/app.po.ts` file
-    cy.contains('body', /QR code/);
+    cy.contains('body', /QR code/i);
   });
 });
