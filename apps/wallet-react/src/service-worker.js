@@ -8,7 +8,7 @@ const putInCache = async (request, response) => {
   const cache = await caches.open('v2');
   // only cache requests from http or https,
   // this originated as extension requests
-  // will also be cached and 
+  // will also be cached and
   // creates problems on the cache.put command
   if (request.url.startsWith('http') || request.url.startsWith('https'))
     await cache.put(request, response);
