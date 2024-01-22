@@ -17,7 +17,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           npm ci
-          npx nx build:wallet-react:production
+          npx nx run wallet-react:build:production
 
       - name: Setup Pages 📄🔧
         id: pages
@@ -37,3 +37,6 @@ jobs:
       - name: Deploy to Github Pages 🚀
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./wallet-react
