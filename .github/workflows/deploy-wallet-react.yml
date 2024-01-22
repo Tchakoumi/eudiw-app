@@ -22,7 +22,7 @@ jobs:
       - name: Setup Pages 📄🔧
         id: pages
         uses: actions/configure-pages@v4
-        
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -37,5 +37,5 @@ jobs:
       - name: Deploy to Github Pages 🚀
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          publish_dir: ./wallet-react
+        # with:
+        #   publish_dir: ./wallet-react
