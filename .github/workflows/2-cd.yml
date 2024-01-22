@@ -34,7 +34,7 @@ jobs:
           apps/wallet-react/src/service-worker.js
 
       - name: Build
-        run: npx nx build wallet-react --baseHref="/wallet-react/"
+        run: npx nx build wallet-react
 
       - name: Upload artifacts
         uses: actions/upload-pages-artifact@v3
