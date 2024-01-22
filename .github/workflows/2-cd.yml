@@ -30,7 +30,7 @@ jobs:
           sed -i 's/"start_url": "\/"/"start_url": "\/wallet-react\/"/g' \
           apps/wallet-react/src/assets/manifest.json
           # service-worker.js
-          sed -i "s/baseHref = '/'/baseHref = '/wallet-react'/g" \
+          sed -i "s/baseHref = '\/'/baseHref = '\/wallet-react\/'/g" \
           apps/wallet-react/src/service-worker.js
 
       - name: Build
