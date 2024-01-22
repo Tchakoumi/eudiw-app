@@ -21,8 +21,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Configure project to enable subpath deployment
+        run: |
+          # project.json
+          sed -i 's/"baseHref": "\/"/"baseHref": "\/wallet-react\/"/g' \
+          apps/wallet-react/project.json
+          # manifest.json
+          sed -i 's/"start_url": "\/"/"start_url": "\/wallet-react\/"/g' \
+          apps/wallet-react/src/assets/manifest.json
+          # service-worker.js
+          sed -i "s/baseHref = '/'/baseHref = '/wallet-react'/g" \
+          apps/wallet-react/src/service-worker.js
+
       - name: Build
-        run: npx nx build wallet-react
+        run: npx nx build wallet-react --baseHref="/wallet-react/"
 
       - name: Upload artifacts
         uses: actions/upload-pages-artifact@v3

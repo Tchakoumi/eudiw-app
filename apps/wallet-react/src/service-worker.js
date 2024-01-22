@@ -1,3 +1,5 @@
+const baseHref = '/';
+
 /* eslint-disable no-restricted-globals */
 const addResourcesToCache = async (resources) => {
   const cache = await caches.open('v2');
@@ -53,14 +55,14 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(addResourcesToCache(['/']));
+  event.waitUntil(addResourcesToCache([baseHref]));
 });
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     cacheFirst({
       request: event.request,
-      fallbackUrl: '/',
+      fallbackUrl: baseHref,
     })
   );
 });
