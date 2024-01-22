@@ -1,18 +1,20 @@
 import { useEffect } from 'react';
-import { useInstallPWA } from '../installPWAContext/installPWAContextProvider';
+import { useInstallPWA } from '../installPWAContext/InstallPWAProvider';
+import { BeforeInstallPromptEvent } from '../installPWAContext/installPWA.interface';
+
+type EventHandler = EventListenerOrEventListenerObject;
 
 export function usePWA() {
-  const { deferredPrompt, is_installing, installPWADispatch } = useInstallPWA();
+  const { deferredPrompt, isInstalling, installPWADispatch } = useInstallPWA();
   useEffect(() => {
-    //TODO: find-out how to type the event on `handleBeforeInstallPrompt`
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handleBeforeInstallPrompt: EventHandler = (e) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      installPWADispatch({ payload: e, type: 'SET_PROMPT' });
+      installPWADispatch({ payload: e as BeforeInstallPromptEvent, type: 'SET_PROMPT' });
     };
 
-    const checkIsAppInstalled = () => {
+    const handleAppInstalled: EventHandler = () => {
       installPWADispatch({ payload: null, type: 'SET_PROMPT' });
     };
 
@@ -21,19 +23,19 @@ export function usePWA() {
         'beforeinstallprompt',
         handleBeforeInstallPrompt
       );
-      window.removeEventListener('appinstalled', checkIsAppInstalled);
+      window.removeEventListener('appinstalled', handleAppInstalled);
       installPWADispatch({ type: 'CLEANUP' });
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', checkIsAppInstalled);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return cleanup;
   }, [installPWADispatch]);
 
   async function installApp() {
     installPWADispatch({ payload: true, type: 'UPDATE_INSTALLATION_STATUS' });
-    deferredPrompt.prompt().then(() => {
+    deferredPrompt?.prompt().then(() => {
       installPWADispatch({
         payload: false,
         type: 'UPDATE_INSTALLATION_STATUS',
@@ -43,8 +45,8 @@ export function usePWA() {
 
   return {
     isInstalled: !deferredPrompt,
-    isInstallable: !!deferredPrompt && !is_installing,
-    isInstalling: is_installing && !!deferredPrompt,
+    isInstallable: !!deferredPrompt && !isInstalling,
+    isInstalling: isInstalling && !!deferredPrompt,
     installApp,
   };
 }
