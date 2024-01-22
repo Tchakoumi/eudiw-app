@@ -24,7 +24,7 @@
     }
   ],
   "id": "datev_wallet",
-  "start_url": "/",
+  "start_url": "/wallet-react/",
   "background_color": "#9bd547",
   "display_override": ["minimal-ui", "standalone"],
   "display": "fullscreen",
