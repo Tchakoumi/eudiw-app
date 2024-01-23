@@ -1,7 +1,10 @@
 name: CD
 
 on:
-  push: null
+  # TODO: Remove this to only deploy on merge
+  pull_request: null
+  push:
+    branches: [main]
 
 concurrency:
   group: pages
