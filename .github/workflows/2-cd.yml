@@ -1,8 +1,6 @@
 name: CD
 
 on:
-  # TODO: Remove this to only deploy on merge
-  pull_request: null
   push:
     branches: [main]
 
