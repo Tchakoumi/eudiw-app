@@ -26,8 +26,8 @@ jobs:
 
       - name: Configure project to enable subpath deployment
         run: |
-          sed -i 's/"start_url": "\/"/"start_url": "\/eudiw-app\/"/g' \
-          apps/wallet-react/src/assets/manifest.json
+          cd apps/wallet-react/src/assets
+          cp manifest.prod.json manifest.json
 
       - name: Build
         run: npx nx build wallet-react --baseHref=/eudiw-app/

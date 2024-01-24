@@ -49,19 +49,26 @@ const enableNavigationPreload = async () => {
   }
 };
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(enableNavigationPreload());
-});
+fetch('manifest.json')
+  .then((response) => response.json().start_url)
+  .then((baseHref) => {
+    self.addEventListener('activate', (event) => {
+      event.waitUntil(enableNavigationPreload());
+    });
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(addResourcesToCache(['/']));
-});
+    self.addEventListener('install', (event) => {
+      event.waitUntil(addResourcesToCache([baseHref]));
+    });
 
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    cacheFirst({
-      request: event.request,
-      fallbackUrl: '/',
-    })
-  );
-});
+    self.addEventListener('fetch', (event) => {
+      event.respondWith(
+        cacheFirst({
+          request: event.request,
+          fallbackUrl: baseHref,
+        })
+      );
+    });
+  })
+  .catch(() => {
+    console.error('Could not retrieve baseHref from manifest.json');
+  });
