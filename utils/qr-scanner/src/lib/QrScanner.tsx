@@ -1,6 +1,7 @@
 import { BrowserMultiFormatReader, Exception, Result } from '@zxing/library';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { IQrScannerProps } from './qrScannerProps';
+import './qrScanner.css';
 
 export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,12 +88,29 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
             width: '100%',
           }}
         >
-          {error.name === 'NotFoundException'
-            ? 'Searching for Qr code...'
-            : error.message}
+          {error.name === 'NotFoundException' ? (
+            <SearchingQrCode />
+          ) : (
+            error.message
+          )}
         </div>
       )}
       <video ref={videoRef} style={{ width: '100%', height: '100%' }} />
+    </div>
+  );
+}
+
+function SearchingQrCode() {
+  return (
+    <div className="loading-span">
+      <span role="img" aria-label="loading" style={{ animation: 'none' }}>
+        🌀 Searching for Qr code
+      </span>
+      {'...'.split('').map((letter, index) => (
+        <span key={index} style={{ animationDelay: `${index * 0.1}s` }}>
+          {letter}
+        </span>
+      ))}
     </div>
   );
 }
