@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "affected": {
-    "defaultBase": "master"
+    "defaultBase": "main"
   },
   "targetDefaults": {
     "build": {
@@ -76,6 +76,5 @@
         "linter": "eslint"
       }
     }
-  },
-  "nxCloudAccessToken": "NjNiODVmMGItYTFhMy00YmY3LTg2MTctMjkwNWYxZDY1MGU4fHJlYWQtd3JpdGU="
+  }
 }
