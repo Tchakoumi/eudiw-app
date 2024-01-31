@@ -24,7 +24,7 @@
     }
   ],
   "id": "datev_wallet",
-  "start_url": "/",
+  "start_url": "/eudiw-app",
   "background_color": "#9bd547",
   "display_override": ["standalone", "minimal-ui"],
   "display": "standalone",
