@@ -11,7 +11,10 @@ export function usePWA() {
     const handleBeforeInstallPrompt: EventHandler = (e) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      installPWADispatch({ payload: e as BeforeInstallPromptEvent, type: 'SET_PROMPT' });
+      installPWADispatch({
+        payload: e as BeforeInstallPromptEvent,
+        type: 'SET_PROMPT',
+      });
     };
 
     const handleAppInstalled: EventHandler = () => {
@@ -47,6 +50,10 @@ export function usePWA() {
     isInstalled: !deferredPrompt,
     isInstallable: !!deferredPrompt && !isInstalling,
     isInstalling: isInstalling && !!deferredPrompt,
+    iOS: {
+      isInstallable: !window.matchMedia('(display-mode: standalone)'),
+      isInstalled: !!window.matchMedia('(display-mode: standalone)'),
+    },
     installApp,
   };
 }
