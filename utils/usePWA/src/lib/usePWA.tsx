@@ -4,6 +4,19 @@ import { BeforeInstallPromptEvent } from '../installPWAContext/installPWA.interf
 
 type EventHandler = EventListenerOrEventListenerObject;
 
+//This is to make type window.safari
+// (detect safari browser on desktop) usage typesafe
+declare global {
+  interface Window {
+    safari: unknown;
+  }
+}
+
+export function isIosOrSafariDesktop() {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  return /iphone|ipad|ipod/.test(userAgent) || window.safari !== undefined;
+}
+
 export function usePWA() {
   const { deferredPrompt, isInstalling, installPWADispatch } = useInstallPWA();
   useEffect(() => {
