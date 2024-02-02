@@ -95,12 +95,12 @@ export function InstallPWAContextProvider({
   }
 
   useEffect(() => {
-    if (!isIosInstallOpen) {
+    if (!isIosInstallOpen && isAppleInstallable) {
       setTimeout(() => {
         setIsIosInstallOpen(true);
       }, 3000);
     }
-  }, [isIosInstallOpen]);
+  }, [isAppleInstallable, isIosInstallOpen]);
 
   const showInstall = (isInstallable || isAppleInstallable) && isIosInstallOpen;
 
