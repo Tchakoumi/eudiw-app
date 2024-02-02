@@ -109,14 +109,12 @@ export function InstallPWAContextProvider({
   //   return /iphone|ipad|ipod/.test(userAgent) || window.safari !== undefined;
   // }
 
-  console.log(
-    `isIosOrSafariDesktop: ${isIosOrSafariDesktop() ? 'true' : 'false'}`
-  );
-  console.log(`window.safari: ${window.safari ? 'true' : 'false'}`);
-  console.log(`isInstallable: ${isInstallable}`);
-  console.log(`isAppleInstallable: ${isAppleInstallable}`);
-  console.log(`isIosInstallOpen: ${isIosInstallOpen}`);
-  console.log(`showInstall: ${showInstall}`);
+  alert(`isIosOrSafariDesktop: ${isIosOrSafariDesktop() ? 'true' : 'false'}`);
+  alert(`window.safari: ${window.safari ? 'true' : 'false'}`);
+  alert(`isInstallable: ${isInstallable}`);
+  alert(`isAppleInstallable: ${isAppleInstallable}`);
+  alert(`isIosInstallOpen: ${isIosInstallOpen}`);
+  alert(`showInstall: ${showInstall}`);
 
   return (
     <InstallPWAContext.Provider value={value}>
