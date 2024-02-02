@@ -63,7 +63,7 @@ export function InstallPWAContextProvider({
   }
 
   const isAppleInstallable =
-    !window.matchMedia('(display-mode: standalone)') &&
+    !window.matchMedia('(display-mode: standalone)').matches &&
     isIosOrSafariDesktop() &&
     !value.deferredPrompt;
 
