@@ -2,8 +2,7 @@ import { ReactNode } from 'react';
 
 export interface InstallPWAContextProviderProps {
   children: ReactNode;
-  presentation?: 'banner' | 'popup' | 'tooltip';
-  component?: ReactNode;
+  component?: 'banner' | 'popup' | 'tooltip' | JSX.Element;
 }
 
 /**
