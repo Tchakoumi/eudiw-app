@@ -1,22 +1,22 @@
 .tooltip {
   position: relative;
   width: 100%;
-  margin: 0 40px;
 }
 
 .tooltiptext {
   visibility: visible;
-  width: 100%;
   background-color: rgba(0, 0, 0, 0.671);
-  color: white;
   text-align: center;
   border-radius: 6px;
-  padding: 5px 0;
+  padding: 5px 8px;
 
   position: absolute;
   z-index: 1;
   bottom: 10px;
   left: 0%;
+}
+.tooltiptext span {
+  color: white;
 }
 
 .tooltiptext::after {
