@@ -48,7 +48,11 @@ export function usePWA() {
 
   return {
     isInstalled: !deferredPrompt,
-    isInstallable: !!deferredPrompt && !isInstalling,
+    isInstallable:
+      !!deferredPrompt &&
+      !isInstalling &&
+      (window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: minimal-ui)').matches),
     isInstalling: isInstalling && !!deferredPrompt,
     iOS: {
       isInstallable: !window.matchMedia('(display-mode: standalone)'),
