@@ -13,7 +13,8 @@
   position: absolute;
   z-index: 1;
   bottom: 10px;
-  left: 0%;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 .tooltiptext span {
   color: white;
