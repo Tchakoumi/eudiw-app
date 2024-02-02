@@ -5,12 +5,15 @@ import * as ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './pages/App';
 
+import { baseHref } from './utils/config';
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={baseHref}>
       <InstallPWAContextProvider>
         <App />
       </InstallPWAContextProvider>

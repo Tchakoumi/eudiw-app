@@ -2,3 +2,8 @@
 /dist
 /coverage
 /.nx/cache
+
+# Project-specific paths to ignore
+/apps/wallet/.next
+/apps/wallet/public/service-worker.js
+/apps/wallet/public/workbox-*.js

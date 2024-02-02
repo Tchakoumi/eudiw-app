@@ -19,6 +19,11 @@ const nextConfig = withPWA({
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+  // Configure image optimization for SSG with next/export
+  // Leave unoptimized as a workaround
+  images: {
+    unoptimized: true,
+  },
 });
 
 const plugins = [
