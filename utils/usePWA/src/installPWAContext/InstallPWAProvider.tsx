@@ -113,6 +113,10 @@ export function InstallPWAContextProvider({
     `isIosOrSafariDesktop: ${isIosOrSafariDesktop() ? 'true' : 'false'}`
   );
   console.log(`window.safari: ${window.safari ? 'true' : 'false'}`);
+  console.log(`isInstallable: ${isInstallable}`);
+  console.log(`isAppleInstallable: ${isAppleInstallable}`);
+  console.log(`isIosInstallOpen: ${isIosInstallOpen}`);
+  console.log(`showInstall: ${showInstall}`);
 
   return (
     <InstallPWAContext.Provider value={value}>
