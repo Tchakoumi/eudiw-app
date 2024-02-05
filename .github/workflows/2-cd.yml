@@ -1,0 +1,54 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure project to enable subpath deployment
+        run: |
+          cd apps/wallet-react/src/assets
+          cp manifest.prod.json manifest.json
+
+      - name: Build
+        run: npx nx build wallet-react --baseHref=/eudiw-app/
+
+      - name: Upload artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist/apps/wallet-react
+
+  deploy:
+    needs: rebuild
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      # environment created automatically by GitHub
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

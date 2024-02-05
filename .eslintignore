@@ -1,1 +1,5 @@
 node_modules
+
+# Project-specific paths to ignore
+/apps/wallet/public/service-worker.js
+/apps/wallet/public/workbox-*.js
