@@ -6,7 +6,6 @@ import wallet from '@iconify/icons-fluent/wallet-48-regular';
 import { Icon } from '@iconify/react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import Image from 'next/image';
-import line from '../../public/Line.png';
 import { useTheme } from '../../utils/theme';
 import { useRouter } from 'next/router';
 
@@ -24,7 +23,7 @@ export default function Footer() {
       }}
     >
       <Image
-        src={line}
+        src="/Line.png"
         alt="line"
         style={{
           position: 'absolute',
@@ -32,6 +31,7 @@ export default function Footer() {
           left: '51%',
           transform: 'translate(-50%, -50%)',
         }}
+        fill
       />
       {[
         { icon: wallet, title: 'Wallet' },
