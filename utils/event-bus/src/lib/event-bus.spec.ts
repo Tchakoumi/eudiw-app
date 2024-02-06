@@ -16,6 +16,7 @@ describe('eventBus', () => {
 
   it('should be instantiated', () => {
     expect(eventBus).toBeDefined();
+    expect(eventBus).toBeInstanceOf(EventBus)
     expect(eventBus).toEqual({ listeners: {} });
   });
 
@@ -30,4 +31,16 @@ describe('eventBus', () => {
       listeners: { [Events.Event1]: [callback1], [Events.Event2]: [callback2] },
     });
   });
+
+  it('Should publish events', () => {
+    const data1 = { message: 'Hello from publisher!' }
+    eventBus.publish(Events.Event1, data1)
+    expect(callback1).toHaveBeenCalled()
+    expect(callback1).toHaveBeenCalledWith(data1)
+    
+    const data2 = { message: 'Hello again from publisher!' }
+    eventBus.publish(Events.Event2, data2)
+    expect(callback2).toHaveBeenCalled()
+    expect(callback2).toHaveBeenCalledWith(data2)
+  })
 });
