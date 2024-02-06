@@ -18,7 +18,7 @@ export default function Banner({
     <div className="holder">
       {installApp && !isAppleDevice ? (
         <>
-          <span className="message" style={{textAlign:'start'}}>
+          <span className="message" style={{ textAlign: 'start' }}>
             To access the app from your phone, install now
           </span>
           <button className="install-button" onClick={installApp}>
@@ -49,7 +49,7 @@ export default function Banner({
             </span>
             Add to Homescreen
           </span>
-          <IconTooltip label='Close'>
+          <IconTooltip label="Close">
             <button className="icon-button" onClick={close}>
               <Icon icon={dismiss} fontSize={24} color="white" />
             </button>

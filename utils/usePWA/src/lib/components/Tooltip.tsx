@@ -16,7 +16,7 @@ export default function Tooltip({ close }: { close: () => void }) {
       }}
       className="tooltiptext"
     >
-      <IconTooltip label='Close'>
+      <IconTooltip label="Close">
         <button className="icon-button" onClick={close}>
           <Icon icon={dismiss} fontSize={24} color="white" />
         </button>
