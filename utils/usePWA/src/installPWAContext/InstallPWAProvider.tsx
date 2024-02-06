@@ -32,7 +32,7 @@ const installPWAReducer: Reducer<InstallPWA, Action> = (
 
 export function InstallPWAContextProvider({
   children,
-  component = isIosOrSafariDesktop() ? 'tooltip' : 'banner',
+  component = 'banner',
 }: InstallPWAContextProviderProps): JSX.Element {
   const [installPWAState, installPWADispatch] = useReducer(
     installPWAReducer,
@@ -62,10 +62,14 @@ export function InstallPWAContextProvider({
     });
   }
 
-  const isAppleInstallable =
-    !window.matchMedia('(display-mode: standalone)').matches &&
-    isIosOrSafariDesktop() &&
-    !value.deferredPrompt;
+  const [isAppleInstallable, setIsAppleInstallable] = useState<boolean>(false);
+  useEffect(() => {
+    setIsAppleInstallable(
+      !window.matchMedia('(display-mode: standalone)').matches &&
+        isIosOrSafariDesktop() &&
+        !value.deferredPrompt
+    );
+  }, [value.deferredPrompt]);
 
   const [isIosInstallOpen, setIsIosInstallOpen] = useState<boolean>(true);
 
