@@ -6,17 +6,21 @@ enum Events {
 }
 
 describe('eventBus', () => {
-  const eventBus = EventBus.init();
-  const callback1 = jest.fn((data) => {
-    console.log('Subscriber 1 received event1 with data:', data);
-  });
-  const callback2 = jest.fn((data) => {
-    console.log('Subscriber 2 received event2 with data:', data);
+  let eventBus: EventBus, callback1: jest.Func, callback2: jest.Func;
+
+  beforeAll(() => {
+    eventBus = EventBus.init();
+    callback1 = jest.fn((data) => {
+      console.log('Subscriber 1 received event1 with data:', data);
+    });
+    callback2 = jest.fn((data) => {
+      console.log('Subscriber 2 received event2 with data:', data);
+    });
   });
 
   it('should be instantiated', () => {
     expect(eventBus).toBeDefined();
-    expect(eventBus).toBeInstanceOf(EventBus)
+    expect(eventBus).toBeInstanceOf(EventBus);
     expect(eventBus).toEqual({ listeners: {} });
   });
 
@@ -33,14 +37,14 @@ describe('eventBus', () => {
   });
 
   it('Should publish events', () => {
-    const data1 = { message: 'Hello from publisher!' }
-    eventBus.publish(Events.Event1, data1)
-    expect(callback1).toHaveBeenCalled()
-    expect(callback1).toHaveBeenCalledWith(data1)
-    
-    const data2 = { message: 'Hello again from publisher!' }
-    eventBus.publish(Events.Event2, data2)
-    expect(callback2).toHaveBeenCalled()
-    expect(callback2).toHaveBeenCalledWith(data2)
-  })
+    const data1 = { message: 'Hello from publisher!' };
+    eventBus.publish(Events.Event1, data1);
+    expect(callback1).toHaveBeenCalled();
+    expect(callback1).toHaveBeenCalledWith(data1);
+
+    const data2 = { message: 'Hello again from publisher!' };
+    eventBus.publish(Events.Event2, data2);
+    expect(callback2).toHaveBeenCalled();
+    expect(callback2).toHaveBeenCalledWith(data2);
+  });
 });
