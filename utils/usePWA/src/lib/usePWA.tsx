@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useInstallPWA } from '../installPWAContext/InstallPWAProvider';
 import { BeforeInstallPromptEvent } from '../installPWAContext/installPWA.interface';
 
@@ -59,17 +59,22 @@ export function usePWA() {
     });
   }
 
+  const [isStandalone, setIsStandalone] = useState<boolean>(false);
+  const [isMinimalUi, setIsMinimalUi] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
+    setIsMinimalUi(window.matchMedia('(display-mode: minimal-ui)').matches);
+  }, []);
+
   return {
     isInstalled: !deferredPrompt,
     isInstallable:
-      !!deferredPrompt &&
-      !isInstalling &&
-      (window.matchMedia('(display-mode: standalone)').matches ||
-        window.matchMedia('(display-mode: minimal-ui)').matches),
+      !!deferredPrompt && !isInstalling && !(isStandalone || isMinimalUi),
     isInstalling: isInstalling && !!deferredPrompt,
     iOS: {
-      isInstallable: !window.matchMedia('(display-mode: standalone)'),
-      isInstalled: !!window.matchMedia('(display-mode: standalone)'),
+      isInstallable: !isStandalone,
+      isInstalled: isStandalone,
     },
     installApp,
   };
