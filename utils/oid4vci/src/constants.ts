@@ -1,0 +1,1 @@
+export const DEFAULT_POLLING_INTERVAL_SECONDS = 5;
