@@ -5,9 +5,9 @@ import settings from '@iconify/icons-fluent/settings-48-regular';
 import wallet from '@iconify/icons-fluent/wallet-48-regular';
 import { Icon, IconifyIcon } from '@iconify/react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import line from '../../assets/line.png';
 import { useTheme } from '../../utils/theme';
-import { useNavigate } from 'react-router-dom';
 
 interface INavElements {
   icon: IconifyIcon;
@@ -16,7 +16,7 @@ interface INavElements {
   action?: () => void;
 }
 
-export default function Footer() {
+export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
   const NAV_ELEMENTS: INavElements[] = [
     { icon: wallet, title: 'Wallet' },
     { icon: connected, title: 'Contacts' },
@@ -42,16 +42,18 @@ export default function Footer() {
         padding: '12.5px 21px',
       }}
     >
-      <img
-        src={line}
-        alt="line"
-        style={{
-          position: 'absolute',
-          top: '-80px',
-          left: '51%',
-          transform: 'translate(-50%, -50%)',
-        }}
-      />
+      {showArrow && (
+        <img
+          src={line}
+          alt="line"
+          style={{
+            position: 'absolute',
+            top: '-80px',
+            left: '51%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      )}
       {NAV_ELEMENTS.map(({ icon, title, action, isMain }, index) => (
         <Box
           key={index}
