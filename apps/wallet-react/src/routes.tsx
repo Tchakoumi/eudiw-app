@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Scan from './pages/scan/Scan';
+import SelectCredential from './pages/selectCredential/SelectCredential';
 
 export interface IRoute {
   path: string;
@@ -16,6 +17,10 @@ export const routes: IRoute[] = [
   {
     element: <Scan />,
     path: '/scan',
+  },
+  {
+    element: <SelectCredential />,
+    path: '/credential-type',
   },
   {
     element: <Navigate to="/" />,
