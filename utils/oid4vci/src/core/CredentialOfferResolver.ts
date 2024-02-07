@@ -56,7 +56,7 @@ export class CredentialOfferResolver {
     }
 
     try {
-      return JSON.parse(parsedCredentialOffer) as CredentialOffer
+      return JSON.parse(parsedCredentialOffer) as CredentialOffer;
     } catch (e) {
       throw new Error('Invalid credential offer: deserialization error.');
     }

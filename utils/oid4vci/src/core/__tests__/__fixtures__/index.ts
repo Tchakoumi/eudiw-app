@@ -1,1 +1,1 @@
-export * from './CredentialOfferResolver.fixtures'
+export * from './CredentialOfferResolver.fixtures';

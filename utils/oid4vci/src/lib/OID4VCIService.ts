@@ -5,7 +5,7 @@ import { ResolvedCredentialOffer } from '../types';
  */
 export interface OID4VCIService {
   /**
-   * Resolves an out-of-band credential offer (along with issuer metadata).
+   * Resolves an out-of-band credential offer (collecting issuer metadata).
    */
   resolveCredentialOffer(
     credentialOffer: string
