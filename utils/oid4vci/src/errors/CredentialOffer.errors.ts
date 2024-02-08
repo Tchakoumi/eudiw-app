@@ -4,4 +4,5 @@ export enum InvalidCredentialOffer {
   WrongParamCount = `${Generic}: exactly one parameter is required`,
   MissingRequiredParams = `${Generic}: missing required params`,
   DeserializationError = `${Generic}: deserialization error`,
+  MissingCredentialIssuer = `${Generic}: missing credential issuer`,
 }

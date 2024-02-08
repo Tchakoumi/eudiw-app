@@ -3,7 +3,11 @@
  */
 export interface ResolvedCredentialOffer {
   credentialOffer: CredentialOffer;
-  credentialIssuerMetadata?: object;
+  metadata?: {
+    credentialIssuerMetadata?: object;
+    authorizationServerMetadata?: object;
+    jwtIssuerMetadata?: object;
+  };
 }
 
 /**

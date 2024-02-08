@@ -1,19 +1,55 @@
+import { WELL_KNOWN_ENDPOINTS } from '../../constants';
 import { InvalidCredentialOffer } from '../../errors';
 import { CredentialOffer, ResolvedCredentialOffer } from '../../types';
 import { CredentialOfferResolver } from '../CredentialOfferResolver';
-import { credentialOfferObjectRef1 } from './__fixtures__';
+import {
+  credentialOfferObjectRef1,
+  credentialIssuerMetadataRef1,
+  authorizationServerMetadataRef1,
+  jwtIssuerMetadataRef1,
+} from './__fixtures__';
 
 describe('CredentialOfferResolver', () => {
   const resolver: CredentialOfferResolver = new CredentialOfferResolver();
   const fetchMock = jest.spyOn(global, 'fetch');
 
   beforeEach(async () => {
+    fetchMock.mockImplementation(replyWithMetadataRef1);
+  });
+
+  afterAll(async () => {
     fetchMock.mockClear();
   });
 
   const encodeCredentialOffer = (credentialOffer: CredentialOffer) => {
     return encodeURIComponent(JSON.stringify(credentialOffer));
   };
+
+  const replyWithEmptyResponse = async () => {
+    return {
+      json: async () => ({}),
+    } as Response;
+  };
+
+  const replyWithMetadataRef1 = (async (url: string) => {
+    return {
+      json: async () => {
+        let response = {};
+
+        if (url.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)) {
+          response = credentialIssuerMetadataRef1;
+        } else if (
+          url.endsWith(WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION)
+        ) {
+          response = authorizationServerMetadataRef1;
+        } else if (url.endsWith(WELL_KNOWN_ENDPOINTS.JWT_ISSUER_METADATA)) {
+          response = jwtIssuerMetadataRef1;
+        }
+
+        return response;
+      },
+    } as Response;
+  }) as (arg: unknown) => Promise<Response>;
 
   it('should resolve offer by value', async () => {
     const credentialOffer =
@@ -33,7 +69,12 @@ describe('CredentialOfferResolver', () => {
           },
         },
       } as CredentialOffer,
-    });
+      metadata: {
+        credentialIssuerMetadata: credentialIssuerMetadataRef1,
+        authorizationServerMetadata: authorizationServerMetadataRef1,
+        jwtIssuerMetadata: jwtIssuerMetadataRef1,
+      },
+    } as ResolvedCredentialOffer);
   });
 
   it('should resolve offer by value (schemeless link)', async () => {
@@ -45,6 +86,11 @@ describe('CredentialOfferResolver', () => {
 
     expect(resolved).toEqual({
       credentialOffer: credentialOfferObjectRef1,
+      metadata: {
+        credentialIssuerMetadata: credentialIssuerMetadataRef1,
+        authorizationServerMetadata: authorizationServerMetadataRef1,
+        jwtIssuerMetadata: jwtIssuerMetadataRef1,
+      },
     } as ResolvedCredentialOffer);
   });
 
@@ -53,21 +99,29 @@ describe('CredentialOfferResolver', () => {
       'https://trial.authlete.net/api/offer/xxxx'
     )}`;
 
-    fetchMock.mockImplementationOnce(async () => {
-      return {
-        text: async () => JSON.stringify(credentialOfferObjectRef1),
-      } as Response;
+    fetchMock.mockImplementation(async (arg) => {
+      if (arg == 'https://trial.authlete.net/api/offer/xxxx') {
+        return {
+          text: async () => JSON.stringify(credentialOfferObjectRef1),
+        } as Response;
+      } else {
+        return await replyWithMetadataRef1(arg);
+      }
     });
 
     const resolved = await resolver.resolveCredentialOffer(credentialOffer);
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
       'https://trial.authlete.net/api/offer/xxxx'
     );
 
     expect(resolved).toEqual({
       credentialOffer: credentialOfferObjectRef1,
+      metadata: {
+        credentialIssuerMetadata: credentialIssuerMetadataRef1,
+        authorizationServerMetadata: authorizationServerMetadataRef1,
+        jwtIssuerMetadata: jwtIssuerMetadataRef1,
+      },
     } as ResolvedCredentialOffer);
   });
 
@@ -81,21 +135,29 @@ describe('CredentialOfferResolver', () => {
       credential_configuration_ids: ['IdentityCredential'],
     };
 
-    fetchMock.mockImplementationOnce(async () => {
-      return {
-        text: async () => JSON.stringify(credentialOfferObject),
-      } as Response;
+    fetchMock.mockImplementation(async (arg) => {
+      if ((<string>arg).startsWith('https://server.example.com/offer/')) {
+        return {
+          text: async () => JSON.stringify(credentialOfferObject),
+        } as Response;
+      } else {
+        return await replyWithEmptyResponse();
+      }
     });
 
     const resolved = await resolver.resolveCredentialOffer(credentialOffer);
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
       'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
     );
 
     expect(resolved).toEqual({
       credentialOffer: credentialOfferObject,
+      metadata: {
+        credentialIssuerMetadata: {},
+        authorizationServerMetadata: {},
+        jwtIssuerMetadata: {},
+      },
     } as ResolvedCredentialOffer);
   });
 
@@ -153,7 +215,7 @@ describe('CredentialOfferResolver', () => {
       'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
     )}`;
 
-    fetchMock.mockImplementationOnce(async () => {
+    fetchMock.mockImplementation(async () => {
       return {
         text: async () => '{{}}',
       } as Response;
@@ -165,16 +227,41 @@ describe('CredentialOfferResolver', () => {
     );
   });
 
-  it('should fail when fetching credential offer by reference errs', async () => {
+  it('should fail when fetching anything errs', async () => {
     const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
       'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
     )}`;
 
-    fetchMock.mockImplementationOnce(() =>
+    fetchMock.mockImplementation(() =>
       Promise.reject(new Error('fetch failed'))
     );
 
     const promise = resolver.resolveCredentialOffer(credentialOffer);
     expect(promise).rejects.toThrow('fetch failed');
+  });
+
+  it('should fail on missing credential issuer', async () => {
+    const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
+      'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
+    )}`;
+
+    fetchMock.mockImplementation(async (arg) => {
+      if ((<string>arg).startsWith('https://server.example.com/offer/')) {
+        return {
+          text: async () =>
+            JSON.stringify({
+              ...credentialOfferObjectRef1,
+              credential_issuer: undefined,
+            }),
+        } as Response;
+      } else {
+        return await replyWithEmptyResponse();
+      }
+    });
+
+    const promise = resolver.resolveCredentialOffer(credentialOffer);
+    expect(promise).rejects.toThrow(
+      InvalidCredentialOffer.MissingCredentialIssuer
+    );
   });
 });
