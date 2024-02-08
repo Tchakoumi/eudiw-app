@@ -1,3 +1,4 @@
+import { InvalidCredentialOffer } from '../../errors';
 import { CredentialOffer, ResolvedCredentialOffer } from '../../types';
 import { CredentialOfferResolver } from '../CredentialOfferResolver';
 import { credentialOfferObjectRef1 } from './__fixtures__';
@@ -96,5 +97,84 @@ describe('CredentialOfferResolver', () => {
     expect(resolved).toEqual({
       credentialOffer: credentialOfferObject,
     } as ResolvedCredentialOffer);
+  });
+
+  it('should fail when credential offer has no query string', async () => {
+    const credentialOffers = ['', 'openid-credential-offer'];
+
+    for (const credentialOffer of credentialOffers) {
+      const promise = resolver.resolveCredentialOffer(credentialOffer);
+      expect(promise).rejects.toThrow(
+        InvalidCredentialOffer.MissingQueryString
+      );
+    }
+  });
+
+  it('should fail on empty or non single-param query string', async () => {
+    const credentialOffers = [
+      '?',
+      '?k1=v1&k2=v2',
+      'openid-credential-offer://?k1=v1&k2=v2',
+    ];
+
+    for (const credentialOffer of credentialOffers) {
+      const promise = resolver.resolveCredentialOffer(credentialOffer);
+      expect(promise).rejects.toThrow(InvalidCredentialOffer.WrongParamCount);
+    }
+  });
+
+  it('should fail on missing required parameters', async () => {
+    const credentialOffers = ['?k1', '?k2'];
+
+    for (const credentialOffer of credentialOffers) {
+      const promise = resolver.resolveCredentialOffer(credentialOffer);
+      expect(promise).rejects.toThrow(
+        InvalidCredentialOffer.MissingRequiredParams
+      );
+    }
+  });
+
+  it('should fail on invalid JSON resolved credential offer', async () => {
+    const credentialOffers = [
+      '?credential_offer=',
+      `?credential_offer=${encodeURIComponent('{{}}')}`,
+    ];
+
+    for (const credentialOffer of credentialOffers) {
+      const promise = resolver.resolveCredentialOffer(credentialOffer);
+      expect(promise).rejects.toThrow(
+        InvalidCredentialOffer.DeserializationError
+      );
+    }
+  });
+
+  it('should fail on invalid JSON resolved credential offer (by reference)', async () => {
+    const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
+      'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
+    )}`;
+
+    fetchMock.mockImplementationOnce(async () => {
+      return {
+        text: async () => '{{}}',
+      } as Response;
+    });
+
+    const promise = resolver.resolveCredentialOffer(credentialOffer);
+    expect(promise).rejects.toThrow(
+      InvalidCredentialOffer.DeserializationError
+    );
+  });
+
+  it('should fail when fetching credential offer by reference errs', async () => {
+    const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
+      'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
+    )}`;
+
+    fetchMock.mockImplementationOnce(() =>
+      Promise.reject(new Error('fetch failed'))
+    );
+
+    const promise = resolver.resolveCredentialOffer(credentialOffer);
+    expect(promise).rejects.toThrow('fetch failed');
   });
 });

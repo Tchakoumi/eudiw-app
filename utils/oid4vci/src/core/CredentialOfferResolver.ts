@@ -1,3 +1,4 @@
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
 import { CredentialOffer, ResolvedCredentialOffer } from '../types';
 
 export class CredentialOfferResolver {
@@ -26,24 +27,24 @@ export class CredentialOfferResolver {
    */
   private async parseCredentialOffer(credentialOffer: string) {
     const query = credentialOffer.split('?')[1];
-    if (!query) {
-      throw new Error('Invalid credential offer: no query string.');
+    if (query == undefined) {
+      throw new OID4VCIServiceError(InvalidCredentialOffer.MissingQueryString);
     }
 
     const params = new URLSearchParams(query);
     const paramLength = Array.from(params.keys()).length;
 
     if (paramLength !== 1) {
-      throw new Error(
-        'Invalid credential offer: exactly one parameter is required.'
-      );
+      throw new OID4VCIServiceError(InvalidCredentialOffer.WrongParamCount);
     }
 
     if (
       !params.has('credential_offer') &&
       !params.has('credential_offer_uri')
     ) {
-      throw new Error('Invalid credential offer: missing required parameters.');
+      throw new OID4VCIServiceError(
+        InvalidCredentialOffer.MissingRequiredParams
+      );
     }
 
     const credentialOfferURI = params.get('credential_offer_uri');
@@ -51,14 +52,12 @@ export class CredentialOfferResolver {
       ? await this.fetchCredentialOffer(credentialOfferURI)
       : params.get('credential_offer');
 
-    if (!parsedCredentialOffer) {
-      throw new Error('Invalid credential offer: null.');
-    }
-
     try {
-      return JSON.parse(parsedCredentialOffer) as CredentialOffer;
+      return JSON.parse(parsedCredentialOffer ?? '') as CredentialOffer;
     } catch (e) {
-      throw new Error('Invalid credential offer: deserialization error.');
+      throw new OID4VCIServiceError(
+        InvalidCredentialOffer.DeserializationError
+      );
     }
   }
 
