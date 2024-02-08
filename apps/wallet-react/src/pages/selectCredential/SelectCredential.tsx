@@ -5,10 +5,11 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Typography
+  Typography,
 } from '@mui/material';
 import Footer from '../../components/home/Footer';
 import Header from '../../components/home/Header';
+import { useState } from 'react';
 
 export default function SelectCredential() {
   const CREDENTIAL_ISSUER_METADATA = {
@@ -104,11 +105,34 @@ export default function SelectCredential() {
     },
   };
 
+  type ISupportedCredential =
+    keyof typeof CREDENTIAL_ISSUER_METADATA.credential_configurations_supported;
+
   function getOfferedCredentials() {
     return Object.keys(
       CREDENTIAL_ISSUER_METADATA.credential_configurations_supported
-    );
+    ) as ISupportedCredential[];
   }
+
+  function getVCItems(selectedCredential: ISupportedCredential) {
+    const selectedCredentialClaims =
+      CREDENTIAL_ISSUER_METADATA.credential_configurations_supported[
+        selectedCredential
+      ].claims;
+
+    const selectedCredentialClaimKeys = Object.keys(selectedCredentialClaims) ;
+    // const object = selectedCredentialClaimKeys.forEach(item=>selectedCredentialClaims[item])
+    if (selectedCredentialClaimKeys.length > 1) return selectedCredentialClaims;
+    return selectedCredentialClaims[selectedCredentialClaimKeys as keyof typeof selectedCredentialClaims];
+  }
+
+  function capitalize(word: string) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
+  const [canShowCards, setCanShowCards] = useState<boolean>(false);
+  const [chosenCredentialType, setChosenCredentialType] =
+    useState<ISupportedCredential>();
 
   return (
     <Box
@@ -140,20 +164,45 @@ export default function SelectCredential() {
           }}
         >
           <FormControl>
-            <RadioGroup defaultValue={getOfferedCredentials()[0]}>
-              {getOfferedCredentials().map((type) => (
-                <FormControlLabel
-                  value={type}
-                  control={<Radio />}
-                  label={type}
-                />
-              ))}
+            <RadioGroup
+              onChange={(e) =>
+                setChosenCredentialType(e.target.value as ISupportedCredential)
+              }
+            >
+              {getOfferedCredentials()
+                .sort((a, b) => (a > b ? 1 : -1))
+                .map((type) => (
+                  <FormControlLabel
+                    value={type}
+                    control={<Radio />}
+                    label={type}
+                  />
+                ))}
             </RadioGroup>
           </FormControl>
-          <Button variant="contained" color="primary" size="small">
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={() => setCanShowCards(true)}
+            disabled={!chosenCredentialType}
+          >
             Next
           </Button>
         </Box>
+
+        {canShowCards && chosenCredentialType && (
+          <Box sx={{ display: 'grid' }}>
+            {Object.keys(getVCItems(chosenCredentialType)).map((key) => (
+              <Typography>
+                {key
+                  .split('_')
+                  .map((jj) => capitalize(jj))
+                  .join(' ')}
+              </Typography>
+            ))}
+          </Box>
+        )}
       </Box>
       <Footer showArrow={false} />
     </Box>
