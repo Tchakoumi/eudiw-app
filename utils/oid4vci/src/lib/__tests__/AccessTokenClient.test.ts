@@ -1,28 +1,71 @@
 import { AccessTokenClient } from '../AccessTokenClient';
 import {
-  AccessTokenRequest,
   AccessTokenResponse,
-  GrantTypes,
+  CredentialOfferRequestWithBaseUrl,
   OpenIDResponse,
 } from '../types';
+const nock = require('nock');
 
-test('true is true', async () => {
-  const TOKEN_ENDPOINT = 'https://trial.authlete.net/api/';
+const MOCK_URL = 'https://trial.authlete.net/api';
 
+describe('CredentialOfferResolver', () => {
   const accessTokenClient: AccessTokenClient = new AccessTokenClient();
 
-  const accessTokenRequest: AccessTokenRequest = {
-    grant_type: GrantTypes.PRE_AUTHORIZED_CODE,
-    'pre-authorized_code': '-nlq6ZIu6lWCl0uJmL6JBHSpQ9CdGqvnFSt1Vl4dXqo',
-    client_id: '218232426',
-  } as AccessTokenRequest;
+  beforeEach(async () => {
+    nock.cleanAll();
+  });
 
-  const accessTokenResponse: OpenIDResponse<AccessTokenResponse> =
-    await accessTokenClient.acquireAccessTokenUsingRequest({
-      accessTokenRequest,
-      asOpts: { as: TOKEN_ENDPOINT },
-    });
+  afterAll(async () => {
+    nock.cleanAll();
+  });
 
-  console.log('accessTokenResponse: ', accessTokenResponse);
-  expect(true).toBe(true);
+  it('should resolve offer by value', async () => {
+    const CREDENTIAL: CredentialOfferRequestWithBaseUrl = {
+      baseUrl: 'openid-credential-offer://',
+      credential_offer: {
+        credential_issuer: 'https://trial.authlete.net/api',
+        credentials: ['OpenBadgeCredential'],
+        grants: {
+          'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
+            'pre-authorized_code':
+              '9sqM3jB_ItDWDCaaPakcdevXr2vFu5HvaxRxpE3_14Q',
+            user_pin_required: false,
+          },
+        },
+      },
+      scheme: '',
+      userPinRequired: false,
+      original_credential_offer: {
+        credential_issuer: 'https://trial.authlete.net/api',
+        credentials: ['OpenBadgeCredential'],
+        grants: {
+          'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
+            'pre-authorized_code':
+              '9sqM3jB_ItDWDCaaPakcdevXr2vFu5HvaxRxpE3_14Q',
+            user_pin_required: false,
+          },
+        },
+      },
+      version: 1011,
+      supportedFlows: [],
+    };
+
+    const body: AccessTokenResponse = {
+      access_token: 'ey6546.546654.64565',
+      authorization_pending: false,
+      c_nonce: 'c_nonce2022101300',
+      c_nonce_expires_in: 2022101300,
+      interval: 2022101300,
+      token_type: 'Bearer',
+    };
+
+    nock(MOCK_URL).post(/.*/).reply(200, body);
+
+    const accessTokenResponse: OpenIDResponse<AccessTokenResponse> =
+      await accessTokenClient.acquireAccessToken({
+        credentialOffer: CREDENTIAL,
+      });
+
+    expect(accessTokenResponse.successBody).toEqual(body);
+  });
 });
