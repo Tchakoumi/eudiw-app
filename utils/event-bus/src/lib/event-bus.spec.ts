@@ -13,13 +13,8 @@ describe('eventBus', () => {
     callback1 = jest.fn((data) => {
       console.log('Subscriber 1 received event1 with data:', data);
     });
-    callback2 = jest.fn(async (data) => {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          console.time(`Subscriber 2 received event2 with ${data}`);
-          resolve(1);
-        }, 5000);
-      });
+    callback2 = jest.fn(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     });
   });
 
@@ -43,10 +38,17 @@ describe('eventBus', () => {
     eventBus.emit(Events.Event1, data1);
     expect(callback1).toHaveBeenCalled();
     expect(callback1).toHaveBeenCalledWith(data1);
+  });
+
+  it('Should show case the EventBus async behavior', async () => {
+    const startTime = Date.now();
 
     const data2 = { message: 'Hello again from publisher!' };
     eventBus.emit(Events.Event2, data2);
+    const elapsedTime = Date.now() - startTime;
+
     expect(callback2).toHaveBeenCalled();
     expect(callback2).toHaveBeenCalledWith(data2);
+    expect(elapsedTime).toBeLessThan(1000);
   });
 });
