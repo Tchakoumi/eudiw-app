@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import eventBus from './event-bus';
+import { eventBus } from './event-bus';
 
 enum Events {
   Event1 = 'event1',

@@ -28,4 +28,4 @@ class EventBus {
 }
 
 // Initialize and export the singleton instance of the event bus
-export default EventBus.init();
+export const eventBus = EventBus.init();
