@@ -1,4 +1,3 @@
-import { MetadataClient } from './MetadataClient';
 import {
   assertedUniformCredentialOffer,
   getIssuerFromCredentialOfferPayload,
@@ -78,13 +77,7 @@ export class AccessTokenClient {
     const requestTokenURL = AccessTokenClient.determineTokenURL({
       asOpts,
       issuerOpts,
-      metadata: metadata
-        ? metadata
-        : issuerOpts?.fetchMetadata
-          ? await MetadataClient.retrieveAllMetadata(issuerOpts.issuer, {
-              errorOnNotFound: false,
-            })
-          : undefined,
+      metadata,
     });
 
     return this.sendAuthCode(requestTokenURL, accessTokenRequest);
