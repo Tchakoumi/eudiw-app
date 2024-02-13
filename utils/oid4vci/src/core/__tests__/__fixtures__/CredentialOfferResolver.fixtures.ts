@@ -1,4 +1,9 @@
-import { CredentialOffer } from '../../../types';
+import {
+  AuthorizationServerMetadata,
+  CredentialIssuerMetadata,
+  CredentialOffer,
+  JwtIssuerMetadata,
+} from '../../../types';
 
 export const credentialOfferObjectRef1: CredentialOffer = {
   credential_issuer: 'https://trial.authlete.net',
@@ -10,7 +15,7 @@ export const credentialOfferObjectRef1: CredentialOffer = {
   },
 };
 
-export const credentialIssuerMetadataRef1 = {
+export const credentialIssuerMetadataRef1: CredentialIssuerMetadata = {
   credential_issuer: 'https://trial.authlete.net',
   credential_endpoint: 'https://trial.authlete.net/api/credential',
   batch_credential_endpoint: 'https://trial.authlete.net/api/batch_credential',
@@ -102,7 +107,7 @@ export const credentialIssuerMetadataRef1 = {
   },
 };
 
-export const authorizationServerMetadataRef1 = {
+export const authorizationServerMetadataRef1: AuthorizationServerMetadata = {
   issuer: 'https://trial.authlete.net',
   authorization_endpoint: 'https://trial.authlete.net/api/authorization',
   prompt_values_supported: [
@@ -566,7 +571,7 @@ export const authorizationServerMetadataRef1 = {
   'pre-authorized_grant_anonymous_access_supported': false,
 };
 
-export const jwtIssuerMetadataRef1 = {
+export const jwtIssuerMetadataRef1: JwtIssuerMetadata = {
   issuer: 'https://trial.authlete.net',
   jwks_uri: 'https://trial.authlete.net/api/vci/jwks',
 };

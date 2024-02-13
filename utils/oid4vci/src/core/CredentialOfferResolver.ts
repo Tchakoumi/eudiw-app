@@ -1,6 +1,12 @@
 import { WELL_KNOWN_ENDPOINTS } from '../constants';
 import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
-import { CredentialOffer, ResolvedCredentialOffer } from '../types';
+import {
+  AuthorizationServerMetadata,
+  CredentialIssuerMetadata,
+  CredentialOffer,
+  JwtIssuerMetadata,
+  ResolvedCredentialOffer,
+} from '../types';
 
 export class CredentialOfferResolver {
   /**
@@ -109,12 +115,15 @@ export class CredentialOfferResolver {
    */
   private async fetchCredentialIssuerMetadata(
     credentialIssuer: string
-  ): Promise<object> {
+  ): Promise<CredentialIssuerMetadata> {
     const url = this.appendEndpoint(
       credentialIssuer,
       WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA
     );
-    return await this.fetchMetadata(url);
+
+    const metadata = await this.fetchMetadata(url);
+
+    return metadata as CredentialIssuerMetadata;
   }
 
   /**
@@ -129,7 +138,7 @@ export class CredentialOfferResolver {
    */
   private async fetchAuthorizationServerMetadata(
     credentialIssuer: string
-  ): Promise<object> {
+  ): Promise<AuthorizationServerMetadata> {
     let metadata;
 
     try {
@@ -146,7 +155,7 @@ export class CredentialOfferResolver {
       metadata = await this.fetchMetadata(url);
     }
 
-    return metadata;
+    return metadata as AuthorizationServerMetadata;
   }
 
   /**
@@ -157,13 +166,15 @@ export class CredentialOfferResolver {
    */
   private async fetchJwtIssuerMetadata(
     credentialIssuer: string
-  ): Promise<object> {
+  ): Promise<JwtIssuerMetadata> {
     const url = this.appendEndpoint(
       credentialIssuer,
       WELL_KNOWN_ENDPOINTS.JWT_ISSUER_METADATA
     );
 
-    return await this.fetchMetadata(url);
+    const metadata = await this.fetchMetadata(url);
+
+    return metadata as JwtIssuerMetadata;
   }
 
   private async fetchMetadata(url: string): Promise<object> {
