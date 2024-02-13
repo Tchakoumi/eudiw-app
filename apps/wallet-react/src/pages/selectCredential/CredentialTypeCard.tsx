@@ -5,13 +5,11 @@ export default function CredentialTypeCard({
   type,
   issuer,
   displayName,
-  isActive,
   selectCredentialType,
 }: {
   type: string;
   issuer: string;
   displayName: string;
-  isActive: boolean;
   selectCredentialType: (type: string) => void;
 }) {
   return (
