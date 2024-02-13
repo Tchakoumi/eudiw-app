@@ -1,59 +1,128 @@
-import { Box, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function IDTemplate({
-  chosenCredentialType,
-  vcItems,
-  toggleDisplayDetails,
-  showDetails = 3,
+  credentialOfferAttributes,
+  selectedClaimKeys,
+  handleClaimSelection,
+  handleSelectAll,
 }: {
-  chosenCredentialType: string;
-  vcItems: Record<string, string>;
-  toggleDisplayDetails: () => void;
-  showDetails: 3 | -1;
+  credentialOfferAttributes: {
+    key: string | number;
+    preferredLocale: string;
+  }[];
+  selectedClaimKeys: string[];
+  handleClaimSelection: (claimKey: string) => void;
+  handleSelectAll: (keys: string[]) => void;
 }) {
-  function capitalize(word: string) {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  }
+  const isAllSelected =
+    selectedClaimKeys.length === credentialOfferAttributes.length;
+  const push = useNavigate();
 
   return (
-    <Box
-      onClick={toggleDisplayDetails}
-      sx={{
-        display: 'grid',
-        border: '1px solid grey',
-        borderRadius: '8px',
-        padding: '4px 8px',
-        width: 'fit-content',
-        cursor: 'pointer',
-        transition: 'background-color 0.5s, box-shadow 0.5s',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0)',
-        '&:hover': {
-          backgroundColor: '#a1df4663',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-        },
-      }}
-    >
+    <Box>
+      <Typography variant="h4">
+        Select Claims to present in credential
+      </Typography>
+
+      <TableContainer
+        sx={{
+          borderRadius: '8px',
+          border: `1px solid #D1D5DB`,
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+        }}
+      >
+        <Table stickyHeader size="small">
+          <TableHead>
+            <TableRow
+              role="checkbox"
+              onClick={() =>
+                handleSelectAll(
+                  isAllSelected
+                    ? []
+                    : credentialOfferAttributes.map(({ key }) => key as string)
+                )
+              }
+              sx={{
+                '& th': {
+                  padding: '8.5px',
+                },
+              }}
+            >
+              <TableCell padding="checkbox">
+                <Checkbox checked={isAllSelected} />
+              </TableCell>
+              <TableCell>Available Claims</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {credentialOfferAttributes.map(
+              ({ key: attrKey, preferredLocale: name }) => (
+                <TableRow
+                  role="checkbox"
+                  onClick={() => handleClaimSelection(String(attrKey))}
+                  sx={{
+                    '&:last-child td, &:last-child th': { border: 0 },
+                    '& td': {
+                      padding: '7px',
+                    },
+                  }}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selectedClaimKeys.includes(String(attrKey))}
+                    />
+                  </TableCell>
+                  <TableCell>{name}</TableCell>
+                </TableRow>
+              )
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
       <Box
         sx={{
           display: 'grid',
           gridAutoFlow: 'column',
-          columnGap: '4px',
-          marginBottom: '4px',
+          columnGap: 1,
+          alignItems: 'center',
+          justifyItems: 'start',
+          justifyContent: 'end',
+          marginTop: '8px',
         }}
       >
-        <Typography>Id type: </Typography>
-        <Typography sx={{ fontWeight: 700 }}>{chosenCredentialType}</Typography>
+        <Button
+          variant="outlined"
+          color="primary"
+          size="small"
+          onClick={() => push('/')}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled={selectedClaimKeys.length === 0}
+          onClick={() => alert('Move to VC generation phase')}
+        >
+          Generate VC
+        </Button>
       </Box>
-      {Object.keys(vcItems)
-        .slice(0, showDetails)
-        .map((key) => (
-          <Typography variant="body2">
-            {`${key
-              .split('_')
-              .map((jj) => capitalize(jj))
-              .join(' ')}: ${vcItems[key]}`}
-          </Typography>
-        ))}
     </Box>
   );
 }
