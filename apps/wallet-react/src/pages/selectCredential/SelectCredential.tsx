@@ -1,9 +1,10 @@
-import { Box, Button, Typography, capitalize } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
-import AuthleteLogo from '../../assets/authlete-logo.png';
 import Footer from '../../components/home/Footer';
 import Header from '../../components/home/Header';
-import { CredentialConfiguration } from './credentials.types';
+import CredentialTypeCard from './CredentialTypeCard';
+import IDTemplate from './IDTemplate';
+import { Claims, CredentialConfiguration } from './credentials.types';
 
 export default function SelectCredential() {
   const CREDENTIAL_ISSUER_METADATA = {
@@ -291,28 +292,61 @@ export default function SelectCredential() {
   type ISupportedCredential =
     keyof typeof CREDENTIAL_ISSUER_METADATA.credential_configurations_supported;
 
-  function getIdCardItems(claims: never) {
-    const claimKeys = Object.keys(claims) as (keyof typeof claims)[];
-
-    const object: Record<string, string> = {};
-    claimKeys.forEach((item) => {
-      object[item as string] = claims[item] as string;
-    });
-    return object;
+  function capitalize(word: string) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
   }
 
-  function getVCSDJWTItems(
+  function cleanupClaimKey(claimKey: string) {
+    return claimKey
+      .split('_')
+      .map((jj) => capitalize(jj))
+      .join(' ');
+  }
+
+  // TODO: Is it possible to type the preferredLocal?
+  /**
+   * This function helps to get the selected credential type
+   * attributes and the display in the prefered language
+   *
+   * @param {string} claims - the different claims presentin the credential type
+   * @param {string} preferredLocal - the desired language we want the claims to be presented in
+   */
+  function getOfferedIdAttributes(claims: Claims, preferredLocal: string) {
+    const claimKeys = Object.keys(claims) as (keyof typeof claims)[];
+
+    const claimKeysInPreferredLocal = claimKeys.map((item) => {
+      const claimInPreferredLocale = claims[item].display.find(
+        ({ locale }) => locale === preferredLocal
+      );
+      if (claims[item].display.length > 0) {
+        // if preferred locale is found,
+        // then retun the name in that locale
+        if (claimInPreferredLocale)
+          return { key: item, preferredLocale: claimInPreferredLocale.name };
+        //if preferred local is not found,
+        // just return the name on first element in display list
+        return { key: item, preferredLocale: claims[item].display[0].name };
+      }
+      // if the display list is empty
+      // return the cleanedup key
+      return { key: item, preferredLocale: cleanupClaimKey(item as string) };
+    });
+    return claimKeysInPreferredLocal;
+  }
+
+  function getVCSDJWTData(
     issuer_metadata: typeof CREDENTIAL_ISSUER_METADATA
   ): { type: string; issuer: string; data: CredentialConfiguration }[] {
-    const ttt = Object.keys(
+    const credentialOfferTypeKeys = Object.keys(
       issuer_metadata.credential_configurations_supported
     ) as ISupportedCredential[];
-    const bb = ttt.filter(
+
+    const vcSdJwtTypeKeys = credentialOfferTypeKeys.filter(
       (item) =>
         issuer_metadata.credential_configurations_supported[item].format ===
         'vc+sd-jwt'
     );
-    return bb.map((item) => {
+    return vcSdJwtTypeKeys.map((item) => {
       return {
         type: item,
         issuer: issuer_metadata.credential_issuer,
@@ -322,32 +356,24 @@ export default function SelectCredential() {
   }
 
   function getVCItems(selectedCredential: ISupportedCredential) {
-    const selectedCredentialClaims =
+    const selectedOfferClaims =
       CREDENTIAL_ISSUER_METADATA.credential_configurations_supported[
         selectedCredential
       ].claims;
 
-    const selectedCredentialClaimKeys = Object.keys(
-      selectedCredentialClaims
-    ) as (keyof typeof selectedCredentialClaims)[];
-
-    const object: Record<string, string> = {};
-    selectedCredentialClaimKeys.forEach((item) => {
-      object[item as string] = selectedCredentialClaims[item] as string;
-    });
-
-    if (selectedCredentialClaimKeys.length > 1)
-      return getIdCardItems(selectedCredentialClaims as never);
-    return getIdCardItems(
-      selectedCredentialClaims[
-        selectedCredentialClaimKeys as keyof typeof selectedCredentialClaims
-      ]
-    );
+    return getOfferedIdAttributes(selectedOfferClaims as Claims, 'en');
   }
 
-  const [showCard, setShowCard] = useState<boolean>(false);
+  const [selectedClaimKeys, setSelectedClaimKeys] = useState<string[]>([]);
+  function handleClaimSelection(claimKey: string) {
+    setSelectedClaimKeys((prevValues) => {
+      return prevValues.includes(claimKey)
+        ? prevValues.filter((_) => _ !== claimKey)
+        : [...prevValues, claimKey];
+    });
+  }
+
   const [chosenCredentialType, setChosenCredentialType] = useState<string>();
-  const [showDetailedId, setShowDetailedId] = useState<boolean>(false);
 
   return (
     <Box
@@ -375,101 +401,36 @@ export default function SelectCredential() {
             display: 'grid',
             gridTemplateRows: 'auto auto 1fr',
             rowGap: 2,
-            justifyContent: 'center',
           }}
         >
-          {getVCSDJWTItems(CREDENTIAL_ISSUER_METADATA).map(
+          {getVCSDJWTData(CREDENTIAL_ISSUER_METADATA).map(
             ({ type, issuer, data: { display } }) => (
-              <Box
-                onClick={() =>
+              <CredentialTypeCard
+                displayName={display[0].name}
+                issuer={issuer}
+                type={type}
+                selectCredentialType={(type) =>
                   setChosenCredentialType((prevType) =>
                     prevType === type ? undefined : type
                   )
                 }
-                sx={{
-                  backgroundColor:chosenCredentialType === type
-                  ? 'green'
-                  :'white',
-                  padding: '8px',
-                  borderRadius: 4,
-                  boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-                  display: 'grid',
-                  rowGap: 3,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: 'auto 1fr',
-                    columnGap: 2,
-                    alignItems: 'center',
-                    justifyItems: 'end',
-                  }}
-                >
-                  <img
-                    src={AuthleteLogo}
-                    height={100}
-                    width={100}
-                    alt="authlete logo"
-                  />
-                  <Box>
-                    <Typography variant="h4">{`Authlete ${display[0].name}`}</Typography>
-                    <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                      {issuer}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box>
-                  <Typography variant="h5">Issuer</Typography>
-                  <Typography>
-                    {issuer
-                      .split('//')[1]
-                      .split('.')
-                      .slice(0, 2)
-                      .map((_) => capitalize(_))
-                      .join(' ')}
-                  </Typography>
-                </Box>
-              </Box>
+              />
             )
           )}
-          {/* <FormControl>
-            <RadioGroup
-              onChange={(e) => {
-                setChosenCredentialType(e.target.value as ISupportedCredential);
-                setShowDetailedId(false);
-              }}
-            >
-              {getVCSDJWTItems(CREDENTIAL_ISSUER_METADATA).map(
-                ({ type, data: { display } }) => (
-                  <FormControlLabel
-                    value={type}
-                    control={<Radio />}
-                    label={display[0].name}
-                  />
-                )
-              )}
-            </RadioGroup>
-          </FormControl> */}
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            onClick={() => setShowCard(!showCard)}
-            disabled={!chosenCredentialType}
-          >
-            {showCard ? 'Hide Card' : 'Show Card'}
-          </Button>
         </Box>
 
-        {/* {showCard && chosenCredentialType && (
+        {chosenCredentialType && (
           <IDTemplate
-            vcItems={getVCItems(chosenCredentialType)}
-            chosenCredentialType={chosenCredentialType}
-            toggleDisplayDetails={() => setShowDetailedId(!showDetailedId)}
-            showDetails={showDetailedId ? -1 : 3}
+            credentialOfferAttributes={getVCItems(
+              chosenCredentialType as ISupportedCredential
+            )}
+            handleSelectAll={(selectedClaims) =>
+              setSelectedClaimKeys(selectedClaims)
+            }
+            selectedClaimKeys={selectedClaimKeys}
+            handleClaimSelection={handleClaimSelection}
           />
-        )} */}
+        )}
       </Box>
       <Footer showArrow={false} />
     </Box>
