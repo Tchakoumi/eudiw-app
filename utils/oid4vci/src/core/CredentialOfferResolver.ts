@@ -1,3 +1,9 @@
+import { fetch } from 'cross-fetch';
+
+import { WELL_KNOWN_ENDPOINTS } from '../constants';
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
+import { composeUrl } from '../utils';
+
 import {
   AuthorizationServerMetadata,
   CredentialIssuerMetadata,
@@ -7,10 +13,6 @@ import {
   JwtIssuerMetadata,
   ResolvedCredentialOffer,
 } from '../types';
-
-import { WELL_KNOWN_ENDPOINTS } from '../constants';
-import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
-import { composeUrl } from '../utils';
 
 export class CredentialOfferResolver {
   /**
@@ -83,12 +85,18 @@ export class CredentialOfferResolver {
   /**
    * Fetch credential offer from a resource link.
    * @param credentialOfferURI a resource link to retrieve a credential offer payload from
-   * @returns credential offer object
+   * @returns credential offer object as stringified JSON
    */
   private async fetchCredentialOffer(
     credentialOfferURI: string
   ): Promise<string> {
-    return await fetch(credentialOfferURI).then((response) => response.text());
+    return await fetch(credentialOfferURI).then((response) => {
+      if (!response.ok) {
+        throw new Error('Not 2xx response');
+      }
+
+      return response.text();
+    });
   }
 
   /**
@@ -254,6 +262,12 @@ export class CredentialOfferResolver {
   }
 
   private async fetchMetadata(url: string) {
-    return await fetch(url).then((response) => response.json());
+    return await fetch(url).then((response) => {
+      if (!response.ok) {
+        throw new Error('Not 2xx response');
+      }
+
+      return response.json();
+    });
   }
 }
