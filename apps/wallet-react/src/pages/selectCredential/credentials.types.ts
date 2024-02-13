@@ -3,14 +3,16 @@ export interface ClaimDisplay {
   locale: string;
 }
 
+export interface Claims {
+  [key: string]: {
+    display: ClaimDisplay[];
+  };
+}
+
 export interface CredentialConfiguration {
   format: string;
   vct: string;
-  claims: {
-    [key: string]: {
-      display: ClaimDisplay[];
-    };
-  };
+  claims: Claims;
   scope: string;
   cryptographic_binding_methods_supported: string[];
   credential_signing_alg_values_supported: string[];
