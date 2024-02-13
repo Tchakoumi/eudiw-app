@@ -1,14 +1,6 @@
-/**
- * Resolved credential offer object along with credential issuer metadata.
- */
-export interface ResolvedCredentialOffer {
-  credentialOffer: CredentialOffer;
-  metadata?: {
-    credentialIssuerMetadata?: object;
-    authorizationServerMetadata?: object;
-    jwtIssuerMetadata?: object;
-  };
-}
+import { AuthorizationServerMetadata } from '../AuthorizationServerMetadata.types';
+import { JwtIssuerMetadata } from '../JwtIssuerMetadata.types';
+import { CredentialIssuerMetadata } from './CredentialIssuerMetadata.types';
 
 /**
  * The OpenID for VC Issuance Flow may start with a Credential Offer.
@@ -120,4 +112,21 @@ export interface PreAuthorizedCodeGrant {
 export enum TxCodeInputMode {
   Numeric = 'numeric', // only digits
   Text = 'text', // any characters
+}
+
+/**
+ * Resolved credential offer object along with credential issuer metadata.
+ */
+export interface ResolvedCredentialOffer {
+  credentialOffer: CredentialOffer;
+  discoveryMetadata?: DiscoveryMetadata;
+}
+
+/**
+ * Payload for discovery metadata.
+ */
+export interface DiscoveryMetadata {
+  credentialIssuerMetadata?: CredentialIssuerMetadata;
+  authorizationServerMetadata?: AuthorizationServerMetadata;
+  jwtIssuerMetadata?: JwtIssuerMetadata;
 }

@@ -51,7 +51,7 @@ describe('CredentialOfferResolver', () => {
     } as Response;
   }) as (arg: unknown) => Promise<Response>;
 
-  it('should resolve offer by value', async () => {
+  it('should resolve offer by value (schemefull link)', async () => {
     const credentialOffer =
       'openid-credential-offer://?credential_offer=' +
       '%7B%22credential_issuer%22%3A%22https%3A%2F%2Fcredential-issuer.example.com%22%2C%22credential_configuration_ids%22%3A%5B%22org.iso.18013.5.1.mDL%22%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22oaKazRN8I0IbtZ0C7JuMn5%22%2C%22tx_code%22%3A%7B%22input_mode%22%3A%22text%22%7D%7D%7D%7D';
@@ -69,7 +69,7 @@ describe('CredentialOfferResolver', () => {
           },
         },
       } as CredentialOffer,
-      metadata: {
+      discoveryMetadata: {
         credentialIssuerMetadata: credentialIssuerMetadataRef1,
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
@@ -86,7 +86,7 @@ describe('CredentialOfferResolver', () => {
 
     expect(resolved).toEqual({
       credentialOffer: credentialOfferObjectRef1,
-      metadata: {
+      discoveryMetadata: {
         credentialIssuerMetadata: credentialIssuerMetadataRef1,
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
@@ -94,7 +94,7 @@ describe('CredentialOfferResolver', () => {
     } as ResolvedCredentialOffer);
   });
 
-  it('should resolve offer by reference', async () => {
+  it('should resolve offer by reference (v1)', async () => {
     const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
       'https://trial.authlete.net/api/offer/xxxx'
     )}`;
@@ -117,7 +117,7 @@ describe('CredentialOfferResolver', () => {
 
     expect(resolved).toEqual({
       credentialOffer: credentialOfferObjectRef1,
-      metadata: {
+      discoveryMetadata: {
         credentialIssuerMetadata: credentialIssuerMetadataRef1,
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
@@ -125,7 +125,7 @@ describe('CredentialOfferResolver', () => {
     } as ResolvedCredentialOffer);
   });
 
-  it('should resolve offer by reference (bis)', async () => {
+  it('should resolve offer by reference (v2)', async () => {
     const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
       'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
     )}`;
@@ -153,7 +153,7 @@ describe('CredentialOfferResolver', () => {
 
     expect(resolved).toEqual({
       credentialOffer: credentialOfferObject,
-      metadata: {
+      discoveryMetadata: {
         credentialIssuerMetadata: {},
         authorizationServerMetadata: {},
         jwtIssuerMetadata: {},
@@ -196,7 +196,7 @@ describe('CredentialOfferResolver', () => {
     }
   });
 
-  it('should fail on invalid JSON resolved credential offer', async () => {
+  it('should fail on invalid JSON resolved credential offer (by value)', async () => {
     const credentialOffers = [
       '?credential_offer=',
       `?credential_offer=${encodeURIComponent('{{}}')}`,

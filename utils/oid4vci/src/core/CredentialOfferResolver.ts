@@ -1,12 +1,16 @@
-import { WELL_KNOWN_ENDPOINTS } from '../constants';
-import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
 import {
   AuthorizationServerMetadata,
   CredentialIssuerMetadata,
   CredentialOffer,
+  DiscoveryMetadata,
+  Grant,
   JwtIssuerMetadata,
   ResolvedCredentialOffer,
 } from '../types';
+
+import { WELL_KNOWN_ENDPOINTS } from '../constants';
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
+import { composeUrl } from '../utils';
 
 export class CredentialOfferResolver {
   /**
@@ -27,31 +31,11 @@ export class CredentialOfferResolver {
       credentialOffer
     );
 
-    const credentialIssuer = parsedCredentialOffer.credential_issuer;
-    if (!credentialIssuer) {
-      throw new OID4VCIServiceError(
-        InvalidCredentialOffer.MissingCredentialIssuer
-      );
-    }
-
-    const credentialIssuerMetadata = await this.fetchCredentialIssuerMetadata(
-      credentialIssuer
-    );
-
-    const authorizationServerMetadata =
-      await this.fetchAuthorizationServerMetadata(credentialIssuer);
-
-    const jwtIssuerMetadata = await this.fetchJwtIssuerMetadata(
-      credentialIssuer
-    );
-
     return {
       credentialOffer: parsedCredentialOffer,
-      metadata: {
-        credentialIssuerMetadata,
-        authorizationServerMetadata,
-        jwtIssuerMetadata,
-      },
+      discoveryMetadata: await this.fetchDiscoveryMetadata(
+        parsedCredentialOffer
+      ),
     };
   }
 
@@ -85,7 +69,7 @@ export class CredentialOfferResolver {
     const credentialOfferURI = params.get('credential_offer_uri');
     const parsedCredentialOffer = credentialOfferURI
       ? await this.fetchCredentialOffer(credentialOfferURI)
-      : params.get('credential_offer');
+      : params.get('credential_offer') ?? '';
 
     try {
       return JSON.parse(parsedCredentialOffer ?? '') as CredentialOffer;
@@ -108,6 +92,42 @@ export class CredentialOfferResolver {
   }
 
   /**
+   * Fetch credential offer from a resource link.
+   * @param credentialOffer the crendential offer object
+   * @returns discovery metadata
+   */
+  private async fetchDiscoveryMetadata(
+    credentialOffer: CredentialOffer
+  ): Promise<DiscoveryMetadata> {
+    const credentialIssuer = credentialOffer.credential_issuer;
+    if (!credentialIssuer) {
+      throw new OID4VCIServiceError(
+        InvalidCredentialOffer.MissingCredentialIssuer
+      );
+    }
+
+    const credentialIssuerMetadata = await this.fetchCredentialIssuerMetadata(
+      credentialIssuer
+    );
+
+    const authorizationServerMetadata =
+      await this.fetchSuitableAuthorizationServerMetadata(
+        credentialOffer,
+        credentialIssuerMetadata
+      );
+
+    const jwtIssuerMetadata = await this.fetchJwtIssuerMetadata(
+      credentialIssuer
+    );
+
+    return {
+      credentialIssuerMetadata,
+      authorizationServerMetadata,
+      jwtIssuerMetadata,
+    };
+  }
+
+  /**
    * Fetch credential issuer metadata.
    * @param credentialIssuer the location of the crendential issuer
    * @returns metadata
@@ -116,7 +136,7 @@ export class CredentialOfferResolver {
   private async fetchCredentialIssuerMetadata(
     credentialIssuer: string
   ): Promise<CredentialIssuerMetadata> {
-    const url = this.appendEndpoint(
+    const url = composeUrl(
       credentialIssuer,
       WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA
     );
@@ -127,35 +147,91 @@ export class CredentialOfferResolver {
   }
 
   /**
+   * Fetch authorization server metadata from identified suitable server.
+   *
+   * @param credentialOffer the crendential offer object
+   * @param credentialIssuerMetadata the crendential issuer metadata
+   * @param grantType the grant type of interest
+   *
+   * @returns authorization server metadata
+   */
+  private async fetchSuitableAuthorizationServerMetadata(
+    credentialOffer: CredentialOffer,
+    credentialIssuerMetadata: CredentialIssuerMetadata,
+    grantType: keyof Grant = 'urn:ietf:params:oauth:grant-type:pre-authorized_code'
+  ): Promise<AuthorizationServerMetadata> {
+    const authorizationServers =
+      credentialIssuerMetadata.authorization_servers ?? [];
+
+    // If an authorization server is referenced in the credential offer,
+    // the wallet MUST not proceed if it is not featured in the credential
+    // issuer metadata.
+
+    const authorizationServer =
+      credentialOffer.grants?.[grantType]?.authorization_server;
+
+    if (authorizationServer) {
+      if (!authorizationServers.includes(authorizationServer)) {
+        throw new OID4VCIServiceError(
+          InvalidCredentialOffer.UnresolvableAuthorizationServer
+        );
+      }
+
+      return await this.fetchAuthorizationServerMetadata(authorizationServer);
+    }
+
+    // Else, provided the list of authorization servers is not empty,
+    // return the first entry that has support for requested grant type.
+
+    if (authorizationServers.length > 0) {
+      for (const authorizationServer of authorizationServers) {
+        const metadata = await this.fetchAuthorizationServerMetadata(
+          authorizationServer
+        );
+
+        if (metadata.grant_types_supported?.includes(grantType)) {
+          return metadata;
+        }
+      }
+    }
+
+    // Else, just assume the credential issuer serves as the authorization server.
+
+    return await this.fetchAuthorizationServerMetadata(
+      credentialOffer.credential_issuer
+    );
+  }
+
+  /**
    * Fetch authorization server metadata.
    *
-   * This implementation first considers the endpoint to the OpenID Provider Configuration,
-   * which is a superset of OAuth 2.0 Authorization Server Metadata. If unavailable, it
-   * defaults to the latter's endpoint.
+   * This implementation first considers the well-known endpoint to the OpenID Provider
+   * Configuration, which is a superset of OAuth 2.0 Authorization Server Metadata.
+   * If unavailable, it defaults to the latter's well-known endpoint.
    *
-   * @param credentialIssuer the location of the crendential issuer
+   * @param authorizationServer the authorization server URL
    * @returns authorization server metadata
    */
   private async fetchAuthorizationServerMetadata(
-    credentialIssuer: string
+    authorizationServer: string
   ): Promise<AuthorizationServerMetadata> {
-    let metadata;
+    let metadata: AuthorizationServerMetadata;
 
     try {
-      const url = this.appendEndpoint(
-        credentialIssuer,
+      const url = composeUrl(
+        authorizationServer,
         WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION
       );
-      metadata = await this.fetchMetadata(url);
+      metadata = (await this.fetchMetadata(url)) as AuthorizationServerMetadata;
     } catch (e) {
-      const url = this.appendEndpoint(
-        credentialIssuer,
+      const url = composeUrl(
+        authorizationServer,
         WELL_KNOWN_ENDPOINTS.OAUTH_SERVER_METADATA
       );
-      metadata = await this.fetchMetadata(url);
+      metadata = (await this.fetchMetadata(url)) as AuthorizationServerMetadata;
     }
 
-    return metadata as AuthorizationServerMetadata;
+    return metadata;
   }
 
   /**
@@ -167,7 +243,7 @@ export class CredentialOfferResolver {
   private async fetchJwtIssuerMetadata(
     credentialIssuer: string
   ): Promise<JwtIssuerMetadata> {
-    const url = this.appendEndpoint(
+    const url = composeUrl(
       credentialIssuer,
       WELL_KNOWN_ENDPOINTS.JWT_ISSUER_METADATA
     );
@@ -177,14 +253,7 @@ export class CredentialOfferResolver {
     return metadata as JwtIssuerMetadata;
   }
 
-  private async fetchMetadata(url: string): Promise<object> {
+  private async fetchMetadata(url: string) {
     return await fetch(url).then((response) => response.json());
-  }
-
-  private appendEndpoint(baseUrl: string, endpoint: string) {
-    const trimmedBaseUrl = baseUrl.replace(/\/$/, '');
-    const trimmedEndpoint = endpoint.replace(/^\//, '');
-
-    return `${trimmedBaseUrl}/${trimmedEndpoint}`;
   }
 }

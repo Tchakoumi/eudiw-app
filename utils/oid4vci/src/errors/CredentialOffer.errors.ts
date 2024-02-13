@@ -5,4 +5,5 @@ export enum InvalidCredentialOffer {
   MissingRequiredParams = `${Generic}: missing required params`,
   DeserializationError = `${Generic}: deserialization error`,
   MissingCredentialIssuer = `${Generic}: missing credential issuer`,
+  UnresolvableAuthorizationServer = `${Generic}: unresolvable authorization server`,
 }
