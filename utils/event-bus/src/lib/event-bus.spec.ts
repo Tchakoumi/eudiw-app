@@ -51,7 +51,7 @@ describe('eventBus', () => {
 
     const data2 = { message: 'Hello again from publisher!' };
     eventBus.emit(Events.Event2, data2);
-    
+
     // Wait for the async operation to complete
     await asyncOperationCompleted;
     const elapsedTime = Date.now() - startTime;
