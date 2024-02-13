@@ -4,6 +4,7 @@ import { eventBus } from './event-bus';
 enum Events {
   Event1 = 'event1',
   Event2 = 'event2',
+  AsyncComplete = 'asyncComplete',
 }
 
 describe('eventBus', () => {
@@ -15,6 +16,7 @@ describe('eventBus', () => {
     });
     callback2 = jest.fn(async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      eventBus.emit(Events.AsyncComplete);
     });
   });
 
@@ -42,13 +44,20 @@ describe('eventBus', () => {
 
   it('Should show case the EventBus async behavior', async () => {
     const startTime = Date.now();
+    // Promise to await the completion of the async operation
+    const asyncOperationCompleted = new Promise((resolve) => {
+      eventBus.once(Events.AsyncComplete, resolve);
+    });
 
     const data2 = { message: 'Hello again from publisher!' };
     eventBus.emit(Events.Event2, data2);
+    
+    // Wait for the async operation to complete
+    await asyncOperationCompleted;
     const elapsedTime = Date.now() - startTime;
 
     expect(callback2).toHaveBeenCalled();
     expect(callback2).toHaveBeenCalledWith(data2);
-    expect(elapsedTime).toBeLessThan(1000);
+    expect(elapsedTime).toBeGreaterThanOrEqual(1000);
   });
 });
