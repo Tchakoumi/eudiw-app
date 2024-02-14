@@ -363,15 +363,6 @@ export default function SelectCredential() {
     return getOfferedIdAttributes(selectedOfferClaims as Claims, 'en');
   }
 
-  const [selectedClaimKeys, setSelectedClaimKeys] = useState<string[]>([]);
-  function handleClaimSelection(claimKey: string) {
-    setSelectedClaimKeys((prevValues) => {
-      return prevValues.includes(claimKey)
-        ? prevValues.filter((_) => _ !== claimKey)
-        : [...prevValues, claimKey];
-    });
-  }
-
   const [chosenCredentialType, setChosenCredentialType] = useState<string>();
 
   return (
@@ -423,11 +414,6 @@ export default function SelectCredential() {
             credentialOfferAttributes={getVCItems(
               chosenCredentialType as ISupportedCredential
             )}
-            handleSelectAll={(selectedClaims) =>
-              setSelectedClaimKeys(selectedClaims)
-            }
-            selectedClaimKeys={selectedClaimKeys}
-            handleClaimSelection={handleClaimSelection}
           />
         )}
       </Box>
