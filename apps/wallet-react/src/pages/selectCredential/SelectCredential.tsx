@@ -4,10 +4,7 @@ import Footer from '../../components/home/Footer';
 import Header from '../../components/home/Header';
 import CredentialOfferDetails from './CredentialOfferDetails';
 import CredentialTypeCard from './CredentialTypeCard';
-import {
-  Claims,
-  ICredentialCard
-} from './credentials.types';
+import { Claims, ICredentialCard } from './credentials.types';
 
 export default function SelectCredential() {
   const CREDENTIAL_ISSUER_METADATA = {
@@ -379,7 +376,8 @@ export default function SelectCredential() {
     return [];
   }
 
-  const [chosenCredentialType, setChosenCredentialType] = useState<string>();
+  const [selectedCredentialOffer, setSelectedCredentialOffer] =
+    useState<ICredentialCard>();
 
   return (
     <Box
@@ -389,14 +387,17 @@ export default function SelectCredential() {
         height: '100%',
       }}
     >
-      <CredentialOfferDetails
-        closeDialog={() => setChosenCredentialType(undefined)}
-        isDialogOpen={!!chosenCredentialType}
-        credentialOfferAttributes={getVCClaims(
-          chosenCredentialType as ISupportedCredential,
-          CREDENTIAL_ISSUER_METADATA
-        )}
-      />
+      {!!selectedCredentialOffer && (
+        <CredentialOfferDetails
+          closeDialog={() => setSelectedCredentialOffer(undefined)}
+          isDialogOpen={!!selectedCredentialOffer}
+          selectedCredentialOffer={selectedCredentialOffer}
+          credentialOfferAttributes={getVCClaims(
+            selectedCredentialOffer.type as ISupportedCredential,
+            CREDENTIAL_ISSUER_METADATA
+          )}
+        />
+      )}
       <Header />
       <Box
         sx={{
@@ -407,21 +408,26 @@ export default function SelectCredential() {
           padding: '12px',
         }}
       >
-        {getVCSDJWTData(CREDENTIAL_ISSUER_METADATA).map(
-          ({ type, issuer, data: { display } }, index) => (
+        {getVCSDJWTData(CREDENTIAL_ISSUER_METADATA).map((card, index) => {
+          const {
+            type,
+            issuer,
+            data: { display },
+          } = card;
+          return (
             <CredentialTypeCard
               key={index}
               displayName={display[0].name}
               issuer={issuer}
               type={type}
-              selectCredentialType={(type) =>
-                setChosenCredentialType((prevType) =>
-                  prevType === type ? undefined : type
+              selectCredentialType={() =>
+                setSelectedCredentialOffer((prevCard) =>
+                  prevCard && prevCard.type === card.type ? undefined : card
                 )
               }
             />
-          )
-        )}
+          );
+        })}
       </Box>
       <Footer showArrow={false} />
     </Box>
