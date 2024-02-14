@@ -393,8 +393,9 @@ export default function SelectCredential() {
         }}
       >
         {getVCSDJWTData(CREDENTIAL_ISSUER_METADATA).map(
-          ({ type, issuer, data: { display } }) => (
+          ({ type, issuer, data: { display } }, index) => (
             <CredentialTypeCard
+              key={index}
               displayName={display[0].name}
               issuer={issuer}
               type={type}

@@ -87,8 +87,10 @@ export default function CredentialOfferDetails({
               overflow: 'auto',
             }}
           >
-            {credentialOfferAttributes.map((attr) => (
-              <Typography sx={{ fontSize: '14px' }}>{attr}</Typography>
+            {credentialOfferAttributes.map((attr, index) => (
+              <Typography sx={{ fontSize: '14px' }} key={index}>
+                {attr}
+              </Typography>
             ))}
           </Box>
 
