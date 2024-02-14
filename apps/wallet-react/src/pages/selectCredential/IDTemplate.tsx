@@ -9,9 +9,7 @@ export default function IDTemplate({
   const push = useNavigate();
 
   return (
-    <Box>
-      <Typography variant="h4">Credential attributes</Typography>
-
+    <Box >
       <Box
         sx={{
           display: 'grid',
