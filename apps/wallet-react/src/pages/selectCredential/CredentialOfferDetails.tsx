@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   IconButton,
   Slide,
@@ -10,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import { ICredentialCard } from './credentials.types';
 import CredentialTypeCard from './CredentialTypeCard';
 
@@ -34,11 +35,21 @@ export default function CredentialOfferDetails({
   credentialOfferAttributes: string[];
   selectedCredentialOffer?: ICredentialCard;
 }) {
+  const [isIssuing, setIsIssuing] = useState<boolean>(false);
+  function issueVC() {
+    setIsIssuing(true);
+    setTimeout(() => {
+      setIsIssuing(false);
+      //TODO: CALL API HERE TO ISSUE VC
+      alert('Issued VC');
+      closeDialog();
+    }, 3000);
+  }
   return (
     <Dialog
       fullScreen
       open={isDialogOpen}
-      onClose={closeDialog}
+      onClose={() => (isIssuing ? null : closeDialog())}
       TransitionComponent={Transition}
     >
       <Box
@@ -58,7 +69,10 @@ export default function CredentialOfferDetails({
           }}
         >
           <Tooltip arrow title="Back">
-            <IconButton size="small" onClick={closeDialog}>
+            <IconButton
+              size="small"
+              onClick={() => (isIssuing ? null : closeDialog())}
+            >
               <Icon icon={back} fontSize={24} />
             </IconButton>
           </Tooltip>
@@ -109,10 +123,13 @@ export default function CredentialOfferDetails({
             color="primary"
             size="small"
             fullWidth
-            onClick={() => {
-              alert('Move to VC generation phase')
-              closeDialog()
-            }}
+            onClick={issueVC}
+            disabled={isIssuing}
+            endIcon={
+              isIssuing && (
+                <CircularProgress size={20} color="primary" thickness={7} />
+              )
+            }
           >
             Issue VC
           </Button>
