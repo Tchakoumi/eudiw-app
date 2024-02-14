@@ -241,9 +241,8 @@ export interface CredentialSupportedJwtVcJson
   extends CommonCredentialSupported {
   /**
    * String identifying the format of this Credential.
-   * @type {'jwt_vc_json'}
    */
-  format: string;
+  format: 'jwt_vc_json';
 
   /**
    * Object containing the detailed description of the Credential type.
@@ -275,9 +274,8 @@ export interface CredentialSupportedJwtVcJsonLdAndLdpVc
   extends CommonCredentialSupported {
   /**
    * String identifying the format of this Credential.
-   * @type {'ldp_vc' | 'jwt_vc_json-ld'}
    */
-  format: string;
+  format: 'ldp_vc' | 'jwt_vc_json-ld';
 
   /**
    * Object containing the detailed description of the Credential type.
@@ -314,9 +312,8 @@ export interface CredentialSupportedJwtVcJsonLdAndLdpVc
 export interface CredentialSupportedMsoMdoc extends CommonCredentialSupported {
   /**
    * String identifying the format of this Credential.
-   * @type {'mso_mdoc'}
    */
-  format: string;
+  format: 'mso_mdoc';
 
   /**
    * String identifying the Credential type, as defined in [ISO.18013-5].
@@ -349,9 +346,8 @@ export interface CredentialSupportedMsoMdoc extends CommonCredentialSupported {
 export interface CredentialSupportedSdJwtVc extends CommonCredentialSupported {
   /**
    * String identifying the format of this Credential.
-   * @type {'vc+sd-jwt'}
    */
-  format: string;
+  format: 'vc+sd-jwt';
 
   /**
    * String designating the type of a Credential.
