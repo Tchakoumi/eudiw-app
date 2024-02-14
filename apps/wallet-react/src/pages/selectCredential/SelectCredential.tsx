@@ -354,13 +354,23 @@ export default function SelectCredential() {
     }) as { type: string; issuer: string; data: CredentialConfiguration }[];
   }
 
-  function getVCItems(selectedCredential: ISupportedCredential) {
-    const selectedOfferClaims =
-      CREDENTIAL_ISSUER_METADATA.credential_configurations_supported[
-        selectedCredential
-      ].claims;
+  function getVCItems(
+    selectedCredential: ISupportedCredential,
+    credentialIssuerMetadata: typeof CREDENTIAL_ISSUER_METADATA
+  ) {
+    const offeredCredentialTypeKeys = Object.keys(
+      credentialIssuerMetadata.credential_configurations_supported
+    ) as ISupportedCredential[];
 
-    return getOfferedIdAttributes(selectedOfferClaims as Claims, 'en');
+    if (offeredCredentialTypeKeys.includes(selectedCredential)) {
+      const selectedOfferClaims =
+        credentialIssuerMetadata.credential_configurations_supported[
+          selectedCredential
+        ].claims;
+
+      return getOfferedIdAttributes(selectedOfferClaims as Claims, 'en');
+    }
+    return [];
   }
 
   const [chosenCredentialType, setChosenCredentialType] = useState<string>();
@@ -376,11 +386,10 @@ export default function SelectCredential() {
       <CredentialOfferDetails
         closeDialog={() => setChosenCredentialType(undefined)}
         isDialogOpen={!!chosenCredentialType}
-        credentialOfferAttributes={
-          chosenCredentialType
-            ? getVCItems(chosenCredentialType as ISupportedCredential)
-            : []
-        }
+        credentialOfferAttributes={getVCItems(
+          chosenCredentialType as ISupportedCredential,
+          CREDENTIAL_ISSUER_METADATA
+        )}
       />
       <Header />
       <Box
