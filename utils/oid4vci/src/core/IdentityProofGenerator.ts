@@ -1,3 +1,7 @@
+import * as jose from 'jose';
+import { OID4VCIServiceError } from '../errors';
+import { CLIENT_ID } from '../config';
+
 export class IdentityProofGenerator {
   /**
    * Constructor.
@@ -7,26 +11,33 @@ export class IdentityProofGenerator {
   /**
    * Computes key proof of wallet's identity.
    */
-  public generateKeyProof(nonce: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async generateKeyProof(aud: string, nonce: string) {
     const jwk = this.getJwkIdentity();
+    if (!jwk.alg) {
+      throw new OID4VCIServiceError(
+        'The wallet identity must embed an algorithm for signature.'
+      );
+    }
 
-    return [
-      'eyJ0eXAiOiJvcGVuaWQ0dmNpLXByb29mK2p3dCIsImFsZyI6IkVTMjU2IiwiandrIjp7ImNy' +
-        'diI6IlAtMjU2Iiwia3R5IjoiRUMiLCJ4IjoiUFN4UXJEMnpsMF9tWGNBcXoxbWdxU2VCb0Jo' +
-        'bm14Mnl4QkVwckJZOEYyMCIsInkiOiJ4VjhmYmkxRlNvc1V1bkxldUxOdUxrSmlxbVk2VEtp' +
-        'TW51ci1HbjJ3UjEwIn19.eyJpc3MiOiIyMTgyMzI0MjYiLCJhdWQiOiJodHRwczovL3RyaWF' +
-        'sLmF1dGhsZXRlLm5ldCIsImlhdCI6MTcwMzg0NzM3Niwibm9uY2UiOiJFaFRDOExBNmtWcnJ' +
-        'PNl9YaUM3TjZOX3dYZG1hMlpzMUxIQVFCWjVFMFQwIn0.6l8QnPTclDUoWH5PsVsZQDauA_H' +
-        'cIVDGxU9-TfezflIIAzTFgeC5nTr5rLBkEIgcfUvkUOwKqlM06LdVVwTZlw',
-      nonce,
-    ];
+    const priv = await jose.importJWK(jwk);
+
+    const jws = await new jose.SignJWT({ nonce })
+      .setProtectedHeader({
+        alg: jwk.alg,
+        jwk: this.toPublicJwk(jwk),
+      })
+      .setIssuedAt(Date.now())
+      .setIssuer(CLIENT_ID)
+      .setAudience(aud)
+      .sign(priv);
+
+    return jws;
   }
 
   /**
    * Reads current wallet's identity from store.
    */
-  private getJwkIdentity() {
+  private getJwkIdentity(): jose.JWK {
     return {
       kty: 'EC',
       d: 'lPHtS-GHGLHoUUaRlJoIm920f0smWf1xN6fLgz7y3eA',
@@ -37,5 +48,10 @@ export class IdentityProofGenerator {
       y: 'gJiHCDP1jbAK_s5iItC7RtKV8Hx5RlLDoP_mEaWfe9w',
       alg: 'ES256',
     };
+  }
+
+  private toPublicJwk(jwk: jose.JWK): jose.JWK {
+    const { kty, crv, x, y, e, n } = jwk;
+    return { kty, crv, x, y, e, n };
   }
 }
