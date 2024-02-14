@@ -5,16 +5,16 @@ export default function CredentialTypeCard({
   type,
   issuer,
   displayName,
-  selectCredentialType,
+  selectCredentialType = () => null,
 }: {
   type: string;
   issuer: string;
   displayName: string;
-  selectCredentialType: (type: string) => void;
+  selectCredentialType?: () => void;
 }) {
   return (
     <Box
-      onClick={() => selectCredentialType(type)}
+      onClick={selectCredentialType}
       sx={{
         background: '#FFFFFF',
         padding: '24px',
