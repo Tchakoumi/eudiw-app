@@ -336,7 +336,7 @@ export default function SelectCredential() {
     return claimKeysInPreferredLocal;
   }
 
-  function getVCSDJWTData(
+  function getVCSDJWTOffers(
     issuer_metadata: typeof CREDENTIAL_ISSUER_METADATA
   ): ICredentialCard[] {
     const credentialOfferTypeKeys = Object.keys(
@@ -408,7 +408,7 @@ export default function SelectCredential() {
           padding: '12px',
         }}
       >
-        {getVCSDJWTData(CREDENTIAL_ISSUER_METADATA).map((card, index) => {
+        {getVCSDJWTOffers(CREDENTIAL_ISSUER_METADATA).map((card, index) => {
           const {
             type,
             issuer,
