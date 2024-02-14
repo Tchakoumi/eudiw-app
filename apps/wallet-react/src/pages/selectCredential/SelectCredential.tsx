@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Footer from '../../components/home/Footer';
 import Header from '../../components/home/Header';
 import CredentialTypeCard from './CredentialTypeCard';
-import IDTemplate from './IDTemplate';
+import IDTemplate, { CredentialOfferDetails } from './IDTemplate';
 import { Claims, CredentialConfiguration } from './credentials.types';
 
 export default function SelectCredential() {
@@ -408,6 +408,17 @@ export default function SelectCredential() {
             )
           )}
         </Box>
+        {
+          <CredentialOfferDetails
+            closeDialog={() => setChosenCredentialType(undefined)}
+            isDialogOpen={!!chosenCredentialType}
+            credentialOfferAttributes={
+              chosenCredentialType
+                ? getVCItems(chosenCredentialType as ISupportedCredential)
+                : []
+            }
+          />
+        }
 
         {chosenCredentialType && (
           <IDTemplate
