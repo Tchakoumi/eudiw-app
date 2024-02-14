@@ -107,7 +107,7 @@ export class CredentialOfferResolver {
   private async fetchDiscoveryMetadata(
     credentialOffer: CredentialOffer
   ): Promise<DiscoveryMetadata> {
-    const credentialIssuer = credentialOffer.credential_issuer;
+    const { credential_issuer: credentialIssuer } = credentialOffer;
     if (!credentialIssuer) {
       throw new OID4VCIServiceError(
         InvalidCredentialOffer.MissingCredentialIssuer
