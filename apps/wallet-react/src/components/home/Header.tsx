@@ -1,6 +1,4 @@
-import { Icon } from '@iconify/react';
-import search from '@iconify/icons-fluent/search-32-regular';
-import { Box, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 export default function Header() {
   return (
@@ -13,22 +11,6 @@ export default function Header() {
       }}
     >
       <Typography variant="h2">DATEV-Wallet</Typography>
-      <TextField
-        variant="outlined"
-        size="small"
-        fullWidth
-        placeholder="Search"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start" sx={{ width: 'auto' }}>
-              <Icon
-                icon={search}
-                style={{ marginRight: '8px', fontSize: '24px' }}
-              />
-            </InputAdornment>
-          ),
-        }}
-      />
     </Box>
   );
 }
