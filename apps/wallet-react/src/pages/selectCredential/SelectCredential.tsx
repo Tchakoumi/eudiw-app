@@ -387,17 +387,15 @@ export default function SelectCredential() {
         height: '100%',
       }}
     >
-      {!!selectedCredentialOffer && (
-        <CredentialOfferDetails
-          closeDialog={() => setSelectedCredentialOffer(undefined)}
-          isDialogOpen={!!selectedCredentialOffer}
-          selectedCredentialOffer={selectedCredentialOffer}
-          credentialOfferAttributes={getVCClaims(
-            selectedCredentialOffer.type as ISupportedCredential,
-            CREDENTIAL_ISSUER_METADATA
-          )}
-        />
-      )}
+      <CredentialOfferDetails
+        closeDialog={() => setSelectedCredentialOffer(undefined)}
+        isDialogOpen={!!selectedCredentialOffer}
+        selectedCredentialOffer={selectedCredentialOffer}
+        credentialOfferAttributes={getVCClaims(
+          selectedCredentialOffer?.type as ISupportedCredential,
+          CREDENTIAL_ISSUER_METADATA
+        )}
+      />
       <Header />
       <Box
         sx={{

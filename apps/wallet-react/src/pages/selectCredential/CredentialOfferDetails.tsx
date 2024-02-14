@@ -27,16 +27,12 @@ export default function CredentialOfferDetails({
   isDialogOpen,
   closeDialog,
   credentialOfferAttributes,
-  selectedCredentialOffer: {
-    data: { display },
-    issuer,
-    type,
-  },
+  selectedCredentialOffer,
 }: {
   isDialogOpen: boolean;
   closeDialog: () => void;
   credentialOfferAttributes: string[];
-  selectedCredentialOffer: ICredentialCard;
+  selectedCredentialOffer?: ICredentialCard;
 }) {
   return (
     <Dialog
@@ -76,11 +72,13 @@ export default function CredentialOfferDetails({
           </Typography>
         </Box>
         <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
-          <CredentialTypeCard
-            displayName={display[0].name}
-            issuer={issuer}
-            type={type}
-          />
+          {selectedCredentialOffer && (
+            <CredentialTypeCard
+              displayName={selectedCredentialOffer.data.display[0].name}
+              issuer={selectedCredentialOffer.issuer}
+              type={selectedCredentialOffer.type}
+            />
+          )}
         </Box>
         <Box
           sx={{
