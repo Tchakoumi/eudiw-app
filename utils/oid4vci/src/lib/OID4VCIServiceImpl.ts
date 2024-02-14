@@ -8,15 +8,15 @@ import { OID4VCIService } from './OID4VCIService';
  * Concrete implementation of the OID4VCI service.
  */
 export class OID4VCIServiceImpl implements OID4VCIService {
-  readonly credentialRequester = new CredentialRequester();
-
-  public constructor() {}
+  private readonly credentialOfferResolver = new CredentialOfferResolver();
+  private readonly credentialRequester = new CredentialRequester();
 
   public async resolveCredentialOffer(
     credentialOffer: string
   ): Promise<ResolvedCredentialOffer> {
-    const resolver = new CredentialOfferResolver();
-    return await resolver.resolveCredentialOffer(credentialOffer);
+    return await this.credentialOfferResolver.resolveCredentialOffer(
+      credentialOffer
+    );
   }
 
   public async requestCredentialIssuance(
