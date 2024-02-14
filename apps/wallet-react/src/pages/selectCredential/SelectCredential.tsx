@@ -311,7 +311,7 @@ export default function SelectCredential() {
    * @param {string} claims - the different claims presentin the credential type
    * @param {string} preferredLocal - the desired language we want the claims to be presented in
    */
-  function getOfferedIdAttributes(claims: Claims, preferredLocal: string) {
+  function getVCClaimsInPreferredLocale(claims: Claims, preferredLocal: string) {
     const claimKeys = Object.keys(claims) as (keyof typeof claims)[];
 
     const claimKeysInPreferredLocal = claimKeys.map((item) => {
@@ -354,7 +354,7 @@ export default function SelectCredential() {
     }) as { type: string; issuer: string; data: CredentialConfiguration }[];
   }
 
-  function getVCItems(
+  function getVCClaims(
     selectedCredential: ISupportedCredential,
     credentialIssuerMetadata: typeof CREDENTIAL_ISSUER_METADATA
   ) {
@@ -368,7 +368,7 @@ export default function SelectCredential() {
           selectedCredential
         ].claims;
 
-      return getOfferedIdAttributes(selectedOfferClaims as Claims, 'en');
+      return getVCClaimsInPreferredLocale(selectedOfferClaims as Claims, 'en');
     }
     return [];
   }
@@ -386,7 +386,7 @@ export default function SelectCredential() {
       <CredentialOfferDetails
         closeDialog={() => setChosenCredentialType(undefined)}
         isDialogOpen={!!chosenCredentialType}
-        credentialOfferAttributes={getVCItems(
+        credentialOfferAttributes={getVCClaims(
           chosenCredentialType as ISupportedCredential,
           CREDENTIAL_ISSUER_METADATA
         )}
