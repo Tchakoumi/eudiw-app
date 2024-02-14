@@ -21,7 +21,7 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="left" ref={ref} {...props} />;
 });
 
-export function CredentialOfferDetails({
+export default function CredentialOfferDetails({
   isDialogOpen,
   closeDialog,
   credentialOfferAttributes,

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Footer from '../../components/home/Footer';
 import Header from '../../components/home/Header';
 import CredentialTypeCard from './CredentialTypeCard';
-import { CredentialOfferDetails } from './IDTemplate';
+import CredentialOfferDetails from './IDTemplate';
 import { Claims, CredentialConfiguration } from './credentials.types';
 
 export default function SelectCredential() {
