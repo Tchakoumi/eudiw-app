@@ -93,7 +93,10 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
             </IconButton>
           </Tooltip>
           <Typography
-            sx={{ fontWeight: 400, alignSelf: 'end' }}
+            sx={{
+              fontWeight: location.pathname === route ? 700 : 400,
+              alignSelf: 'end',
+            }}
             variant="subtitle2"
           >
             {title}
