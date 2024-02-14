@@ -2,9 +2,12 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 import Footer from '../../components/home/Footer';
 import Header from '../../components/home/Header';
-import CredentialTypeCard from './CredentialTypeCard';
 import CredentialOfferDetails from './CredentialOfferDetails';
-import { Claims, CredentialConfiguration } from './credentials.types';
+import CredentialTypeCard from './CredentialTypeCard';
+import {
+  Claims,
+  ICredentialCard
+} from './credentials.types';
 
 export default function SelectCredential() {
   const CREDENTIAL_ISSUER_METADATA = {
@@ -311,7 +314,10 @@ export default function SelectCredential() {
    * @param {string} claims - the different claims presentin the credential type
    * @param {string} preferredLocal - the desired language we want the claims to be presented in
    */
-  function getVCClaimsInPreferredLocale(claims: Claims, preferredLocal: string) {
+  function getVCClaimsInPreferredLocale(
+    claims: Claims,
+    preferredLocal: string
+  ) {
     const claimKeys = Object.keys(claims) as (keyof typeof claims)[];
 
     const claimKeysInPreferredLocal = claimKeys.map((item) => {
@@ -335,7 +341,7 @@ export default function SelectCredential() {
 
   function getVCSDJWTData(
     issuer_metadata: typeof CREDENTIAL_ISSUER_METADATA
-  ): { type: string; issuer: string; data: CredentialConfiguration }[] {
+  ): ICredentialCard[] {
     const credentialOfferTypeKeys = Object.keys(
       issuer_metadata.credential_configurations_supported
     ) as ISupportedCredential[];
@@ -351,7 +357,7 @@ export default function SelectCredential() {
         issuer: issuer_metadata.credential_issuer,
         data: issuer_metadata.credential_configurations_supported[item],
       };
-    }) as { type: string; issuer: string; data: CredentialConfiguration }[];
+    }) as ICredentialCard[];
   }
 
   function getVCClaims(

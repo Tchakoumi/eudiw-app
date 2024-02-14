@@ -38,3 +38,8 @@ export interface IdentityCredentialMetadataConfig {
   credential_configurations_supported: IdentityCredentialMetadata;
 }
 
+export interface ICredentialCard {
+  type: string;
+  issuer: string;
+  data: CredentialConfiguration;
+}
