@@ -109,7 +109,10 @@ export default function CredentialOfferDetails({
             color="primary"
             size="small"
             fullWidth
-            onClick={() => alert('Move to VC generation phase')}
+            onClick={() => {
+              alert('Move to VC generation phase')
+              closeDialog()
+            }}
           >
             Issue VC
           </Button>
