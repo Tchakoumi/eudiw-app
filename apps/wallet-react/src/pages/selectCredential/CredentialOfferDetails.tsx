@@ -11,6 +11,8 @@ import {
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef } from 'react';
+import { ICredentialCard } from './credentials.types';
+import CredentialTypeCard from './CredentialTypeCard';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -25,10 +27,16 @@ export default function CredentialOfferDetails({
   isDialogOpen,
   closeDialog,
   credentialOfferAttributes,
+  selectedCredentialOffer: {
+    data: { display },
+    issuer,
+    type,
+  },
 }: {
   isDialogOpen: boolean;
   closeDialog: () => void;
   credentialOfferAttributes: string[];
+  selectedCredentialOffer: ICredentialCard;
 }) {
   return (
     <Dialog
@@ -68,7 +76,11 @@ export default function CredentialOfferDetails({
           </Typography>
         </Box>
         <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
-          Hello world
+          <CredentialTypeCard
+            displayName={display[0].name}
+            issuer={issuer}
+            type={type}
+          />
         </Box>
         <Box
           sx={{
