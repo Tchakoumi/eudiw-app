@@ -18,10 +18,7 @@ export default function IDTemplate({
   handleClaimSelection,
   handleSelectAll,
 }: {
-  credentialOfferAttributes: {
-    key: string | number;
-    preferredLocale: string;
-  }[];
+  credentialOfferAttributes: string[];
   selectedClaimKeys: string[];
   handleClaimSelection: (claimKey: string) => void;
   handleSelectAll: (keys: string[]) => void;
@@ -32,9 +29,7 @@ export default function IDTemplate({
 
   return (
     <Box>
-      <Typography variant="h4">
-        Select Claims to present in credential
-      </Typography>
+      <Typography variant="h4">Credential attributes</Typography>
 
       <TableContainer
         sx={{
@@ -52,7 +47,7 @@ export default function IDTemplate({
                 handleSelectAll(
                   isAllSelected
                     ? []
-                    : credentialOfferAttributes.map(({ key }) => key as string)
+                    : credentialOfferAttributes.map((attr) => attr)
                 )
               }
               sx={{
@@ -68,27 +63,25 @@ export default function IDTemplate({
             </TableRow>
           </TableHead>
           <TableBody>
-            {credentialOfferAttributes.map(
-              ({ key: attrKey, preferredLocale: name }) => (
-                <TableRow
-                  role="checkbox"
-                  onClick={() => handleClaimSelection(String(attrKey))}
-                  sx={{
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    '& td': {
-                      padding: '7px',
-                    },
-                  }}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedClaimKeys.includes(String(attrKey))}
-                    />
-                  </TableCell>
-                  <TableCell>{name}</TableCell>
-                </TableRow>
-              )
-            )}
+            {credentialOfferAttributes.map((attr) => (
+              <TableRow
+                role="checkbox"
+                onClick={() => handleClaimSelection(String(attr))}
+                sx={{
+                  '&:last-child td, &:last-child th': { border: 0 },
+                  '& td': {
+                    padding: '7px',
+                  },
+                }}
+              >
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selectedClaimKeys.includes(String(attr))}
+                  />
+                </TableCell>
+                <TableCell>{attr}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -120,7 +113,7 @@ export default function IDTemplate({
           disabled={selectedClaimKeys.length === 0}
           onClick={() => alert('Move to VC generation phase')}
         >
-          Generate VC
+          Issue VC
         </Button>
       </Box>
     </Box>

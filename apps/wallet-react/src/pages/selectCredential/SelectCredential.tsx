@@ -321,15 +321,14 @@ export default function SelectCredential() {
       if (claims[item].display.length > 0) {
         // if preferred locale is found,
         // then retun the name in that locale
-        if (claimInPreferredLocale)
-          return { key: item, preferredLocale: claimInPreferredLocale.name };
+        if (claimInPreferredLocale) return claimInPreferredLocale.name;
         //if preferred local is not found,
         // just return the name on first element in display list
-        return { key: item, preferredLocale: claims[item].display[0].name };
+        return claims[item].display[0].name;
       }
       // if the display list is empty
       // return the cleanedup key
-      return { key: item, preferredLocale: cleanupClaimKey(item as string) };
+      return cleanupClaimKey(item as string);
     });
     return claimKeysInPreferredLocal;
   }
