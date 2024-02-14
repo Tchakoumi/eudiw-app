@@ -1,9 +1,9 @@
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { useState } from 'react';
 import Footer from '../../components/home/Footer';
 import Header from '../../components/home/Header';
 import CredentialTypeCard from './CredentialTypeCard';
-import IDTemplate, { CredentialOfferDetails } from './IDTemplate';
+import { CredentialOfferDetails } from './IDTemplate';
 import { Claims, CredentialConfiguration } from './credentials.types';
 
 export default function SelectCredential() {
@@ -373,59 +373,38 @@ export default function SelectCredential() {
         height: '100%',
       }}
     >
+      <CredentialOfferDetails
+        closeDialog={() => setChosenCredentialType(undefined)}
+        isDialogOpen={!!chosenCredentialType}
+        credentialOfferAttributes={
+          chosenCredentialType
+            ? getVCItems(chosenCredentialType as ISupportedCredential)
+            : []
+        }
+      />
       <Header />
       <Box
         sx={{
+          display: 'grid',
+          gridTemplateRows: 'auto auto 1fr',
+          rowGap: 1,
           backgroundColor: '#F6F7F9',
           padding: '12px',
-          display: 'grid',
-          rowGap: 2,
-          alignContent: 'start',
         }}
       >
-        <Typography variant="h3" sx={{ textAlign: 'center' }}>
-          Select the desired credential types
-        </Typography>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateRows: 'auto auto 1fr',
-            rowGap: 2,
-          }}
-        >
-          {getVCSDJWTData(CREDENTIAL_ISSUER_METADATA).map(
-            ({ type, issuer, data: { display } }) => (
-              <CredentialTypeCard
-                displayName={display[0].name}
-                issuer={issuer}
-                type={type}
-                selectCredentialType={(type) =>
-                  setChosenCredentialType((prevType) =>
-                    prevType === type ? undefined : type
-                  )
-                }
-              />
-            )
-          )}
-        </Box>
-        {
-          <CredentialOfferDetails
-            closeDialog={() => setChosenCredentialType(undefined)}
-            isDialogOpen={!!chosenCredentialType}
-            credentialOfferAttributes={
-              chosenCredentialType
-                ? getVCItems(chosenCredentialType as ISupportedCredential)
-                : []
-            }
-          />
-        }
-
-        {chosenCredentialType && (
-          <IDTemplate
-            credentialOfferAttributes={getVCItems(
-              chosenCredentialType as ISupportedCredential
-            )}
-          />
+        {getVCSDJWTData(CREDENTIAL_ISSUER_METADATA).map(
+          ({ type, issuer, data: { display } }) => (
+            <CredentialTypeCard
+              displayName={display[0].name}
+              issuer={issuer}
+              type={type}
+              selectCredentialType={(type) =>
+                setChosenCredentialType((prevType) =>
+                  prevType === type ? undefined : type
+                )
+              }
+            />
+          )
         )}
       </Box>
       <Footer showArrow={false} />
