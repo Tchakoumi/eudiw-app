@@ -49,26 +49,6 @@ describe('CredentialOfferResolver', () => {
     nock.cleanAll();
   });
 
-  it('should successfully acquire an access token using a credential invite', async () => {
-    const body: AccessTokenResponse = {
-      access_token: 'ey6546.546654.64565',
-      authorization_pending: false,
-      c_nonce: 'c_nonce2022101300',
-      c_nonce_expires_in: 2022101300,
-      interval: 2022101300,
-      token_type: 'Bearer',
-    };
-
-    nock(MOCK_URL).post(/.*/).reply(200, body);
-
-    const accessTokenResponse: OpenIDResponse<AccessTokenResponse> =
-      await accessTokenClient.acquireAccessToken({
-        credentialOffer: CREDENTIAL,
-      });
-
-    expect(accessTokenResponse.successBody).toEqual(body);
-  });
-
   it(
     'should successfully acquire an access token using a pre-authorized code',
     async () => {
@@ -211,19 +191,6 @@ describe('CredentialOfferResolver', () => {
     },
     UNIT_TEST_TIMEOUT,
   );
-
-  it('should throw an error when a pin is provided but not required', async () => {
-    const accessTokenClient: AccessTokenClient = new AccessTokenClient();
-
-    nock(MOCK_URL).post(/.*/).reply(200, {});
-
-    await expect(() =>
-      accessTokenClient.acquireAccessToken({
-        credentialOffer: CREDENTIAL,
-        pin: '1234',
-      }),
-    ).rejects.toThrow(Error('Cannot set a pin, when the pin is not required.'));
-  });
 
   it('should throw an error when determining the token URL if necessary parameters are missing', async () => {
     await expect(() =>

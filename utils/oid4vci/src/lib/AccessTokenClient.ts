@@ -1,8 +1,3 @@
-import {
-  assertedUniformCredentialOffer,
-  getIssuerFromCredentialOfferPayload,
-  toUniformCredentialOfferRequest,
-} from './functions/CredentialOfferUtil';
 import { convertJsonToURI } from './functions/Encoding';
 import { formPost } from './functions/HttpUtils';
 import {
@@ -20,45 +15,6 @@ import {
 import { OpenIDResponse, AccessTokenResponse } from './types';
 
 export class AccessTokenClient {
-  public async acquireAccessToken(
-    opts: AccessTokenRequestOpts,
-  ): Promise<OpenIDResponse<AccessTokenResponse>> {
-    const { asOpts, pin, codeVerifier, code, redirectUri, metadata } = opts;
-
-    const credentialOffer = opts.credentialOffer
-      ? await assertedUniformCredentialOffer(opts.credentialOffer)
-      : undefined;
-    const isPinRequired =
-      credentialOffer &&
-      this.isPinRequiredValue(credentialOffer.credential_offer);
-    const issuer =
-      opts.credentialIssuer ??
-      (credentialOffer
-        ? getIssuerFromCredentialOfferPayload(credentialOffer.credential_offer)
-        : (metadata?.issuer as string));
-    if (!issuer) {
-      throw Error('Issuer required at this point');
-    }
-    const issuerOpts = {
-      issuer,
-    };
-
-    return await this.acquireAccessTokenUsingRequest({
-      accessTokenRequest: await this.createAccessTokenRequest({
-        credentialOffer,
-        asOpts,
-        codeVerifier,
-        code,
-        redirectUri,
-        pin,
-      }),
-      isPinRequired,
-      metadata,
-      asOpts,
-      issuerOpts,
-    });
-  }
-
   public async acquireAccessTokenUsingRequest({
     accessTokenRequest,
     isPinRequired,
@@ -90,83 +46,6 @@ export class AccessTokenClient {
     return await formPost(
       requestTokenURL,
       convertJsonToURI(accessTokenRequest),
-    );
-  }
-
-  private isPinRequiredValue(
-    requestPayload: UniformCredentialOfferPayload,
-  ): boolean {
-    let isPinRequired = false;
-    if (!requestPayload) {
-      throw new Error(TokenErrorResponse.invalid_request);
-    }
-    const issuer = getIssuerFromCredentialOfferPayload(requestPayload);
-    if (
-      requestPayload.grants?.[
-        'urn:ietf:params:oauth:grant-type:pre-authorized_code'
-      ]
-    ) {
-      isPinRequired =
-        requestPayload.grants[
-          'urn:ietf:params:oauth:grant-type:pre-authorized_code'
-        ]?.user_pin_required ?? false;
-    }
-    return isPinRequired;
-  }
-
-  public async createAccessTokenRequest(
-    opts: AccessTokenRequestOpts,
-  ): Promise<AccessTokenRequest> {
-    const { asOpts, pin, codeVerifier, code, redirectUri } = opts;
-    const credentialOfferRequest = opts.credentialOffer
-      ? await toUniformCredentialOfferRequest(opts.credentialOffer)
-      : undefined;
-    const request: Partial<AccessTokenRequest> = {};
-
-    if (asOpts?.clientId) {
-      request.client_id = asOpts.clientId;
-    }
-
-    if (
-      credentialOfferRequest?.supportedFlows.includes(
-        AuthzFlowType.PRE_AUTHORIZED_CODE_FLOW,
-      )
-    ) {
-      this.assertNumericPin(
-        this.isPinRequiredValue(credentialOfferRequest.credential_offer),
-        pin,
-      );
-      request.user_pin = pin;
-
-      request.grant_type = GrantTypes.PRE_AUTHORIZED_CODE;
-      // we actually know it is there because of the isPreAuthCode call
-      request[PRE_AUTH_CODE_LITERAL] =
-        credentialOfferRequest?.credential_offer.grants?.[
-          'urn:ietf:params:oauth:grant-type:pre-authorized_code'
-        ]?.[PRE_AUTH_CODE_LITERAL];
-
-      return request as AccessTokenRequest;
-    }
-
-    if (
-      !credentialOfferRequest ||
-      credentialOfferRequest.supportedFlows.includes(
-        AuthzFlowType.AUTHORIZATION_CODE_FLOW,
-      )
-    ) {
-      request.grant_type = GrantTypes.AUTHORIZATION_CODE;
-      request.code = code;
-      request.redirect_uri = redirectUri;
-
-      if (codeVerifier) {
-        request.code_verifier = codeVerifier;
-      }
-
-      return request as AccessTokenRequest;
-    }
-
-    throw new Error(
-      'Credential offer request does not follow neither pre-authorized code nor authorization code flow requirements.',
     );
   }
 

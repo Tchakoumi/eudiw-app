@@ -98,16 +98,3 @@ const openIdFetch = async <T>(
     errorBody: !success ? responseBody : undefined,
   };
 };
-
-export const getJson = async <T>(
-  URL: string,
-  opts?: {
-    bearerToken?: (() => Promise<string>) | string;
-    contentType?: string;
-    accept?: string;
-    customHeaders?: Record<string, string>;
-    exceptionOnHttpErrorStatus?: boolean;
-  },
-): Promise<OpenIDResponse<T>> => {
-  return await openIdFetch(URL, undefined, { method: 'GET', ...opts });
-};
