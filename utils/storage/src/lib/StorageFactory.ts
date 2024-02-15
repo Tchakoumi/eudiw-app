@@ -43,7 +43,7 @@ export class StorageFactory<T extends DBSchema> {
    * Open a database
    *
    * It creates a new database when is called for the first time.
-   * 
+   *
    * This function is called by the constructor and must not be explicitly called by consumer.
    */
   async init() {
@@ -56,10 +56,10 @@ export class StorageFactory<T extends DBSchema> {
   }
 
   /**
-   * Insert new value to a given store of your indexedDB. 
-   * 
+   * Insert new value to a given store of your indexedDB.
+   *
    * This method will failed if the key you're trying to add already exist
-   * 
+   *
    * @param storeName The name of the store you want to insert data to. Stores are simalar to collections
    * @param payload Data to be stored in key/value format
    * @returns the newly added key
@@ -72,7 +72,7 @@ export class StorageFactory<T extends DBSchema> {
 
   /**
    * Retrieves the value of the first record in a store
-   * 
+   *
    * @param storeName Name of the store
    * @param key record key
    * @returns an object with `key` and `value`
@@ -90,7 +90,7 @@ export class StorageFactory<T extends DBSchema> {
 
   /**
    * Retrieves the records in a store
-   * 
+   *
    * @param storeName Name of the store
    * @returns all the records of the store
    */
@@ -103,7 +103,7 @@ export class StorageFactory<T extends DBSchema> {
 
   /**
    * Puts an item in the store. Replaces any item with the same key.
-   * 
+   *
    * @param storeName Name of the store
    * @param payload item to be put in the store
    */
