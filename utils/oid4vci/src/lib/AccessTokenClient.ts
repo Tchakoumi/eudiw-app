@@ -13,7 +13,6 @@ import { OpenIDResponse, AccessTokenResponse } from './types';
 export class AccessTokenClient {
   public async acquireAccessTokenUsingRequest({
     accessTokenRequest,
-    isPinRequired,
     metadata,
     asOpts,
     issuerOpts,
@@ -24,7 +23,7 @@ export class AccessTokenClient {
     asOpts?: AuthorizationServerOpts;
     issuerOpts?: IssuerOpts;
   }): Promise<OpenIDResponse<AccessTokenResponse>> {
-    this.validate(accessTokenRequest, isPinRequired);
+    this.validate(accessTokenRequest);
 
     const requestTokenURL = AccessTokenClient.determineTokenURL({
       asOpts,
@@ -45,14 +44,10 @@ export class AccessTokenClient {
     );
   }
 
-  private validate(
-    accessTokenRequest: AccessTokenRequest,
-    isPinRequired?: boolean,
-  ): void {
+  private validate(accessTokenRequest: AccessTokenRequest): void {
     if (accessTokenRequest.grant_type === GrantTypes.PRE_AUTHORIZED_CODE) {
       this.assertPreAuthorizedGrantType(accessTokenRequest.grant_type);
       this.assertNonEmptyPreAuthorizedCode(accessTokenRequest);
-      this.assertNumericPin(isPinRequired, accessTokenRequest.user_pin);
     }
   }
 
@@ -71,18 +66,6 @@ export class AccessTokenClient {
       throw new Error(
         'Pre-authorization must be proven by presenting the pre-authorized code. Code must be present.',
       );
-    }
-  }
-
-  private assertNumericPin(isPinRequired?: boolean, pin?: string): void {
-    if (isPinRequired) {
-      if (!pin || !/^\d{1,8}$/.test(pin)) {
-        throw new Error(
-          'A valid pin consisting of maximal 8 numeric characters must be present.',
-        );
-      }
-    } else if (pin) {
-      throw new Error('Cannot set a pin, when the pin is not required.');
     }
   }
 

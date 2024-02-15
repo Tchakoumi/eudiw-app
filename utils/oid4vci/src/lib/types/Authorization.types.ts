@@ -21,23 +21,41 @@ export interface AuthorizationServerOpts {
 export interface AccessTokenResponse {
   access_token: string;
   scope?: string;
-  token_type?: string;
+  token_type: string;
   expires_in?: number; // in seconds
   c_nonce?: string;
   c_nonce_expires_in?: number; // in seconds
   authorization_pending?: boolean;
   interval?: number; // in seconds
+  refresh_token?: string;
+  authorization_details: AuthorizationDetail[];
+}
+
+export interface AuthorizationDetail {
+  type: string;
+  credential_configuration_id: string;
+  credential_identifiers?: string[];
 }
 
 export interface AccessTokenRequest {
+  grant_type: GrantTypes;
   client_id?: string;
   code?: string;
   code_verifier?: string;
-  grant_type: GrantTypes;
   'pre-authorized_code': string;
   redirect_uri?: string;
-  scope?: string;
-  user_pin?: string;
+  tx_code?: string;
+}
+
+export interface TxCode {
+  input_mode?: TxCodeInputMode;
+  length?: number;
+  description?: string;
+}
+
+export enum TxCodeInputMode {
+  Numeric = 'numeric', // only digits
+  Text = 'text', // any characters
 }
 
 export enum GrantTypes {

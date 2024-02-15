@@ -1,4 +1,4 @@
-import { AuthorizationServerMetadata } from './ServerMetadata.types';
+import { AuthorizationServerMetadata } from './AuthorizationServerMetadata.types';
 
 export interface ErrorResponse extends Response {
   error: string;
