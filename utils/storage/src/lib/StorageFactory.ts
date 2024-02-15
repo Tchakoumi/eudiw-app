@@ -88,4 +88,18 @@ export class StorageFactory<T extends DBSchema> {
     const allKeys = await this.db.getAllKeys(storeName);
     return Promise.all(allKeys.map((key) => this.findOne(storeName, key)));
   }
+
+  /**
+   * Puts an item in the store. Replaces any item with the same key.
+   * @param storeName Name of the store
+   * @param payload item to be put in the store
+   */
+  async update(storeName: StoreNames<T>, payload: StoreRecord<T>) {
+    if (!this.db) throw new Error('Database not initialized !');
+
+    const key = await this.db.getKey(storeName, payload.key);
+    if (!key) throw new Error(`No such key as ${payload.key} in store`);
+
+    await this.db.put(storeName, payload.value, payload.key);
+  }
 }
