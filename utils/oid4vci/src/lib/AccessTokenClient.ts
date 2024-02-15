@@ -2,15 +2,11 @@ import { convertJsonToURI } from './functions/Encoding';
 import { formPost } from './functions/HttpUtils';
 import {
   AccessTokenRequest,
-  AccessTokenRequestOpts,
   AuthorizationServerOpts,
-  AuthzFlowType,
   EndpointMetadata,
   GrantTypes,
   IssuerOpts,
   PRE_AUTH_CODE_LITERAL,
-  TokenErrorResponse,
-  UniformCredentialOfferPayload,
 } from './types';
 import { OpenIDResponse, AccessTokenResponse } from './types';
 

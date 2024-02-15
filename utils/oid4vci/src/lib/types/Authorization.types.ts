@@ -1,6 +1,4 @@
 import { ErrorResponse } from './Generic.types';
-import { UniformCredentialOffer } from './CredentialIssuance.types';
-import { EndpointMetadata } from './ServerMetadata.types';
 
 export enum Encoding {
   FORM_URL_ENCODED = 'application/x-www-form-urlencoded',
@@ -11,17 +9,6 @@ export interface OpenIDResponse<T> {
   origResponse: Response;
   successBody?: T;
   errorBody?: ErrorResponse;
-}
-
-export interface AccessTokenRequestOpts {
-  credentialOffer?: UniformCredentialOffer;
-  credentialIssuer?: string;
-  asOpts?: AuthorizationServerOpts;
-  metadata?: EndpointMetadata;
-  codeVerifier?: string; // only required for authorization flow
-  code?: string; // only required for authorization flow
-  redirectUri?: string; // only required for authorization flow
-  pin?: string; // Pin-number. Only used when required
 }
 
 export interface AuthorizationServerOpts {
@@ -63,9 +50,4 @@ export interface IssuerOpts {
   issuer: string;
   tokenEndpoint?: string;
   fetchMetadata?: boolean;
-}
-
-export enum AuthzFlowType {
-  AUTHORIZATION_CODE_FLOW = 'Authorization Code Flow',
-  PRE_AUTHORIZED_CODE_FLOW = 'Pre-Authorized Code Flow',
 }
