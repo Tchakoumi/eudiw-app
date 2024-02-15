@@ -102,4 +102,16 @@ export class StorageFactory<T extends DBSchema> {
 
     await this.db.put(storeName, payload.value, payload.key);
   }
+
+  /**
+   * Deletes records in a store matching the given key.
+   *
+   * @param storeName Name of the store.
+   * @param key
+   */
+  async delete(storeName: StoreNames<T>, key: StoreRecord<T>['key']) {
+    if (!this.db) throw new Error('Database not initialized !');
+
+    await this.db.delete(storeName, key);
+  }
 }
