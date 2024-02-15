@@ -127,4 +127,22 @@ export class StorageFactory<T extends DBSchema> {
 
     await this.db.delete(storeName, key);
   }
+
+  /**
+   * Delete all records in a store matching the given keys.
+   *
+   * In case no key is provided, all records of the store are deleted
+   *
+   * @param storeName Name of the store
+   * @param keys keys to delete
+   */
+  async deleteMany(storeName: StoreNames<T>, keys?: StoreRecord<T>['key'][]) {
+    if (!this.db) throw new Error('Database not initialized !');
+
+    let allKeys = await this.db.getAllKeys(storeName);
+    if (keys) allKeys = allKeys.filter(keys.includes);
+
+    const tx = this.db.transaction(storeName, 'readwrite');
+    await Promise.all([...allKeys.map((key) => tx.store.delete(key)), tx.done]);
+  }
 }
