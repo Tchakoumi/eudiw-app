@@ -1,4 +1,5 @@
 export const DEFAULT_POLLING_INTERVAL_SECONDS = 5;
+export const OID4VCI_PROOF_TYP = 'openid4vci-proof+jwt';
 
 export const WELL_KNOWN_ENDPOINTS = {
   CREDENTIAL_ISSUER_METADATA: '.well-known/openid-credential-issuer',

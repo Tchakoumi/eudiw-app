@@ -1,4 +1,5 @@
 import { CLIENT_ID } from '../../config';
+import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
 import * as jose from 'jose';
 
@@ -11,7 +12,7 @@ describe('IdentityProofGenerator', () => {
   });
 
   it('should generate a valid JWS key proof', async () => {
-    const now = Date.now();
+    const now = currentTimestampInSecs();
     const aud = 'https://trial.authlete.net';
     const nonce = '8ef0d890-c1e2-4339-a245-9b53f6c16632';
 

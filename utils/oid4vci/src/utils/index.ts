@@ -7,3 +7,10 @@ export const composeUrl = (baseUrl: string, path: string): string => {
 
   return `${trimmedBaseUrl}/${trimmedPath}`;
 };
+
+/**
+ * Returns current unix timestamp in seconds.
+ */
+export const currentTimestampInSecs = (): number => {
+  return Math.floor(new Date().getTime() / 1000);
+};

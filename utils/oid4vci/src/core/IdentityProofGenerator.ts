@@ -1,6 +1,8 @@
 import * as jose from 'jose';
 import { OID4VCIServiceError } from '../errors';
 import { CLIENT_ID } from '../config';
+import { OID4VCI_PROOF_TYP } from '../constants';
+import { currentTimestampInSecs } from '../utils';
 
 export class IdentityProofGenerator {
   /**
@@ -24,9 +26,10 @@ export class IdentityProofGenerator {
     const jws = await new jose.SignJWT({ nonce })
       .setProtectedHeader({
         alg: jwk.alg,
+        typ: OID4VCI_PROOF_TYP,
         jwk: this.toPublicJwk(jwk),
       })
-      .setIssuedAt(Date.now())
+      .setIssuedAt(currentTimestampInSecs())
       .setIssuer(CLIENT_ID)
       .setAudience(aud)
       .sign(priv);
