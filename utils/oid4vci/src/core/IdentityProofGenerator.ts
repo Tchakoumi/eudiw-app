@@ -11,7 +11,7 @@ export class IdentityProofGenerator {
   /**
    * Computes key proof of wallet's identity.
    */
-  public async generateKeyProof(aud: string, nonce: string) {
+  public async generateKeyProof(aud: string, nonce?: string) {
     const jwk = this.getJwkIdentity();
     if (!jwk.alg) {
       throw new OID4VCIServiceError(
