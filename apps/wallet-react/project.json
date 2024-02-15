@@ -12,7 +12,7 @@
         "compiler": "babel",
         "outputPath": "dist/apps/wallet-react",
         "index": "apps/wallet-react/src/index.html",
-        "baseHref": "/",
+        "baseHref": "https://adorsys.github.io/eudiw-app/",
         "main": "apps/wallet-react/src/main.tsx",
         "tsConfig": "apps/wallet-react/tsconfig.app.json",
         "assets": [
