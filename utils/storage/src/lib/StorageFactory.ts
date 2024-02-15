@@ -16,6 +16,10 @@ export class StorageFactory<T extends DBSchema> {
   private dbVersion: number;
   private db: IDBPDatabase<T> | null = null;
   private openDBCallbacks: OpenDBCallbacks<T> | undefined;
+  /**
+   * A boolean indicating wheter or not the database was initialized
+   */
+  isInitialized: boolean = false
 
   constructor(
     dbName: string,
@@ -36,12 +40,13 @@ export class StorageFactory<T extends DBSchema> {
       this.dbVersion,
       this.openDBCallbacks
     );
+    this.isInitialized = true
   }
 
   /**
    * Insert new value to a given store of your indexedDB. This method will failed if the key you're trying to add already exist
    * @param storeName The name of the store you want to insert data to. Stores are simalar to collections
-   * @param payload Data to be stored in key/value format 
+   * @param payload Data to be stored in key/value format
    * @returns the newly added keys
    */
   async insert(
