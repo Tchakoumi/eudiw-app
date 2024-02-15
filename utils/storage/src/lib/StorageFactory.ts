@@ -34,10 +34,17 @@ export class StorageFactory<T extends DBSchema> {
     this.dbName = dbName;
     this.dbVersion = dbVersion;
     this.openDBCallbacks = openDBCallbacks;
+    this.init()
+      .then(() => console.log('StorageFactory was successfully initialized !'))
+      .catch(console.error);
   }
 
   /**
    * Open a database
+   *
+   * It creates a new database when is called for the first time.
+   * 
+   * This function is called by the constructor and must not be explicitly called by consumer.
    */
   async init() {
     this.db = await openDB<T>(
