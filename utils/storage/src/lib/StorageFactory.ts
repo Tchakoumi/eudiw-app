@@ -98,7 +98,23 @@ export class StorageFactory<T extends DBSchema> {
     if (!this.db) throw new Error('Database not initialized !');
 
     const allKeys = await this.db.getAllKeys(storeName);
-    return Promise.all(allKeys.map((key) => this.findOne(storeName, key)));
+
+    const tx = this.db.transaction(storeName, 'readonly');
+    const result = await Promise.all([
+      ...allKeys.map((key) => tx.store.get(key)),
+      tx.done,
+    ]);
+    
+    result.pop();
+    return result
+      .filter((value) => value !== null)
+      .map(
+        (value, i) =>
+          ({
+            key: allKeys[i],
+            value: value as StoreRecord<T>['value'],
+          } satisfies StoreRecord<T>)
+      );
   }
 
   /**
