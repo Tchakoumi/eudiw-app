@@ -76,4 +76,16 @@ export class StorageFactory<T extends DBSchema> {
     if (!value) return null;
     return { key, value } satisfies StoreRecord<T>;
   }
+
+  /**
+   * Retrieves the records in a store
+   * @param storeName Name of the store
+   * @returns all the records of the store
+   */
+  async findAll(storeName: StoreNames<T>) {
+    if (!this.db) throw new Error('Database not initialized !');
+
+    const allKeys = await this.db.getAllKeys(storeName);
+    return Promise.all(allKeys.map((key) => this.findOne(storeName, key)));
+  }
 }
