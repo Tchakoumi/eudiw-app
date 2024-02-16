@@ -2,7 +2,12 @@ import nock from 'nock';
 
 import { WELL_KNOWN_ENDPOINTS } from '../../constants';
 import { InvalidCredentialOffer } from '../../errors';
-import { CredentialOffer, ResolvedCredentialOffer } from '../../types';
+import {
+  AuthorizationServerMetadata,
+  CredentialIssuerMetadata,
+  CredentialOffer,
+  ResolvedCredentialOffer,
+} from '../../types';
 import { CredentialOfferResolver } from '../CredentialOfferResolver';
 
 import {
@@ -19,7 +24,7 @@ describe('CredentialOfferResolver', () => {
     nock.disableNetConnect();
   });
 
-  afterEach(async () => {
+  beforeEach(async () => {
     nock.cleanAll();
   });
 
@@ -27,28 +32,30 @@ describe('CredentialOfferResolver', () => {
     return encodeURIComponent(JSON.stringify(credentialOffer));
   };
 
-  const nockReplyWithEmptyPayload = (scope: nock.Scope) => {
-    scope
+  const nockReplyWithEmptyPayload = (scope: nock.Scope): nock.Scope => {
+    return scope
       .get(() => true)
       .reply(200, {})
       .persist();
   };
 
-  const nockReplyWithMetadataRef1 = (scope: nock.Scope) => {
-    scope
-      // openid-credential-issuer
-      .get((uri) =>
-        uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
-      )
-      .reply(200, credentialIssuerMetadataRef1)
-      // openid-configuration
-      .get((uri) =>
-        uri.endsWith(WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION)
-      )
-      .reply(200, authorizationServerMetadataRef1)
-      // jwt-issuer
-      .get((uri) => uri.endsWith(WELL_KNOWN_ENDPOINTS.JWT_ISSUER_METADATA))
-      .reply(200, jwtIssuerMetadataRef1);
+  const nockReplyWithMetadataRef1 = (scope: nock.Scope): nock.Scope => {
+    return (
+      scope
+        // openid-credential-issuer
+        .get((uri) =>
+          uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
+        )
+        .reply(200, credentialIssuerMetadataRef1)
+        // openid-configuration
+        .get((uri) =>
+          uri.endsWith(WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION)
+        )
+        .reply(200, authorizationServerMetadataRef1)
+        // jwt-issuer
+        .get((uri) => uri.endsWith(WELL_KNOWN_ENDPOINTS.JWT_ISSUER_METADATA))
+        .reply(200, jwtIssuerMetadataRef1)
+    );
   };
 
   it('should resolve offer by value (schemeful link)', async () => {
@@ -154,7 +161,7 @@ describe('CredentialOfferResolver', () => {
 
     for (const credentialOffer of credentialOffers) {
       const promise = resolver.resolveCredentialOffer(credentialOffer);
-      expect(promise).rejects.toThrow(
+      await expect(promise).rejects.toThrow(
         InvalidCredentialOffer.MissingQueryString
       );
     }
@@ -169,7 +176,9 @@ describe('CredentialOfferResolver', () => {
 
     for (const credentialOffer of credentialOffers) {
       const promise = resolver.resolveCredentialOffer(credentialOffer);
-      expect(promise).rejects.toThrow(InvalidCredentialOffer.WrongParamCount);
+      await expect(promise).rejects.toThrow(
+        InvalidCredentialOffer.WrongParamCount
+      );
     }
   });
 
@@ -178,7 +187,7 @@ describe('CredentialOfferResolver', () => {
 
     for (const credentialOffer of credentialOffers) {
       const promise = resolver.resolveCredentialOffer(credentialOffer);
-      expect(promise).rejects.toThrow(
+      await expect(promise).rejects.toThrow(
         InvalidCredentialOffer.MissingRequiredParams
       );
     }
@@ -192,7 +201,7 @@ describe('CredentialOfferResolver', () => {
 
     for (const credentialOffer of credentialOffers) {
       const promise = resolver.resolveCredentialOffer(credentialOffer);
-      expect(promise).rejects.toThrow(
+      await expect(promise).rejects.toThrow(
         InvalidCredentialOffer.DeserializationError
       );
     }
@@ -208,12 +217,12 @@ describe('CredentialOfferResolver', () => {
       .reply(200, '{{}}');
 
     const promise = resolver.resolveCredentialOffer(credentialOffer);
-    expect(promise).rejects.toThrow(
+    await expect(promise).rejects.toThrow(
       InvalidCredentialOffer.DeserializationError
     );
   });
 
-  it('should throw when fetching anything errs', async () => {
+  it('should throw when fetching (dereferencing) credential offer fails', async () => {
     const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
       'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
     )}`;
@@ -223,7 +232,7 @@ describe('CredentialOfferResolver', () => {
       .replyWithError('fetch failed');
 
     const promise = resolver.resolveCredentialOffer(credentialOffer);
-    expect(promise).rejects.toThrow('fetch failed');
+    await expect(promise).rejects.toThrow('fetch failed');
   });
 
   it('should throw on missing credential issuer', async () => {
@@ -243,8 +252,150 @@ describe('CredentialOfferResolver', () => {
     nockReplyWithEmptyPayload(scope);
 
     const promise = resolver.resolveCredentialOffer(credentialOffer);
-    expect(promise).rejects.toThrow(
+    await expect(promise).rejects.toThrow(
       InvalidCredentialOffer.MissingCredentialIssuer
+    );
+  });
+
+  it('should default to oauth-server-metadata when openid-configuration is unavailable', async () => {
+    const credentialOffer = `?credential_offer=${encodeCredentialOffer(
+      credentialOfferObjectRef1
+    )}`;
+
+    const scope = nock(credentialOfferObjectRef1.credential_issuer)
+      .get((uri) =>
+        uri.endsWith(WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION)
+      )
+      .reply(404)
+      .get((uri) => uri.endsWith(WELL_KNOWN_ENDPOINTS.OAUTH_SERVER_METADATA))
+      .reply(200, authorizationServerMetadataRef1);
+    nockReplyWithMetadataRef1(scope);
+
+    const resolved = await resolver.resolveCredentialOffer(credentialOffer);
+
+    expect(resolved.discoveryMetadata).toEqual({
+      credentialIssuerMetadata: credentialIssuerMetadataRef1,
+      authorizationServerMetadata: authorizationServerMetadataRef1,
+      jwtIssuerMetadata: jwtIssuerMetadataRef1,
+    });
+  });
+
+  it('should resolve referenced authorization server', async () => {
+    const credentialOfferObject: CredentialOffer = {
+      ...credentialOfferObjectRef1,
+      grants: {
+        'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
+          'pre-authorized_code': '',
+          authorization_server: 'https://auth.authlete.com',
+        },
+      },
+    };
+
+    const credentialOffer = `?credential_offer=${encodeCredentialOffer(
+      credentialOfferObject
+    )}`;
+
+    const credentialIssuerMetadata: CredentialIssuerMetadata = {
+      ...credentialIssuerMetadataRef1,
+      authorization_servers: ['https://auth.authlete.com'],
+    };
+
+    const scope = nock(/authlete/)
+      .get((uri) =>
+        uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
+      )
+      .reply(200, credentialIssuerMetadata);
+
+    nockReplyWithMetadataRef1(scope);
+
+    const resolved = await resolver.resolveCredentialOffer(credentialOffer);
+    expect(resolved.discoveryMetadata).toEqual({
+      credentialIssuerMetadata: credentialIssuerMetadata,
+      authorizationServerMetadata: authorizationServerMetadataRef1,
+      jwtIssuerMetadata: jwtIssuerMetadataRef1,
+    });
+  });
+
+  it('should throw on non referenced authorization server', async () => {
+    const credentialOfferObject: CredentialOffer = {
+      ...credentialOfferObjectRef1,
+      grants: {
+        'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
+          'pre-authorized_code': '',
+          authorization_server: 'invalid-authorization-server',
+        },
+      },
+    };
+
+    const credentialOffer = `?credential_offer=${encodeCredentialOffer(
+      credentialOfferObject
+    )}`;
+
+    const scope = nock(credentialOfferObject.credential_issuer)
+      .get(/./)
+      .reply(200, JSON.stringify(credentialOfferObject));
+    nockReplyWithMetadataRef1(scope);
+
+    const promise = resolver.resolveCredentialOffer(credentialOffer);
+    await expect(promise).rejects.toThrow(
+      InvalidCredentialOffer.UnresolvableAuthorizationServer
+    );
+  });
+
+  it('should find authorization server with support for current grant type', async () => {
+    const credentialOffer = `?credential_offer=${encodeCredentialOffer(
+      credentialOfferObjectRef1
+    )}`;
+
+    const credentialIssuerMetadata: CredentialIssuerMetadata = {
+      ...credentialIssuerMetadataRef1,
+      authorization_servers: [credentialOfferObjectRef1.credential_issuer],
+    };
+
+    const scope = nock(credentialOfferObjectRef1.credential_issuer)
+      .get((uri) =>
+        uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
+      )
+      .reply(200, credentialIssuerMetadata);
+
+    nockReplyWithMetadataRef1(scope);
+
+    const resolved = await resolver.resolveCredentialOffer(credentialOffer);
+    expect(resolved.discoveryMetadata).toEqual({
+      credentialIssuerMetadata: credentialIssuerMetadata,
+      authorizationServerMetadata: authorizationServerMetadataRef1,
+      jwtIssuerMetadata: jwtIssuerMetadataRef1,
+    });
+  });
+
+  it('should throw when no authorization server has support for current grant type', async () => {
+    const credentialOffer = `?credential_offer=${encodeCredentialOffer(
+      credentialOfferObjectRef1
+    )}`;
+
+    const credentialIssuerMetadata: CredentialIssuerMetadata = {
+      ...credentialIssuerMetadataRef1,
+      authorization_servers: [credentialOfferObjectRef1.credential_issuer],
+    };
+
+    const authorizationServerMetadata: AuthorizationServerMetadata = {
+      ...authorizationServerMetadataRef1,
+      grant_types_supported: [],
+    };
+
+    nock(credentialOfferObjectRef1.credential_issuer)
+      .get((uri) =>
+        uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
+      )
+      .reply(200, credentialIssuerMetadata)
+      .get((uri) =>
+        uri.endsWith(WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION)
+      )
+      .reply(200, authorizationServerMetadata);
+
+    const promise = resolver.resolveCredentialOffer(credentialOffer);
+    await expect(promise).rejects.toThrow(
+      InvalidCredentialOffer.UnresolvableAuthorizationServer
     );
   });
 });
