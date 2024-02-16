@@ -8,9 +8,11 @@ import {
   openDB,
 } from 'idb';
 
+export type StoreRecordKey<T> = StoreKey<T, StoreNames<T>>;
+export type StoreRecordValue<T> = StoreValue<T, StoreNames<T>>;
 export type StoreRecord<T> = {
-  key: StoreKey<T, StoreNames<T>>;
-  value: StoreValue<T, StoreNames<T>>;
+  key?: StoreRecordKey<T>;
+  value: StoreRecordValue<T>;
 };
 
 /**
@@ -79,7 +81,7 @@ export class StorageFactory<T extends DBSchema> {
    */
   async findOne(
     storeName: StoreNames<T>,
-    key: StoreKey<T, StoreNames<T>>
+    key: StoreRecordKey<T>
   ): Promise<StoreRecord<T> | null> {
     if (!this.db) throw new Error('Database not initialized !');
 
@@ -104,7 +106,7 @@ export class StorageFactory<T extends DBSchema> {
       ...allKeys.map((key) => tx.store.get(key)),
       tx.done,
     ]);
-    
+
     result.pop();
     return result
       .filter((value) => value !== null)
@@ -112,7 +114,7 @@ export class StorageFactory<T extends DBSchema> {
         (value, i) =>
           ({
             key: allKeys[i],
-            value: value as StoreRecord<T>['value'],
+            value: value as StoreRecordValue<T>,
           } satisfies StoreRecord<T>)
       );
   }
@@ -123,13 +125,17 @@ export class StorageFactory<T extends DBSchema> {
    * @param storeName Name of the store
    * @param payload item to be put in the store
    */
-  async update(storeName: StoreNames<T>, payload: StoreRecord<T>) {
+  async update(
+    storeName: StoreNames<T>,
+    keyPath: StoreRecordKey<T>,
+    payload: Partial<StoreRecordValue<T>>
+  ) {
     if (!this.db) throw new Error('Database not initialized !');
 
-    const key = await this.db.getKey(storeName, payload.key);
-    if (!key) throw new Error(`No such key as ${payload.key} in store`);
+    const value = await this.db.get(storeName, keyPath);
+    if (!value) throw new Error(`No such key as ${keyPath} in store`);
 
-    await this.db.put(storeName, payload.value, payload.key);
+    await this.db.put(storeName, { ...value, ...payload }, keyPath);
   }
 
   /**
@@ -138,7 +144,7 @@ export class StorageFactory<T extends DBSchema> {
    * @param storeName Name of the store.
    * @param key
    */
-  async delete(storeName: StoreNames<T>, key: StoreRecord<T>['key']) {
+  async delete(storeName: StoreNames<T>, key: StoreRecordKey<T>) {
     if (!this.db) throw new Error('Database not initialized !');
 
     await this.db.delete(storeName, key);
@@ -152,7 +158,7 @@ export class StorageFactory<T extends DBSchema> {
    * @param storeName Name of the store
    * @param keys keys to delete
    */
-  async deleteMany(storeName: StoreNames<T>, keys?: StoreRecord<T>['key'][]) {
+  async deleteMany(storeName: StoreNames<T>, keys?: StoreRecordKey<T>[]) {
     if (!this.db) throw new Error('Database not initialized !');
 
     let allKeys = await this.db.getAllKeys(storeName);
