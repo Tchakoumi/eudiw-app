@@ -1,8 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useInstallPWA } from '../installPWAContext/InstallPWAProvider';
 import { BeforeInstallPromptEvent } from '../installPWAContext/installPWA.interface';
 
 type EventHandler = EventListenerOrEventListenerObject;
+
+//This is to make type window.safari
+// (detect safari browser on desktop) usage typesafe
+declare global {
+  interface Window {
+    safari: unknown;
+  }
+}
+
+export function isIosOrSafariDesktop() {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  return /iphone|ipad|ipod/.test(userAgent) || window.safari !== undefined;
+}
 
 export function usePWA() {
   const { deferredPrompt, isInstalling, installPWADispatch } = useInstallPWA();
@@ -46,10 +59,23 @@ export function usePWA() {
     });
   }
 
+  const [isStandalone, setIsStandalone] = useState<boolean>(false);
+  const [isMinimalUi, setIsMinimalUi] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
+    setIsMinimalUi(window.matchMedia('(display-mode: minimal-ui)').matches);
+  }, []);
+
   return {
     isInstalled: !deferredPrompt,
-    isInstallable: !!deferredPrompt && !isInstalling,
+    isInstallable:
+      !!deferredPrompt && !isInstalling && !(isStandalone || isMinimalUi),
     isInstalling: isInstalling && !!deferredPrompt,
+    iOS: {
+      isInstallable: !isStandalone,
+      isInstalled: isStandalone,
+    },
     installApp,
   };
 }
