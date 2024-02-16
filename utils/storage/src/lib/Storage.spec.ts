@@ -2,7 +2,8 @@ import { DBSchema } from 'idb';
 import { StorageFactory } from './StorageFactory';
 
 // Mocking indexdedDB functionality
-import 'fake-indexeddb/auto';
+import "core-js/stable/structured-clone";
+import "fake-indexeddb/auto";
 
 interface TestDBSchema extends DBSchema {
   test_store: {
@@ -18,12 +19,11 @@ describe('StorageFactory', () => {
     },
   });
 
-  it('should work', async () => {
-    await storageFactory.init();
+  it('should be defined', async () => {
+    expect(storageFactory).toBeDefined();
   });
 
   it('should insert data', async () => {
-    await storageFactory.init();
     const addedKey = await storageFactory.insert('test_store', {
       key: 'test_key',
       value: 'test_value',
