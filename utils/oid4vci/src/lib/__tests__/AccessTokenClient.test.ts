@@ -10,7 +10,7 @@ const nock = require('nock');
 const MOCK_URL = 'https://trial.authlete.net/api';
 const UNIT_TEST_TIMEOUT = 30000;
 
-describe('CredentialOfferResolver', () => {
+describe('AccessTokenResolver', () => {
   beforeEach(async () => {
     nock.cleanAll();
   });
@@ -27,7 +27,7 @@ describe('CredentialOfferResolver', () => {
       const accessTokenRequest: AccessTokenRequest = {
         grant_type: GrantTypes.PRE_AUTHORIZED_CODE,
         'pre-authorized_code': '20221013',
-        client_id: 'sphereon',
+        client_id: 'test',
       } as AccessTokenRequest;
 
       const body: AccessTokenResponse = {
@@ -69,7 +69,6 @@ describe('CredentialOfferResolver', () => {
       const accessTokenRequest: AccessTokenRequest = {
         grant_type: GrantTypes.PRE_AUTHORIZED_CODE,
         'pre-authorized_code': '',
-        user_pin: '1.0',
       } as AccessTokenRequest;
 
       nock(MOCK_URL).post(/.*/).reply(200, {});
@@ -174,7 +173,6 @@ describe('CredentialOfferResolver', () => {
 
       const response = await accessTokenClient.acquireAccessTokenUsingRequest({
         accessTokenRequest,
-        isPinRequired: true,
         asOpts: { as: MOCK_URL },
       });
       expect(response.successBody).toEqual(body);

@@ -1,4 +1,3 @@
-import { convertJsonToURI } from './functions/Encoding';
 import { formPost } from './functions/HttpUtils';
 import {
   AccessTokenRequest,
@@ -18,7 +17,6 @@ export class AccessTokenClient {
     issuerOpts,
   }: {
     accessTokenRequest: AccessTokenRequest;
-    isPinRequired?: boolean;
     metadata?: EndpointMetadata;
     asOpts?: AuthorizationServerOpts;
     issuerOpts?: IssuerOpts;
@@ -38,10 +36,7 @@ export class AccessTokenClient {
     requestTokenURL: string,
     accessTokenRequest: AccessTokenRequest,
   ): Promise<OpenIDResponse<AccessTokenResponse>> {
-    return await formPost(
-      requestTokenURL,
-      convertJsonToURI(accessTokenRequest),
-    );
+    return await formPost(requestTokenURL, JSON.stringify(accessTokenRequest));
   }
 
   private validate(accessTokenRequest: AccessTokenRequest): void {
@@ -85,7 +80,7 @@ export class AccessTokenClient {
     }
     let url;
     if (asOpts && asOpts.as) {
-      url = this.creatTokenURLFromURL(
+      url = this.createTokenURLFromURL(
         asOpts.as,
         asOpts?.allowInsecureEndpoints,
         asOpts.tokenEndpoint,
@@ -98,7 +93,7 @@ export class AccessTokenClient {
           'Either authorization server options, a token endpoint or issuer options are required at this point',
         );
       }
-      url = this.creatTokenURLFromURL(
+      url = this.createTokenURLFromURL(
         issuerOpts.issuer,
         asOpts?.allowInsecureEndpoints,
         issuerOpts.tokenEndpoint,
@@ -109,7 +104,7 @@ export class AccessTokenClient {
     return url;
   }
 
-  private static creatTokenURLFromURL(
+  private static createTokenURLFromURL(
     url: string,
     allowInsecureEndpoints?: boolean,
     tokenEndpoint?: string,

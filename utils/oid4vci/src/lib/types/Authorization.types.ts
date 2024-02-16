@@ -47,17 +47,6 @@ export interface AccessTokenRequest {
   tx_code?: string;
 }
 
-export interface TxCode {
-  input_mode?: TxCodeInputMode;
-  length?: number;
-  description?: string;
-}
-
-export enum TxCodeInputMode {
-  Numeric = 'numeric', // only digits
-  Text = 'text', // any characters
-}
-
 export enum GrantTypes {
   AUTHORIZATION_CODE = 'authorization_code',
   PRE_AUTHORIZED_CODE = 'urn:ietf:params:oauth:grant-type:pre-authorized_code',
