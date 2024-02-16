@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
-import Footer from '../components/home/Footer';
-import Header from '../components/home/Header';
+import Footer from '../components/layout/Footer';
+import Header from '../components/layout/Header';
 import HomeBody from '../components/home/HomeBody';
 
 export default function Home() {

@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { useState } from 'react';
-import Footer from '../../components/home/Footer';
-import Header from '../../components/home/Header';
+import Footer from '../../components/layout/Footer';
+import Header from '../../components/layout/Header';
 import CredentialOfferDetails from './CredentialOfferDetails';
 import CredentialTypeCard from './CredentialTypeCard';
 import { Claims, ICredentialCard } from './credentials.types';
