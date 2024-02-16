@@ -4,13 +4,14 @@ import {
   CircularProgress,
   Dialog,
   Slide,
-  Typography
+  Typography,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useState } from 'react';
 import BackTitleBar from '../layout/BackTitleBar';
 import CredentialTypeCard from './CredentialTypeCard';
 import { ICredentialCard } from './credentials.types';
+import WaitingCredential from './WaitingCredential';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -49,67 +50,71 @@ export default function CredentialOfferDetails({
       onClose={() => (isIssuing ? null : closeDialog())}
       TransitionComponent={Transition}
     >
-      <Box
-        sx={{
-          height: '100%',
-          display: 'grid',
-          gridTemplateRows: 'auto auto 1fr',
-        }}
-      >
-        <BackTitleBar
-          pageTitle="Credential Offer"
-          onBack={() => (isIssuing ? null : closeDialog())}
-        />
-        <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
-          {selectedCredentialOffer && (
-            <CredentialTypeCard
-              displayName={selectedCredentialOffer.data.display[0].name}
-              issuer={selectedCredentialOffer.issuer}
-              type={selectedCredentialOffer.type}
-            />
-          )}
-        </Box>
+      {isIssuing ? (
+        <WaitingCredential />
+      ) : (
         <Box
           sx={{
-            padding: '16px',
+            height: '100%',
             display: 'grid',
-            gridTemplateRows: '1fr auto',
-            rowGap: '8px',
+            gridTemplateRows: 'auto auto 1fr',
           }}
         >
+          <BackTitleBar
+            pageTitle="Credential Offer"
+            onBack={() => (isIssuing ? null : closeDialog())}
+          />
+          <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
+            {selectedCredentialOffer && (
+              <CredentialTypeCard
+                displayName={selectedCredentialOffer.data.display[0].name}
+                issuer={selectedCredentialOffer.issuer}
+                type={selectedCredentialOffer.type}
+              />
+            )}
+          </Box>
           <Box
             sx={{
+              padding: '16px',
               display: 'grid',
-              rowGap: '14px',
-              maxHeight: '100%',
-              alignContent: 'start',
-              overflow: 'auto',
+              gridTemplateRows: '1fr auto',
+              rowGap: '8px',
             }}
           >
-            {credentialOfferAttributes.map((attr, index) => (
-              <Typography sx={{ fontSize: '14px' }} key={index}>
-                {attr}
-              </Typography>
-            ))}
-          </Box>
+            <Box
+              sx={{
+                display: 'grid',
+                rowGap: '14px',
+                maxHeight: '100%',
+                alignContent: 'start',
+                overflow: 'auto',
+              }}
+            >
+              {credentialOfferAttributes.map((attr, index) => (
+                <Typography sx={{ fontSize: '14px' }} key={index}>
+                  {attr}
+                </Typography>
+              ))}
+            </Box>
 
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            fullWidth
-            onClick={issueVC}
-            disabled={isIssuing}
-            endIcon={
-              isIssuing && (
-                <CircularProgress size={20} color="primary" thickness={7} />
-              )
-            }
-          >
-            Issue VC
-          </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              fullWidth
+              onClick={issueVC}
+              disabled={isIssuing}
+              endIcon={
+                isIssuing && (
+                  <CircularProgress size={20} color="primary" thickness={7} />
+                )
+              }
+            >
+              Issue VC
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      )}
     </Dialog>
   );
 }
