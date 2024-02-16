@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useState } from 'react';
-import BackTitleBar from '../../components/layout/BackTitleBar';
+import BackTitleBar from '../layout/BackTitleBar';
 import CredentialTypeCard from './CredentialTypeCard';
 import { ICredentialCard } from './credentials.types';
 

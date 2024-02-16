@@ -2,9 +2,9 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
-import CredentialOfferDetails from './CredentialOfferDetails';
-import CredentialTypeCard from './CredentialTypeCard';
-import { Claims, ICredentialCard } from './credentials.types';
+import CredentialOfferDetails from '../../components/credential-offer/CredentialOfferDetails';
+import CredentialTypeCard from '../../components/credential-offer/CredentialTypeCard';
+import { Claims, ICredentialCard } from '../../components/credential-offer/credentials.types';
 
 export default function SelectCredential() {
   const CREDENTIAL_ISSUER_METADATA = {
