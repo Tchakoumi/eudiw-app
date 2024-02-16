@@ -295,7 +295,13 @@ export default function CredentialType() {
   type ISupportedCredential =
     keyof typeof CREDENTIAL_ISSUER_METADATA.credential_configurations_supported;
 
-  function capitalize(word: string) {
+  /**
+   *This function is used to capitalise the first letter of every word
+   *
+   * @param {string} word - word to be capitalized
+   * @returns {string} - the capitalized word
+   */
+  function capitalize(word: string): string {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }
 
