@@ -339,18 +339,18 @@ export default function CredentialType() {
   ): string[] {
     const claimKeys = Object.keys(claims) as (keyof typeof claims)[];
 
-    const claimKeysInPreferredLocal = claimKeys.map((item) => {
-      if (claims[item].display.length > 0) {
-        const claimInPreferredLocale = claims[item].display.find(
+    const claimKeysInPreferredLocal = claimKeys.map((claimKey) => {
+      if (claims[claimKey].display.length > 0) {
+        const claimInPreferredLocale = claims[claimKey].display.find(
           ({ locale }) => locale === preferredLocale
         );
         // if preferred locale is found, then retun the name in that locale
         if (claimInPreferredLocale) return claimInPreferredLocale.name;
         //if preferred local is not found, just return the name on first element in display list
-        return claims[item].display[0].name;
+        return claims[claimKey].display[0].name;
       }
       // if the display list is empty return the cleanedup key
-      return removeUnderscoresFromWord(item as string);
+      return removeUnderscoresFromWord(claimKey as string);
     });
     return claimKeysInPreferredLocal;
   }
@@ -367,11 +367,13 @@ export default function CredentialType() {
         issuer_metadata.credential_configurations_supported[item].format ===
         'vc+sd-jwt'
     );
-    return vcSdJwtTypeKeys.map((item) => {
+    return vcSdJwtTypeKeys.map((credentialOfferTypeKey) => {
       return {
-        type: item,
+        type: credentialOfferTypeKey,
         issuer: issuer_metadata.credential_issuer,
-        data: issuer_metadata.credential_configurations_supported[item],
+        data: issuer_metadata.credential_configurations_supported[
+          credentialOfferTypeKey
+        ],
       };
     }) as ICredentialCard[];
   }
