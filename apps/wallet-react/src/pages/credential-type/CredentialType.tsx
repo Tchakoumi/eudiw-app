@@ -309,11 +309,11 @@ export default function CredentialType() {
    * This function removes underscores(_) in a word 
    * and seperate in different words, all capitalized.
    *
-   * @param claimKey - Key of the claim to cleanup
+   * @param word - Key of the claim to cleanup
    * @returns {string} - text without underscores
    */
-  function cleanupClaimKey(claimKey: string): string {
-    return claimKey
+  function removeUnderscoresFromWord(word: string): string {
+    return word
       .split('_')
       .map((jj) => capitalize(jj))
       .join(' ');
@@ -347,7 +347,7 @@ export default function CredentialType() {
       }
       // if the display list is empty
       // return the cleanedup key
-      return cleanupClaimKey(item as string);
+      return removeUnderscoresFromWord(item as string);
     });
     return claimKeysInPreferredLocal;
   }
