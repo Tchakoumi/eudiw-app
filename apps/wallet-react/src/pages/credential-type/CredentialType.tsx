@@ -355,6 +355,12 @@ export default function CredentialType() {
     return claimKeysInPreferredLocal;
   }
 
+  /**
+   * Gets all credential types of vc+sd-jwt format, adding to it the issuer and it's credential type
+   *
+   * @param {typeof CREDENTIAL_ISSUER_METADATA} issuer_metadata - the provided metadata from issuer
+   * @returns {ICredentialCard} - the metadata credential configurations supported, type and issuer of every supported type
+   */
   function getVCSDJWTOffers(
     issuer_metadata: typeof CREDENTIAL_ISSUER_METADATA
   ): ICredentialCard[] {
@@ -363,9 +369,9 @@ export default function CredentialType() {
     ) as ISupportedCredential[];
 
     const vcSdJwtTypeKeys = credentialOfferTypeKeys.filter(
-      (item) =>
-        issuer_metadata.credential_configurations_supported[item].format ===
-        'vc+sd-jwt'
+      (credentialType) =>
+        issuer_metadata.credential_configurations_supported[credentialType]
+          .format === 'vc+sd-jwt'
     );
     return vcSdJwtTypeKeys.map((credentialOfferTypeKey) => {
       return {
