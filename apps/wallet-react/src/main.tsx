@@ -1,4 +1,4 @@
-import { InstallPWAContextProvider } from '@datev/usePWA';
+import { InstallPWAContextProvider, isIosOrSafariDesktop } from '@datev/usePWA';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 
@@ -14,7 +14,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <StrictMode>
     <BrowserRouter basename={baseHref}>
-      <InstallPWAContextProvider>
+      <InstallPWAContextProvider
+        component={isIosOrSafariDesktop() ? 'tooltip' : 'banner'}
+      >
         <App />
       </InstallPWAContextProvider>
     </BrowserRouter>
@@ -25,9 +27,9 @@ const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
     try {
       const registration = await navigator.serviceWorker.register(
-        `${baseHref}service-worker.js`,
+        '/service-worker.js',
         {
-          scope: baseHref,
+          scope: '/',
         }
       );
       if (registration.installing) {
