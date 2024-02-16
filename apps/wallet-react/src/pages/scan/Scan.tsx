@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConnectionDialog from '../../components/scan-details/ConnectionDialog';
 import { useTheme } from '../../utils/theme';
+import { eventBus } from '@datev/event-bus';
 
 export default function Scan() {
   const theme = useTheme();
@@ -17,6 +18,8 @@ export default function Scan() {
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>(
     'environment'
   );
+  eventBus.on('scan-event', (scanResult) => setConnectionString(scanResult));
+
   return (
     <>
       <ConnectionDialog
@@ -63,7 +66,7 @@ export default function Scan() {
             <QrScanner
               onResult={(result: string) => {
                 setIsDetailsDialogOpen(true);
-                setConnectionString(result);
+                eventBus.emit('scan-event', result);
               }}
               validate={(result) => {
                 return String(result);
