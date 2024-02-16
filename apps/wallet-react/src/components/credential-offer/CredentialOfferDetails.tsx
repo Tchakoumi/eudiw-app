@@ -1,27 +1,12 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  Slide,
-  Typography
-} from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
-import { forwardRef, useState } from 'react';
+import { Box, Button, Dialog, Typography } from '@mui/material';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackTitleBar from '../layout/BackTitleBar';
+import DialogTransition from '../layout/DialogTransition';
 import CredentialIssued from './CredentialIssued';
 import CredentialTypeCard from './CredentialTypeCard';
 import WaitingCredential from './WaitingCredential';
 import { ICredentialCard } from './credentials.types';
-
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: JSX.Element;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="left" ref={ref} {...props} />;
-});
 
 export default function CredentialOfferDetails({
   isDialogOpen,
@@ -57,7 +42,7 @@ export default function CredentialOfferDetails({
       fullScreen
       open={isDialogOpen}
       onClose={() => (isIssuing ? null : close())}
-      TransitionComponent={Transition}
+      TransitionComponent={DialogTransition}
     >
       {isDoneIssuing ? (
         <CredentialIssued
