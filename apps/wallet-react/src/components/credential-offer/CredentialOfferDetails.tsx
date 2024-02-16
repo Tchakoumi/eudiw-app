@@ -12,6 +12,8 @@ import BackTitleBar from '../layout/BackTitleBar';
 import CredentialTypeCard from './CredentialTypeCard';
 import { ICredentialCard } from './credentials.types';
 import WaitingCredential from './WaitingCredential';
+import CredentialIssued from './CredentialIssued';
+import { useNavigate } from 'react-router-dom';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -33,14 +35,15 @@ export default function CredentialOfferDetails({
   credentialOfferAttributes: string[];
   selectedCredentialOffer?: ICredentialCard;
 }) {
+  const push = useNavigate();
   const [isIssuing, setIsIssuing] = useState<boolean>(false);
+  const [isDoneIssuing, setIsDoneIssuing] = useState<boolean>(false);
   function issueVC() {
     setIsIssuing(true);
     setTimeout(() => {
       setIsIssuing(false);
+      setIsDoneIssuing(true);
       //TODO: CALL API HERE TO ISSUE VC
-      alert('Issued VC');
-      closeDialog();
     }, 3000);
   }
   return (
@@ -50,7 +53,14 @@ export default function CredentialOfferDetails({
       onClose={() => (isIssuing ? null : closeDialog())}
       TransitionComponent={Transition}
     >
-      {isIssuing ? (
+      {isDoneIssuing ? (
+        <CredentialIssued
+          handleClose={() => {
+            closeDialog();
+            push('/credentials');
+          }}
+        />
+      ) : isIssuing ? (
         <WaitingCredential />
       ) : (
         <Box
