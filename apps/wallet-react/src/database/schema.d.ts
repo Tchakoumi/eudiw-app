@@ -7,7 +7,8 @@ interface WalletDBSchema extends DBSchema {
       name: string;
       age: number;
       email: string;
-      profileId: number;
+      // will be auto incremented
+      profileId?: number;
     };
     indexes: { 'by-email': string };
   };
