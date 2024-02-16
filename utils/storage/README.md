@@ -13,10 +13,41 @@ As any other web application, Here are some of the most revelant data storage op
 
 These three options encompass a broad spectrum of data storage use cases in PWAs, ranging from structured data storage with IndexedDB to basic key-value pair storage with LocalStorage and SessionStorage. IndexedDB emerges as the most suitable option for our needs, given its capacity for structured data, larger storage capacity, transaction support, and indexing capabilities, but most importantly, its asynchronous nature.
 
+## Compatibility
+The compatibility graph of indexedDB can be found at the following address https://developer.mozilla.org/en-US/docs/Web/API/indexedDB#browser_compatibility
+
 ## Usage
 To use this libray in the app, first import
 ```ts
-import { StorageFactory } from '@datev/storage'
+import { StorageFactory } from '@datev/storage';
+import { WalletDBSchema } from './schema';
+
+// open a new database named `storage` following the `WalletDBSchema` schema
+const storageFactory = new StorageFactory<WalletDBSchema>('storage', 1, {
+  upgrade(db, oldVersion, newVersion, transaction, event) {
+    //creating a new store `test_store`
+    db.createObjectStore('test_store');
+  },
+  blocked(currentVersion, blockedVersion, event) {
+    // …
+  },
+  blocking(currentVersion, blockedVersion, event) {
+    // …
+  },
+  terminated() {
+    // …
+  },
+});
+
+// schema.d.ts
+import type { DBSchema } from 'idb';
+
+interface WalletDBSchema extends DBSchema {
+  test_store: {
+    key: string;
+    value: string;
+  };
+}
 ```
 
 ## Running unit tests

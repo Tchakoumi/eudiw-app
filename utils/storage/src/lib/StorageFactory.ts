@@ -1,45 +1,28 @@
 import {
   DBSchema,
   IDBPDatabase,
+  IndexNames,
   OpenDBCallbacks,
-  StoreKey,
   StoreNames,
-  StoreValue,
   openDB,
 } from 'idb';
-
-export type StoreRecordKey<T> = StoreKey<T, StoreNames<T>>;
-export type StoreRecordValue<T> = StoreValue<T, StoreNames<T>>;
-export type StoreRecord<T> = {
-  key?: StoreRecordKey<T>;
-  value: StoreRecordValue<T>;
-};
+import {
+  StoreRecord,
+  StoreRecordKey,
+  StoreRecordValue,
+  QueryStore,
+} from './Storage.types';
 
 /**
  * A factory class for indexedDB's common CRUD operations
  */
 export class StorageFactory<T extends DBSchema> {
-  private dbName: string;
-  private dbVersion: number;
+  /** Opened database */
   private db: IDBPDatabase<T> | null = null;
-  private openDBCallbacks: OpenDBCallbacks<T> | undefined;
   /**
-   * A boolean indicating wheter or not the database was initialized
+   * Promise returning an open database
    */
-  isInitialized: boolean = false;
-
-  constructor(
-    dbName: string,
-    dbVersion = 1,
-    openDBCallbacks?: OpenDBCallbacks<T>
-  ) {
-    this.dbName = dbName;
-    this.dbVersion = dbVersion;
-    this.openDBCallbacks = openDBCallbacks;
-    this.init()
-      .then(() => console.log('StorageFactory was successfully initialized !'))
-      .catch(console.error);
-  }
+  #dbPromise: Promise<IDBPDatabase<T>>;
 
   /**
    * Open a database
@@ -47,14 +30,17 @@ export class StorageFactory<T extends DBSchema> {
    * It creates a new database when is called for the first time.
    *
    * This function is called by the constructor and must not be explicitly called by consumer.
+   *
+   * @param dbName Name of the indexedDB
+   * @param [dbVersion=1] database version
+   * @param openDBCallbacks Addittional callbacks
    */
-  async init() {
-    this.db = await openDB<T>(
-      this.dbName,
-      this.dbVersion,
-      this.openDBCallbacks
-    );
-    this.isInitialized = true;
+  constructor(
+    dbName: string,
+    dbVersion = 1,
+    openDBCallbacks?: OpenDBCallbacks<T>
+  ) {
+    this.#dbPromise = openDB<T>(dbName, dbVersion, openDBCallbacks);
   }
 
   /**
@@ -67,7 +53,7 @@ export class StorageFactory<T extends DBSchema> {
    * @returns the newly added key
    */
   async insert(storeName: StoreNames<T>, payload: StoreRecord<T>) {
-    if (!this.db) throw new Error('Database not initialized !');
+    if (!this.db) this.db = await this.#dbPromise;
 
     return await this.db.add(storeName, payload.value, payload.key);
   }
@@ -81,13 +67,13 @@ export class StorageFactory<T extends DBSchema> {
    */
   async findOne(
     storeName: StoreNames<T>,
-    key: StoreRecordKey<T>
+    key: IDBValidKey
   ): Promise<StoreRecord<T> | null> {
-    if (!this.db) throw new Error('Database not initialized !');
+    if (!this.db) this.db = await this.#dbPromise;
 
-    const value = await this.db.get(storeName, key);
+    const value = await this.db.get(storeName, key as StoreRecordKey<T>);
     if (!value) return null;
-    return { key, value } satisfies StoreRecord<T>;
+    return { key: key as StoreRecordKey<T>, value } satisfies StoreRecord<T>;
   }
 
   /**
@@ -97,7 +83,7 @@ export class StorageFactory<T extends DBSchema> {
    * @returns all the records of the store
    */
   async findAll(storeName: StoreNames<T>) {
-    if (!this.db) throw new Error('Database not initialized !');
+    if (!this.db) this.db = await this.#dbPromise;
 
     const allKeys = await this.db.getAllKeys(storeName);
 
@@ -106,7 +92,7 @@ export class StorageFactory<T extends DBSchema> {
       ...allKeys.map((key) => tx.store.get(key)),
       tx.done,
     ]);
-
+    
     result.pop();
     return result
       .filter((value) => value !== null)
@@ -114,7 +100,7 @@ export class StorageFactory<T extends DBSchema> {
         (value, i) =>
           ({
             key: allKeys[i],
-            value: value as StoreRecordValue<T>,
+            value: value as StoreRecord<T>['value'],
           } satisfies StoreRecord<T>)
       );
   }
@@ -127,15 +113,23 @@ export class StorageFactory<T extends DBSchema> {
    */
   async update(
     storeName: StoreNames<T>,
-    keyPath: StoreRecordKey<T>,
+    key: IDBValidKey,
     payload: Partial<StoreRecordValue<T>>
   ) {
-    if (!this.db) throw new Error('Database not initialized !');
+    if (!this.db) this.db = await this.#dbPromise;
+    const tx = this.db.transaction(storeName);
+    const hasKeyPath = Boolean(tx.store.keyPath);
+    tx.done;
 
-    const value = await this.db.get(storeName, keyPath);
-    if (!value) throw new Error(`No such key as ${keyPath} in store`);
+    const payloadKey = key as StoreRecordKey<T>;
+    const value = await this.db.get(storeName, payloadKey);
+    if (!value) throw new Error(`No such key as ${payloadKey} in store`);
 
-    await this.db.put(storeName, { ...value, ...payload }, keyPath);
+    await this.db.put(
+      storeName,
+      { ...value, ...payload },
+      hasKeyPath ? undefined : payloadKey
+    );
   }
 
   /**
@@ -144,10 +138,10 @@ export class StorageFactory<T extends DBSchema> {
    * @param storeName Name of the store.
    * @param key
    */
-  async delete(storeName: StoreNames<T>, key: StoreRecordKey<T>) {
-    if (!this.db) throw new Error('Database not initialized !');
+  async delete(storeName: StoreNames<T>, key: IDBValidKey) {
+    if (!this.db) this.db = await this.#dbPromise;
 
-    await this.db.delete(storeName, key);
+    await this.db.delete(storeName, key as StoreRecordKey<T>);
   }
 
   /**
@@ -158,13 +152,51 @@ export class StorageFactory<T extends DBSchema> {
    * @param storeName Name of the store
    * @param keys keys to delete
    */
-  async deleteMany(storeName: StoreNames<T>, keys?: StoreRecordKey<T>[]) {
-    if (!this.db) throw new Error('Database not initialized !');
+  async deleteMany(storeName: StoreNames<T>, keys?: IDBValidKey[]) {
+    if (!this.db) this.db = await this.#dbPromise;
 
     let allKeys = await this.db.getAllKeys(storeName);
-    if (keys) allKeys = allKeys.filter(keys.includes);
+    if (keys) allKeys = allKeys.filter((keys as StoreRecordKey<T>[]).includes);
 
     const tx = this.db.transaction(storeName, 'readwrite');
     await Promise.all([...allKeys.map((key) => tx.store.delete(key)), tx.done]);
+  }
+
+  /**
+   * Retrieves values in an index that match the query.
+   *
+   * @param storeName Name of the store
+   * @param indexName Name of the index in the store
+   * @param count Number of occurrences you want to retrieve
+   * @param query
+   * @returns records with the given index
+   */
+  async findManyByIndex(
+    storeName: StoreNames<T>,
+    indexName: IndexNames<T, StoreNames<T>>,
+    query?: Omit<QueryStore<T>, 'indexName'>
+  ) {
+    if (!this.db) this.db = await this.#dbPromise;
+
+    return await this.db.getAllFromIndex(
+      storeName,
+      indexName,
+      query?.key,
+      query?.count
+    );
+  }
+
+  /**
+   * Retrieves the number of records matching the given query in a store.
+   *
+   * @param storeName Name of the store
+   * @param query query params
+   * @returns number of occurrences
+   */
+  async count(storeName: StoreNames<T>, query?: QueryStore<T>) {
+    if (!this.db) this.db = await this.#dbPromise;
+    if (query?.indexName)
+      return await this.db.countFromIndex(storeName, query?.indexName);
+    return await this.db.count(storeName, query?.key);
   }
 }
