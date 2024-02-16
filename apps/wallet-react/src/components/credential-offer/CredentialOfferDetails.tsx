@@ -1,19 +1,18 @@
 import {
   Box,
   Button,
-  CircularProgress,
   Dialog,
   Slide,
-  Typography,
+  Typography
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useState } from 'react';
-import BackTitleBar from '../layout/BackTitleBar';
-import CredentialTypeCard from './CredentialTypeCard';
-import { ICredentialCard } from './credentials.types';
-import WaitingCredential from './WaitingCredential';
-import CredentialIssued from './CredentialIssued';
 import { useNavigate } from 'react-router-dom';
+import BackTitleBar from '../layout/BackTitleBar';
+import CredentialIssued from './CredentialIssued';
+import CredentialTypeCard from './CredentialTypeCard';
+import WaitingCredential from './WaitingCredential';
+import { ICredentialCard } from './credentials.types';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -120,12 +119,6 @@ export default function CredentialOfferDetails({
               size="small"
               fullWidth
               onClick={issueVC}
-              disabled={isIssuing}
-              endIcon={
-                isIssuing && (
-                  <CircularProgress size={20} color="primary" thickness={7} />
-                )
-              }
             >
               Issue VC
             </Button>
