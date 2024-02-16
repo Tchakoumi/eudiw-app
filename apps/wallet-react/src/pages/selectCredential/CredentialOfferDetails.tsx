@@ -1,19 +1,16 @@
-import back from '@iconify/icons-fluent/chevron-left-24-filled';
-import { Icon } from '@iconify/react';
 import {
   Box,
   Button,
   CircularProgress,
   Dialog,
-  IconButton,
   Slide,
-  Tooltip,
-  Typography,
+  Typography
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardRef, useState } from 'react';
-import { ICredentialCard } from './credentials.types';
+import BackTitleBar from '../../components/layout/BackTitleBar';
 import CredentialTypeCard from './CredentialTypeCard';
+import { ICredentialCard } from './credentials.types';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
@@ -59,32 +56,10 @@ export default function CredentialOfferDetails({
           gridTemplateRows: 'auto auto 1fr',
         }}
       >
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: 'auto 1fr',
-            columnGap: '8px',
-            alignItems: 'center',
-            padding: '16px 16px 16px 8px',
-          }}
-        >
-          <Tooltip arrow title="Back">
-            <IconButton
-              size="small"
-              onClick={() => (isIssuing ? null : closeDialog())}
-            >
-              <Icon icon={back} fontSize={24} />
-            </IconButton>
-          </Tooltip>
-          <Typography
-            sx={{
-              fontWeight: 600,
-              fontSize: '16px',
-            }}
-          >
-            Credential Offer
-          </Typography>
-        </Box>
+        <BackTitleBar
+          pageTitle="Credential Offer"
+          onBack={() => (isIssuing ? null : closeDialog())}
+        />
         <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
           {selectedCredentialOffer && (
             <CredentialTypeCard
