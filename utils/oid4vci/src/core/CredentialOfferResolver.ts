@@ -22,8 +22,8 @@ export class CredentialOfferResolver {
 
   /**
    * Resolves a credential offer (along with issuer metadata).
-   * @param credentialOffer a credential offer string provided as a link
-   *                        or resulting from a QR code scan
+   * @param credentialOffer a credential offer string provided as a link,
+   *                        potentially resulting from a QR code scan
    * @returns the resolved credential offer alongside issuer metadata
    */
   public async resolveCredentialOffer(
@@ -43,6 +43,9 @@ export class CredentialOfferResolver {
 
   /**
    * Parses an out-of-band credential offer into an object.
+   *
+   * It handles dereferencing offers by reference.
+   *
    * @param credentialOffer out-of-band credential offer
    * @returns credential offer object
    */
@@ -100,7 +103,7 @@ export class CredentialOfferResolver {
   }
 
   /**
-   * Fetch credential offer from a resource link.
+   * Fetch discovery metadata associated with the issuer.
    * @param credentialOffer the crendential offer object
    * @returns discovery metadata
    */
@@ -136,9 +139,9 @@ export class CredentialOfferResolver {
   }
 
   /**
-   * Fetch credential issuer metadata.
-   * @param credentialIssuer the location of the crendential issuer
-   * @returns metadata
+   * Fetch credential issuer metadata from normative well-known endpoint.
+   * @param credentialIssuer the crendential issuer URI
+   * @returns its credential issuer metadata
    * @link https://openid.github.io/OpenID4VCI/openid-4-verifiable-credential-issuance-wg-draft.html#name-credential-issuer-metadata
    */
   private async fetchCredentialIssuerMetadata(
@@ -201,6 +204,10 @@ export class CredentialOfferResolver {
           return metadata;
         }
       }
+
+      throw new OID4VCIServiceError(
+        InvalidCredentialOffer.UnresolvableAuthorizationServer
+      );
     }
 
     // Else, just assume the credential issuer serves as the authorization server.
@@ -244,8 +251,8 @@ export class CredentialOfferResolver {
 
   /**
    * Fetch JWT Issuer Metadata.
-   * @param credentialIssuer the location of the crendential issuer
-   * @returns JWT issuer metadata
+   * @param credentialIssuer the crendential issuer URI
+   * @returns its JWT issuer metadata
    * @link https://datatracker.ietf.org/doc/html/draft-ietf-oauth-sd-jwt-vc-01#name-jwt-issuer-metadata
    */
   private async fetchJwtIssuerMetadata(
@@ -261,7 +268,12 @@ export class CredentialOfferResolver {
     return metadata as JwtIssuerMetadata;
   }
 
-  private async fetchMetadata(url: string) {
+  /**
+   * Fetch metadata agnostically.
+   * @param url a URL to retrieve the metadata payload from
+   * @returns the retrieved metadata as JSON
+   */
+  private async fetchMetadata(url: string): Promise<object> {
     return await fetch(url).then((response) => {
       if (!response.ok) {
         throw new Error('Not 2xx response');

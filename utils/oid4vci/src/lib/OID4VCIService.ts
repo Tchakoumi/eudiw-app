@@ -6,8 +6,8 @@ import { ResolvedCredentialOffer } from '../types';
 export interface OID4VCIService {
   /**
    * Resolves an out-of-band credential offer (collecting issuer metadata).
-   * @param credentialOffer a credential offer string provided as a link
-   *                        or resulting from a QR code scan
+   * @param credentialOffer a credential offer string provided as a link,
+   *                        potentially resulting from a QR code scan
    * @returns the resolved credential offer alongside issuer metadata
    */
   resolveCredentialOffer(
