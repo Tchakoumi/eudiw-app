@@ -6,7 +6,7 @@ import CredentialOfferDetails from '../../components/credential-offer/Credential
 import CredentialTypeCard from '../../components/credential-offer/CredentialTypeCard';
 import { Claims, ICredentialCard } from '../../components/credential-offer/credentials.types';
 
-export default function SelectCredential() {
+export default function CredentialType() {
   const CREDENTIAL_ISSUER_METADATA = {
     credential_issuer: 'https://trial.authlete.net',
     credential_endpoint: 'https://trial.authlete.net/api/credential',
