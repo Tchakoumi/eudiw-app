@@ -16,3 +16,7 @@ export type QueryStore<T> = {
   count?: number;
   indexName?: IndexNames<T, StoreNames<T>>;
 };
+
+export interface TransactionCallback<T> {
+  (tx: IDBPTransaction<T, StoreNames<T>[], IDBTransactionMode>): void;
+}

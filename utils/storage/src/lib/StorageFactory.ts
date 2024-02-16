@@ -11,6 +11,7 @@ import {
   StoreRecordKey,
   StoreRecordValue,
   QueryStore,
+  TransactionCallback,
 } from './Storage.types';
 
 /**
@@ -92,7 +93,7 @@ export class StorageFactory<T extends DBSchema> {
       ...allKeys.map((key) => tx.store.get(key)),
       tx.done,
     ]);
-    
+
     result.pop();
     return result
       .filter((value) => value !== null)
@@ -198,5 +199,30 @@ export class StorageFactory<T extends DBSchema> {
     if (query?.indexName)
       return await this.db.countFromIndex(storeName, query?.indexName);
     return await this.db.count(storeName, query?.key);
+  }
+
+  /**
+   * 
+   * @param storeNames Names of the store involved in the transaction
+   * @param mode "readonly" | "readwrite"
+   * @param callbacks 
+   */
+  async $transaction(
+    storeNames: StoreNames<T>[],
+    mode: IDBTransactionMode,
+    /**
+     * Callbacks to be executed within the context of the transaction
+     * @example
+     * const callback1 = (tx) => {
+     *  const store = tx.objectStore(storeName);
+     *  store.add({ name: "Marcjazz", email: "kuidjamarco@gmail.com" })
+     * }
+     */
+    callbacks: TransactionCallback<T>[]
+  ) {
+    if (!this.db) this.db = await this.#dbPromise;
+
+    const tx = this.db.transaction(storeNames, mode);
+    await Promise.all([...callbacks.map((callback) => callback(tx)), tx.done]);
   }
 }
