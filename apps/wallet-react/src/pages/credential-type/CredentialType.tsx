@@ -305,7 +305,14 @@ export default function CredentialType() {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }
 
-  function cleanupClaimKey(claimKey: string) {
+  /**
+   * This function removes underscores(_) in a word 
+   * and seperate in different words, all capitalized.
+   *
+   * @param claimKey - Key of the claim to cleanup
+   * @returns {string} - text without underscores
+   */
+  function cleanupClaimKey(claimKey: string): string {
     return claimKey
       .split('_')
       .map((jj) => capitalize(jj))
