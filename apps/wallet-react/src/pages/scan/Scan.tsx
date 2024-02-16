@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ConnectionDialog from '../../components/scan-details/ConnectionDialog';
+import LoadingScanDetails from '../../components/scan-details/LoadingScanDetails';
 import { useTheme } from '../../utils/theme';
 
 export default function Scan() {
@@ -19,7 +19,7 @@ export default function Scan() {
   );
   return (
     <>
-      <ConnectionDialog
+      <LoadingScanDetails
         connectionLink={connectionString}
         isDialogOpen={!!connectionString && isDetailsDialogOpen}
         closeDialog={() => {
