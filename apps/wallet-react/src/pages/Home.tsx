@@ -3,14 +3,13 @@ import { Box } from '@mui/material';
 import Footer from '../components/home/Footer';
 import Header from '../components/home/Header';
 import HomeBody from '../components/home/HomeBody';
-import InstallPWABanner from '../components/home/InstallPWABanner';
 import dbService from '../database';
 import { WalletDBSchema } from '../database/schema';
 import { StoreRecord } from '@datev/storage';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const { isInstallable, installApp } = usePWA();
+  usePWA();
 
   const [payload, setPayload] = useState<StoreRecord<WalletDBSchema>>({
     value: {
@@ -71,12 +70,9 @@ export default function Home() {
       sx={{
         height: '100%',
         display: 'grid',
-        gridTemplateRows: isInstallable
-          ? 'auto auto 1fr auto'
-          : 'auto 1fr auto',
+        gridTemplateRows: 'auto 1fr auto',
       }}
     >
-      {isInstallable && <InstallPWABanner installApp={installApp} />}
       <Header />
       <HomeBody />
       <Footer />

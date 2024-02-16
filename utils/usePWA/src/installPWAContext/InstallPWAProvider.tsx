@@ -1,6 +1,9 @@
-import { Reducer, useContext, useReducer } from 'react';
+import { Reducer, useContext, useEffect, useReducer, useState } from 'react';
 import InstallPWAContext, { initialState } from './installPWAContext';
 
+import Banner from '../lib/components/Banner';
+import Tooltip from '../lib/components/Tooltip';
+import { isIosOrSafariDesktop } from '../lib/usePWA';
 import {
   Action,
   InstallPWA,
@@ -29,19 +32,95 @@ const installPWAReducer: Reducer<InstallPWA, Action> = (
 
 export function InstallPWAContextProvider({
   children,
+  component = 'banner',
 }: InstallPWAContextProviderProps): JSX.Element {
   const [installPWAState, installPWADispatch] = useReducer(
     installPWAReducer,
     initialState
   );
+
   const value = {
     ...installPWAState,
     installPWADispatch,
   };
 
+  const isInstallable =
+    !!value.deferredPrompt &&
+    !value.isInstalling &&
+    !(
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: minimal-ui)').matches
+    );
+
+  async function installApp() {
+    installPWADispatch({ payload: true, type: 'UPDATE_INSTALLATION_STATUS' });
+    value.deferredPrompt?.prompt().then(() => {
+      installPWADispatch({
+        payload: false,
+        type: 'UPDATE_INSTALLATION_STATUS',
+      });
+    });
+  }
+
+  const [isAppleInstallable, setIsAppleInstallable] = useState<boolean>(false);
+  useEffect(() => {
+    setIsAppleInstallable(
+      !window.matchMedia('(display-mode: standalone)').matches &&
+        isIosOrSafariDesktop() &&
+        !value.deferredPrompt
+    );
+  }, [value.deferredPrompt]);
+
+  const [isIosInstallOpen, setIsIosInstallOpen] = useState<boolean>(true);
+
+  function getPresentation() {
+    switch (component) {
+      case 'banner':
+        return (
+          <Banner
+            installApp={installApp}
+            isAppleDevice={isAppleInstallable}
+            close={() => setIsIosInstallOpen(false)}
+          />
+        );
+      case 'tooltip':
+        return <Tooltip close={() => setIsIosInstallOpen(false)} />;
+      case 'popup':
+        return (
+          <Banner
+            installApp={installApp}
+            isAppleDevice={isAppleInstallable}
+            close={() => setIsIosInstallOpen(false)}
+          />
+        );
+      default:
+        return component;
+    }
+  }
+
+  useEffect(() => {
+    if (!isIosInstallOpen && isAppleInstallable) {
+      setTimeout(() => {
+        setIsIosInstallOpen(true);
+      }, 3000);
+    }
+  }, [isAppleInstallable, isIosInstallOpen]);
+
+  const showInstall = (isInstallable || isAppleInstallable) && isIosInstallOpen;
+
   return (
     <InstallPWAContext.Provider value={value}>
-      {children}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateRows:
+            showInstall && component === 'banner' ? 'auto 1fr' : '1fr',
+          height: '100%',
+        }}
+      >
+        {showInstall && getPresentation()}
+        {children}
+      </div>
     </InstallPWAContext.Provider>
   );
 }
