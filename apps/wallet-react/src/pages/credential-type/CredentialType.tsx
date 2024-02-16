@@ -320,34 +320,36 @@ export default function CredentialType() {
       .join(' ');
   }
 
-  // TODO: Is it possible to type the preferredLocal?
   /**
-   * This function helps to get the selected credential type
-   * attributes and the display in the prefered language
+   * This function helps to get the selected credential type's
+   * claims in the prefered locale.
    *
-   * @param {string} claims - the different claims presentin the credential type
-   * @param {string} preferredLocal - the desired language we want the claims to be presented in
+   * If the provided preferred locale is found, it'll return it's value
+   * else it'll use the value of the the first element of display
+   * if the claim has no display, then it'll remove underscores from
+   * the claim and return as value for display
+   *
+   * @param {Claims} claims - the different claims present in the credential type
+   * @param {string} preferredLocale - the desired language we want the claims to be presented in
+   * @returns {string[]} - a list of all claims in preferred locale
    */
   function getVCClaimsInPreferredLocale(
     claims: Claims,
-    preferredLocal: string
-  ) {
+    preferredLocale: string
+  ): string[] {
     const claimKeys = Object.keys(claims) as (keyof typeof claims)[];
 
     const claimKeysInPreferredLocal = claimKeys.map((item) => {
-      const claimInPreferredLocale = claims[item].display.find(
-        ({ locale }) => locale === preferredLocal
-      );
       if (claims[item].display.length > 0) {
-        // if preferred locale is found,
-        // then retun the name in that locale
+        const claimInPreferredLocale = claims[item].display.find(
+          ({ locale }) => locale === preferredLocale
+        );
+        // if preferred locale is found, then retun the name in that locale
         if (claimInPreferredLocale) return claimInPreferredLocale.name;
-        //if preferred local is not found,
-        // just return the name on first element in display list
+        //if preferred local is not found, just return the name on first element in display list
         return claims[item].display[0].name;
       }
-      // if the display list is empty
-      // return the cleanedup key
+      // if the display list is empty return the cleanedup key
       return removeUnderscoresFromWord(item as string);
     });
     return claimKeysInPreferredLocal;
