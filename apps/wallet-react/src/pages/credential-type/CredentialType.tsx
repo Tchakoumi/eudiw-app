@@ -330,7 +330,7 @@ export default function CredentialType() {
    * the claim and return as value for display
    *
    * @param {Claims} claims - the different claims present in the credential type
-   * @param {string} preferredLocale - the desired language we want the claims to be presented in
+   * @param {string} preferredLocale - the desired language in which we want the claims to be presented
    * @returns {string[]} - a list of all claims in preferred locale
    */
   function getVCClaimsInPreferredLocale(
@@ -384,10 +384,21 @@ export default function CredentialType() {
     }) as ICredentialCard[];
   }
 
+  /**
+   * Serves as guard to get the claims in preferred locale.
+   * verifies that provided selectedCredential exists, then moves on to get claims in provided locale.
+   * if it doesn't exist, it returns and empty array
+   *
+   * @param {ISupportedCredential} selectedCredential - the credential type's key who's claims we want
+   * @param {typeof CREDENTIAL_ISSUER_METADATA} credentialIssuerMetadata - the provided metadata from issuer
+   * @param {string} preferredLocale - the desired language in which we want the claims to be presented
+   * @returns {string[]} - the list of claims to display
+   */
   function getVCClaims(
     selectedCredential: ISupportedCredential,
-    credentialIssuerMetadata: typeof CREDENTIAL_ISSUER_METADATA
-  ) {
+    credentialIssuerMetadata: typeof CREDENTIAL_ISSUER_METADATA,
+    preferredLocale: string
+  ): string[] {
     const offeredCredentialTypeKeys = Object.keys(
       credentialIssuerMetadata.credential_configurations_supported
     ) as ISupportedCredential[];
@@ -398,7 +409,10 @@ export default function CredentialType() {
           selectedCredential
         ].claims;
 
-      return getVCClaimsInPreferredLocale(selectedOfferClaims as Claims, 'en');
+      return getVCClaimsInPreferredLocale(
+        selectedOfferClaims as Claims,
+        preferredLocale
+      );
     }
     return [];
   }
@@ -420,7 +434,8 @@ export default function CredentialType() {
         selectedCredentialOffer={selectedCredentialOffer}
         credentialOfferAttributes={getVCClaims(
           selectedCredentialOffer?.type as ISupportedCredential,
-          CREDENTIAL_ISSUER_METADATA
+          CREDENTIAL_ISSUER_METADATA,
+          'en'
         )}
       />
       <Header />
