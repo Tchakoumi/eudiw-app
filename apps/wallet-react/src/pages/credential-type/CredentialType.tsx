@@ -296,17 +296,18 @@ export default function CredentialType() {
     keyof typeof CREDENTIAL_ISSUER_METADATA.credential_configurations_supported;
 
   /**
-   *This function is used to capitalise the first letter of every word
+   * This function is used to capitalise the first
+   * letter in a given phrase
    *
-   * @param {string} word - word to be capitalized
-   * @returns {string} - the capitalized word
+   * @param {string} phrase - phrase to be capitalized
+   * @returns {string} - the capitalized phrase
    */
-  function capitalize(word: string): string {
-    return word.charAt(0).toUpperCase() + word.slice(1);
+  function capitalize(phrase: string): string {
+    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
   }
 
   /**
-   * This function removes underscores(_) in a word 
+   * This function removes underscores(_) in a word
    * and seperate in different words, all capitalized.
    *
    * @param word - Key of the claim to cleanup
