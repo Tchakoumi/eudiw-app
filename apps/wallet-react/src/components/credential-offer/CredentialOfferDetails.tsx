@@ -46,18 +46,25 @@ export default function CredentialOfferDetails({
       //TODO: CALL API HERE TO ISSUE VC
     }, 3000);
   }
+
+  function close() {
+    setIsIssuing(false);
+    setIsDoneIssuing(false);
+    closeDialog();
+  }
+
   return (
     <Dialog
       fullScreen
       open={isDialogOpen}
-      onClose={() => (isIssuing ? null : closeDialog())}
+      onClose={() => (isIssuing ? null : close())}
       TransitionComponent={Transition}
     >
       {isDoneIssuing ? (
         <CredentialIssued
           handleClose={() => {
-            closeDialog();
-            push('/credentials');
+            close();
+            push('/credential');
           }}
         />
       ) : isIssuing ? (
@@ -72,7 +79,7 @@ export default function CredentialOfferDetails({
         >
           <BackTitleBar
             pageTitle="Credential Offer"
-            onBack={() => (isIssuing ? null : closeDialog())}
+            onBack={() => (isIssuing ? null : close())}
           />
           <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
             {selectedCredentialOffer && (
