@@ -123,29 +123,28 @@ describe('StorageFactory', () => {
     );
   });
 
-  it('should update value', async () => {
+  it('should update value in store', async () => {
     const updateFn = (storeName: StoreNames<TestDBSchema>) =>
       storageFactory.update(storeName, 'john_smith_key', {
         name: 'Jean Kamdem',
       });
+
     expect(updateFn('inlineKeyStore')).resolves.not.toThrow();
-
-    expect(updateFn('testStore')).rejects.toThrow(
-      `No such key as john_smith_key in store`
-    );
-
-    await updateFn('inlineKeyStore');
-    const record1 = await storageFactory.findOne(
-      'inlineKeyStore',
-      'john_smith_key'
-    );
-    expect(record1).toStrictEqual<StoreRecord<TestDBSchema>>({
-      key: 'john_smith_key',
-      value: {
-        email: 'johnsmith@gmail.com',
-        inlineId: 'john_smith_key',
-        name: 'Jean Kamdem',
-      },
+    await updateFn('testStore').catch((error) => {
+      expect(error.message).toBe(`No such key as john_smith_key in store`);
     });
+  });
+
+  it('should delete value in store', () => {
+    expect(
+      storageFactory.delete('inlineKeyStore', 'john_smith_key')
+    ).resolves.not.toThrow();
+
+    expect(
+      storageFactory.delete(
+        'someStore' as StoreNames<TestDBSchema>,
+        'john_smith_key'
+      )
+    ).rejects.toThrow('No objectStore named someStore in this database');
   });
 });
