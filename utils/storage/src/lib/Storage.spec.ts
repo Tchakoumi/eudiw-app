@@ -1,5 +1,5 @@
 import { DBSchema, StoreNames } from 'idb';
-import { StoreIndexNames, StoreRecord } from './Storage.types';
+import { StoreRecord, StoreRecordValue } from './Storage.types';
 import { StorageFactory } from './StorageFactory';
 
 // Mocking indexdedDB functionality
@@ -32,7 +32,7 @@ describe('StorageFactory', () => {
         const inlineKeyStore = db.createObjectStore('inlineKeyStore', {
           keyPath: 'inlineId',
         });
-        inlineKeyStore.createIndex('byEmail', 'email')
+        inlineKeyStore.createIndex('byEmail', 'email');
       },
     });
   });
@@ -176,9 +176,41 @@ describe('StorageFactory', () => {
     expect(itemCount).toBeLessThanOrEqual(2);
 
     const indexItemCount = await storageFactory.count('inlineKeyStore', {
-      indexName: 'byEmail' as StoreIndexNames<TestDBSchema>,
+      indexName: 'byEmail',
     });
     expect(indexItemCount).toBeGreaterThanOrEqual(1);
     expect(indexItemCount).toBeLessThanOrEqual(2);
+  });
+
+  it('should retrieves values in an index that match the query.', async () => {
+    const records = await storageFactory.findManyByIndex(
+      'inlineKeyStore',
+      'byEmail'
+    );
+    expect(records.length).toBeGreaterThanOrEqual(1);
+    expect(records.length).toBeLessThanOrEqual(2);
+
+    expect(records).toStrictEqual<StoreRecordValue<TestDBSchema>[]>(
+      records.length === 1
+        ? [
+            {
+              inlineId: 'john_smith_key',
+              email: 'johnsmith@gmail.com',
+              name: 'John Smith',
+            },
+          ]
+        : [
+            {
+              inlineId: 'test_in_line_key',
+              email: 'joe237@gmail.com',
+              name: 'Joe',
+            },
+            {
+              inlineId: 'john_smith_key',
+              email: 'johnsmith@gmail.com',
+              name: 'John Smith',
+            },
+          ]
+    );
   });
 });
