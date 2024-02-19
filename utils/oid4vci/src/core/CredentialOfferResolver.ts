@@ -258,20 +258,15 @@ export class CredentialOfferResolver {
   private async fetchJwtIssuerMetadata(
     credentialIssuer: string
   ): Promise<JwtIssuerMetadata | undefined> {
-    let metadata;
-
     const url = composeUrl(
       credentialIssuer,
       WELL_KNOWN_ENDPOINTS.JWT_ISSUER_METADATA
     );
 
-    try {
-      metadata = (await this.fetchMetadata(url)) as JwtIssuerMetadata;
-    } catch (e) {
-      /* Tolerate missing JWT issuer metadata */
-    }
+    // Tolerate unavailable JWT issuer metadata
+    const metadata = await this.fetchMetadata(url).catch(() => {});
 
-    return metadata;
+    return metadata as JwtIssuerMetadata | undefined;
   }
 
   /**
