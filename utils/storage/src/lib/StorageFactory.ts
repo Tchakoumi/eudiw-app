@@ -173,10 +173,10 @@ export class StorageFactory<T extends DBSchema> {
    * @param query
    * @returns records with the given index
    */
-  async findManyByIndex(
-    storeName: StoreNames<T>,
-    indexName: IndexNames<T, StoreNames<T>>,
-    query?: Omit<QueryStore<T>, 'indexName'>
+  async findManyByIndex<S extends StoreNames<T>>(
+    storeName: S,
+    indexName: IndexNames<T, S>,
+    query?: Omit<QueryStore<T, S>, 'indexName'>
   ) {
     if (!this.db) this.db = await this.#dbPromise;
 
@@ -195,7 +195,7 @@ export class StorageFactory<T extends DBSchema> {
    * @param query query params
    * @returns number of occurrences
    */
-  async count(storeName: StoreNames<T>, query?: QueryStore<T>) {
+  async count<S extends StoreNames<T>>(storeName: S, query?: QueryStore<T, S>) {
     if (!this.db) this.db = await this.#dbPromise;
     if (query?.indexName)
       return await this.db.countFromIndex(storeName, query?.indexName);
