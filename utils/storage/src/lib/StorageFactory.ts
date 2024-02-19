@@ -155,8 +155,11 @@ export class StorageFactory<T extends DBSchema> {
     if (!this.db) this.db = await this.#dbPromise;
 
     let allKeys = await this.db.getAllKeys(storeName);
-    if (keys) allKeys = allKeys.filter((keys as StoreRecordKey<T>[]).includes);
-
+    if (keys) {
+      allKeys = allKeys.filter((key) =>
+        (keys as StoreRecordKey<T>[]).includes(key)
+      );
+    }
     const tx = this.db.transaction(storeName, 'readwrite');
     await Promise.all([...allKeys.map((key) => tx.store.delete(key)), tx.done]);
   }

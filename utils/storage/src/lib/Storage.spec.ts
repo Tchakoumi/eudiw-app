@@ -147,4 +147,24 @@ describe('StorageFactory', () => {
       )
     ).rejects.toThrow('No objectStore named someStore in this database');
   });
+
+  it('should delete many values in store', async () => {
+    const keysToBeDelected: IDBValidKey[] = ['john_smith_key'];
+
+    expect(storageFactory.deleteMany('testStore')).resolves.not.toThrow();
+    expect(
+      storageFactory.deleteMany('inlineKeyStore', keysToBeDelected)
+    ).resolves.not.toThrow();
+
+    expect(
+      storageFactory.deleteMany('inlineKeyStore', [
+        ...keysToBeDelected,
+        'test_value_1',
+      ])
+    ).resolves.not.toThrow();
+
+    expect(
+      storageFactory.deleteMany('unknownStore' as StoreNames<TestDBSchema>)
+    ).rejects.toThrow();
+  });
 });
