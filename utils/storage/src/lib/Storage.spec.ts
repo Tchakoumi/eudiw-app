@@ -133,5 +133,19 @@ describe('StorageFactory', () => {
     expect(updateFn('testStore')).rejects.toThrow(
       `No such key as john_smith_key in store`
     );
+
+    await updateFn('inlineKeyStore');
+    const record1 = await storageFactory.findOne(
+      'inlineKeyStore',
+      'john_smith_key'
+    );
+    expect(record1).toStrictEqual<StoreRecord<TestDBSchema>>({
+      key: 'john_smith_key',
+      value: {
+        email: 'johnsmith@gmail.com',
+        inlineId: 'john_smith_key',
+        name: 'Jean Kamdem',
+      },
+    });
   });
 });
