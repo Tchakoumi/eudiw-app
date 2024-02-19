@@ -202,10 +202,10 @@ export class StorageFactory<T extends DBSchema> {
   }
 
   /**
-   * 
+   *
    * @param storeNames Names of the store involved in the transaction
    * @param mode "readonly" | "readwrite"
-   * @param callbacks 
+   * @param callbacks
    */
   async $transaction(
     storeNames: StoreNames<T>[],
@@ -224,5 +224,16 @@ export class StorageFactory<T extends DBSchema> {
 
     const tx = this.db.transaction(storeNames, mode);
     await Promise.all([...callbacks.map((callback) => callback(tx)), tx.done]);
+  }
+
+  /**
+   * Deletes all records in a store.
+   *
+   * @param storeName Name of the store
+   */
+  async clear(storeName: StoreNames<T>) {
+    if (!this.db) this.db = await this.#dbPromise;
+
+    await this.db.clear(storeName);
   }
 }
