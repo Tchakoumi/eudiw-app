@@ -1,5 +1,5 @@
 import { DBSchema, StoreNames } from 'idb';
-import { StoreRecord } from './Storage.types';
+import { StoreIndexNames, StoreRecord } from './Storage.types';
 import { StorageFactory } from './StorageFactory';
 
 // Mocking indexdedDB functionality
@@ -18,6 +18,7 @@ interface TestDBSchema extends DBSchema {
       email: string;
       inlineId: string;
     };
+    indexes: { byEmail: 'email' };
   };
 }
 
@@ -28,9 +29,10 @@ describe('StorageFactory', () => {
     storageFactory = new StorageFactory<TestDBSchema>('testDB', 1, {
       upgrade(db) {
         db.createObjectStore('testStore');
-        db.createObjectStore('inlineKeyStore', {
+        const inlineKeyStore = db.createObjectStore('inlineKeyStore', {
           keyPath: 'inlineId',
         });
+        inlineKeyStore.createIndex('byEmail', 'email')
       },
     });
   });
@@ -166,5 +168,17 @@ describe('StorageFactory', () => {
     expect(
       storageFactory.deleteMany('unknownStore' as StoreNames<TestDBSchema>)
     ).rejects.toThrow();
+  });
+
+  it('should retrieves the number of records matching the given query in a store', async () => {
+    const itemCount = await storageFactory.count('testStore');
+    expect(itemCount).toBeGreaterThanOrEqual(1);
+    expect(itemCount).toBeLessThanOrEqual(2);
+
+    const indexItemCount = await storageFactory.count('inlineKeyStore', {
+      indexName: 'byEmail' as StoreIndexNames<TestDBSchema>,
+    });
+    expect(indexItemCount).toBeGreaterThanOrEqual(1);
+    expect(indexItemCount).toBeLessThanOrEqual(2);
   });
 });
