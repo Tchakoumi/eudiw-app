@@ -1,5 +1,5 @@
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
-import { ResolvedCredentialOffer } from '../types';
+import { ResolvedCredentialOffer } from './types';
 import { OID4VCIService } from './OID4VCIService';
 
 /**

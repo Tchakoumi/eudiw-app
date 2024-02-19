@@ -1,13 +1,13 @@
 import nock from 'nock';
 
 import { WELL_KNOWN_ENDPOINTS } from '../../constants';
-import { InvalidCredentialOffer } from '../../errors';
+import { InvalidCredentialOffer } from '../../lib/errors';
 import {
   AuthorizationServerMetadata,
   CredentialIssuerMetadata,
   CredentialOffer,
   ResolvedCredentialOffer,
-} from '../../types';
+} from '../../lib/types';
 import { CredentialOfferResolver } from '../CredentialOfferResolver';
 
 import {
@@ -15,7 +15,10 @@ import {
   credentialIssuerMetadataRef1,
   authorizationServerMetadataRef1,
   jwtIssuerMetadataRef1,
-} from './__fixtures__';
+  encodeCredentialOffer,
+  nockReplyWithEmptyPayload,
+  nockReplyWithMetadataRef1,
+} from './fixtures';
 
 describe('CredentialOfferResolver', () => {
   const resolver: CredentialOfferResolver = new CredentialOfferResolver();
@@ -27,36 +30,6 @@ describe('CredentialOfferResolver', () => {
   beforeEach(async () => {
     nock.cleanAll();
   });
-
-  const encodeCredentialOffer = (credentialOffer: CredentialOffer) => {
-    return encodeURIComponent(JSON.stringify(credentialOffer));
-  };
-
-  const nockReplyWithEmptyPayload = (scope: nock.Scope): nock.Scope => {
-    return scope
-      .get(() => true)
-      .reply(200, {})
-      .persist();
-  };
-
-  const nockReplyWithMetadataRef1 = (scope: nock.Scope): nock.Scope => {
-    return (
-      scope
-        // openid-credential-issuer
-        .get((uri) =>
-          uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
-        )
-        .reply(200, credentialIssuerMetadataRef1)
-        // openid-configuration
-        .get((uri) =>
-          uri.endsWith(WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION)
-        )
-        .reply(200, authorizationServerMetadataRef1)
-        // jwt-issuer
-        .get((uri) => uri.endsWith(WELL_KNOWN_ENDPOINTS.JWT_ISSUER_METADATA))
-        .reply(200, jwtIssuerMetadataRef1)
-    );
-  };
 
   it('should resolve offer by value (schemeful link)', async () => {
     const credentialOffer =

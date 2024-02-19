@@ -1,4 +1,4 @@
-import { ResolvedCredentialOffer } from '../types';
+import { ResolvedCredentialOffer } from './types';
 
 /**
  * A service for handling the OID4VCI flow.

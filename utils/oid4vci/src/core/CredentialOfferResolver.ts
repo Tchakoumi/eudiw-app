@@ -1,7 +1,7 @@
 import { fetch } from 'cross-fetch';
 
 import { WELL_KNOWN_ENDPOINTS } from '../constants';
-import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../lib/errors';
 import { composeUrl } from '../utils';
 
 import {
@@ -12,7 +12,7 @@ import {
   Grant,
   JwtIssuerMetadata,
   ResolvedCredentialOffer,
-} from '../types';
+} from '../lib/types';
 
 export class CredentialOfferResolver {
   /**
