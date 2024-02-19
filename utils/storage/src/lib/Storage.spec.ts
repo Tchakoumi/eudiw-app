@@ -85,22 +85,41 @@ describe('StorageFactory', () => {
 
   it('should find one', async () => {
     const record1 = await storageFactory.findOne('testStore', 'test_value_1');
-    expect(record1).toEqual({
+    expect(record1).toStrictEqual<StoreRecord<TestDBSchema>>({
       key: 'test_value_1',
       value: 'storing a test value...',
     });
 
     const record2 = await storageFactory.findOne(
       'inlineKeyStore',
-      'john_smith_key'
+      'john_smith_unknow_key'
     );
-    expect(record2).toEqual({
-      key: 'john_smith_key',
-      value: {
-        email: 'johnsmith@gmail.com',
-        inlineId: 'john_smith_key',
-        name: 'John Smith',
-      },
-    });
+    expect(record2).toBe(null);
+  });
+
+  it('should find all', async () => {
+    const records = await storageFactory.findAll('testStore');
+    expect(records.length).toBeGreaterThanOrEqual(1);
+    expect(records.length).toBeLessThanOrEqual(2);
+
+    expect(records).toStrictEqual<StoreRecord<TestDBSchema>[]>(
+      records.length === 1
+        ? [
+            {
+              key: 'test_value_1',
+              value: 'storing a test value...',
+            },
+          ]
+        : [
+            {
+              key: 'test_key',
+              value: 'test_value',
+            },
+            {
+              key: 'test_value_1',
+              value: 'storing a test value...',
+            },
+          ]
+    );
   });
 });

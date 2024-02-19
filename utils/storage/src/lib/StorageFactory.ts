@@ -95,15 +95,13 @@ export class StorageFactory<T extends DBSchema> {
     ]);
 
     result.pop();
-    return result
-      .filter((value) => value !== null)
-      .map(
-        (value, i) =>
-          ({
-            key: allKeys[i],
-            value: value as StoreRecord<T>['value'],
-          } satisfies StoreRecord<T>)
-      );
+    return result.map(
+      (value, i) =>
+        ({
+          key: allKeys[i],
+          value: value as StoreRecord<T>['value'],
+        } satisfies StoreRecord<T>)
+    );
   }
 
   /**
