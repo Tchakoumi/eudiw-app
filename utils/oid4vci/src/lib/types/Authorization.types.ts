@@ -50,7 +50,6 @@ export interface AccessTokenRequest {
 export enum GrantTypes {
   AUTHORIZATION_CODE = 'authorization_code',
   PRE_AUTHORIZED_CODE = 'urn:ietf:params:oauth:grant-type:pre-authorized_code',
-  PASSWORD = 'password',
 }
 
 export interface IssuerOpts {

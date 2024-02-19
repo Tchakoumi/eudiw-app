@@ -1,3 +1,5 @@
+import { OID4VCIServiceError } from './errors';
+import { InvalidCredentialOffer } from './errors/AccessToken.errors';
 import { formPost } from './functions/HttpUtils';
 import {
   AccessTokenRequest,
@@ -22,7 +24,7 @@ export class AccessTokenClient {
     issuerOpts?: IssuerOpts;
   }): Promise<OpenIDResponse<AccessTokenResponse>> {
     this.validate(accessTokenRequest);
-
+    this.assertTx_Code(accessTokenRequest.tx_code);
     const requestTokenURL = AccessTokenClient.determineTokenURL({
       asOpts,
       issuerOpts,
@@ -122,5 +124,13 @@ export class AccessTokenClient {
       : '/token';
     const scheme = url.split('://')[0];
     return `${scheme ? scheme + '://' : 'https://'}${hostname}${endpoint}`;
+  }
+
+  private assertTx_Code(tx_code?: string): void {
+    // Check if tx_code is not undefined but is an empty string
+    if (tx_code !== undefined && tx_code.trim() === '') {
+      // Throw an error with a specific type/message
+      throw new OID4VCIServiceError(InvalidCredentialOffer.invalid_client);
+    }
   }
 }
