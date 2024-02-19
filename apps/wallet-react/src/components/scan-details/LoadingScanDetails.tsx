@@ -16,12 +16,14 @@ export default function LoadingScanDetails({
   const push = useNavigate();
 
   useEffect(() => {
-    //TODO: CALL API HERE TO PROCESS SCANNED DATA connectionLink
-    setTimeout(() => {
-      //TODO: listen to event result and move to credential offer if good
-      push('/credential-type');
-    }, 3000);
-  }, [push]);
+    if (isDialogOpen) {
+      //TODO: CALL API HERE TO PROCESS SCANNED DATA connectionLink
+      setTimeout(() => {
+        //TODO: listen to event result and move to credential offer if good
+        push('/credential-type');
+      }, 3000);
+    }
+  }, [isDialogOpen, push]);
 
   return (
     <Dialog
