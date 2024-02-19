@@ -1,4 +1,4 @@
-import { DBSchema } from 'idb';
+import { DBSchema, StoreNames } from 'idb';
 import { StoreRecord } from './Storage.types';
 import { StorageFactory } from './StorageFactory';
 
@@ -120,6 +120,18 @@ describe('StorageFactory', () => {
               value: 'storing a test value...',
             },
           ]
+    );
+  });
+
+  it('should update value', async () => {
+    const updateFn = (storeName: StoreNames<TestDBSchema>) =>
+      storageFactory.update(storeName, 'john_smith_key', {
+        name: 'Jean Kamdem',
+      });
+    expect(updateFn('inlineKeyStore')).resolves.not.toThrow();
+
+    expect(updateFn('testStore')).rejects.toThrow(
+      `No such key as john_smith_key in store`
     );
   });
 });
