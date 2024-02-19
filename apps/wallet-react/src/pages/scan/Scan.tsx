@@ -3,8 +3,9 @@ import back from '@iconify/icons-fluent/arrow-left-48-filled';
 import swapCamera from '@iconify/icons-fluent/arrow-sync-24-regular';
 import { Icon } from '@iconify/react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CameraAccessDialog from '../../components/scan-details/CameraAccessDialog';
 import LoadingScanDetails from '../../components/scan-details/LoadingScanDetails';
 import { useTheme } from '../../utils/theme';
 
@@ -17,6 +18,39 @@ export default function Scan() {
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>(
     'environment'
   );
+
+  const [permissionStatus, setPermissionStatus] =
+    useState<PermissionState>('prompt');
+
+  useEffect(() => {
+    const checkCameraPermission = async () => {
+      try {
+        const cameraPermission = await navigator.permissions.query({
+          name: 'camera' as PermissionName,
+        });
+        setPermissionStatus(cameraPermission.state);
+      } catch (error) {
+        console.error('Error checking camera permission:', error);
+      }
+    };
+
+    checkCameraPermission();
+  }, [permissionStatus]);
+
+  const [isRequestCameraDialogOpen, setIsRequestCameraDialogOpen] =
+    useState<boolean>(true);
+  const requestCameraPermission = () => {
+    setIsRequestCameraDialogOpen(false);
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(() => {
+        setPermissionStatus('granted');
+      })
+      .catch((error) => {
+        setPermissionStatus('denied');
+      });
+  };
+
   return (
     <>
       <LoadingScanDetails
@@ -26,6 +60,15 @@ export default function Scan() {
           setIsDetailsDialogOpen(false);
           setConnectionString('');
         }}
+      />
+
+      <CameraAccessDialog
+        isDialogOpen={
+          isRequestCameraDialogOpen &&
+          (permissionStatus === 'prompt' || permissionStatus === 'denied')
+        }
+        usage={permissionStatus as Omit<PermissionState, 'granted'>}
+        requestPermission={requestCameraPermission}
       />
 
       <Box
