@@ -39,10 +39,11 @@ describe('OID4VCIServiceImpl', () => {
       eventBus.emit('complete');
     });
 
-    service.resolveCredentialOffer(credentialOffer);
     service
       .getEventBus()
       .on(OID4VCIServiceEventChannel.SendCredentialOffer, callback);
+
+    service.resolveCredentialOffer({ credentialOffer });
 
     // Wait for callback completion
     await new Promise((resolve) => {
@@ -70,10 +71,11 @@ describe('OID4VCIServiceImpl', () => {
       eventBus.emit('complete');
     });
 
-    service.resolveCredentialOffer(credentialOffer);
     service
       .getEventBus()
       .on(OID4VCIServiceEventChannel.SendCredentialOffer, callback);
+
+    service.resolveCredentialOffer({ credentialOffer });
 
     // Wait for callback completion
     await new Promise((resolve) => {

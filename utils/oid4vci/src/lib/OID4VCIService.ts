@@ -25,8 +25,8 @@ export interface OID4VCIService {
    * - the resolved credential offer alongside issuer metadata,
    * - or an error message indicative of what went wrong.
    *
-   * @param credentialOffer a credential offer string provided as a link,
-   *                        potentially resulting from a QR code scan
+   * @param opts.credentialOffer a credential offer string provided as a link,
+   * potentially resulting from a QR code scan
    */
-  resolveCredentialOffer(credentialOffer: string): Promise<void>;
+  resolveCredentialOffer(opts: { credentialOffer: string }): Promise<void>;
 }

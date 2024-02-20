@@ -15,11 +15,13 @@ export class OID4VCIServiceImpl implements OID4VCIService {
     return this.eventBus;
   }
 
-  public async resolveCredentialOffer(credentialOffer: string): Promise<void> {
+  public async resolveCredentialOffer(opts: {
+    credentialOffer: string;
+  }): Promise<void> {
     const channel = OID4VCIServiceEventChannel.SendCredentialOffer;
 
     this.credentialOfferResolver
-      .resolveCredentialOffer(credentialOffer)
+      .resolveCredentialOffer(opts.credentialOffer)
       .then((resolvedCredentialOffer) =>
         this.eventBus.emit(channel, {
           status: 'success',
