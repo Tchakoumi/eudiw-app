@@ -1,10 +1,12 @@
+import nock from 'nock';
+import { WELL_KNOWN_ENDPOINTS } from '../../../constants';
+
 import {
   AuthorizationServerMetadata,
   CredentialIssuerMetadata,
   CredentialOffer,
-  DiscoveryMetadata,
   JwtIssuerMetadata,
-} from '../../../types';
+} from '../../../lib/types';
 
 export const credentialOfferObjectRef1: CredentialOffer = {
   credential_issuer: 'https://trial.authlete.net',
@@ -577,8 +579,32 @@ export const jwtIssuerMetadataRef1: JwtIssuerMetadata = {
   jwks_uri: 'https://trial.authlete.net/api/vci/jwks',
 };
 
-export const discoveryMetadataRef1: DiscoveryMetadata = {
-  credentialIssuerMetadata: credentialIssuerMetadataRef1,
-  authorizationServerMetadata: authorizationServerMetadataRef1,
-  jwtIssuerMetadata: jwtIssuerMetadataRef1,
+export const encodeCredentialOffer = (credentialOffer: CredentialOffer) => {
+  return encodeURIComponent(JSON.stringify(credentialOffer));
+};
+
+export const nockReplyWithEmptyPayload = (scope: nock.Scope): nock.Scope => {
+  return scope
+    .get(() => true)
+    .reply(200, {})
+    .persist();
+};
+
+export const nockReplyWithMetadataRef1 = (scope: nock.Scope): nock.Scope => {
+  return (
+    scope
+      // openid-credential-issuer
+      .get((uri) =>
+        uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
+      )
+      .reply(200, credentialIssuerMetadataRef1)
+      // openid-configuration
+      .get((uri) =>
+        uri.endsWith(WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION)
+      )
+      .reply(200, authorizationServerMetadataRef1)
+      // jwt-issuer
+      .get((uri) => uri.endsWith(WELL_KNOWN_ENDPOINTS.JWT_ISSUER_METADATA))
+      .reply(200, jwtIssuerMetadataRef1)
+  );
 };

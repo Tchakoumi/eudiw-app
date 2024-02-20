@@ -24,10 +24,10 @@
     }
   ],
   "id": "datev_wallet",
-  "start_url": "/",
+  "start_url": "/eudiw-app",
   "background_color": "#9bd547",
-  "display_override": ["minimal-ui", "standalone"],
-  "display": "fullscreen",
+  "display_override": ["standalone", "minimal-ui"],
+  "display": "standalone",
   "theme_color": "#9bd547",
   "description": "Datev Wallet for mobile",
   "screenshots": [
