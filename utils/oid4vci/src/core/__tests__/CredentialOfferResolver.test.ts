@@ -2,6 +2,8 @@ import nock from 'nock';
 
 import { WELL_KNOWN_ENDPOINTS } from '../../constants';
 import { InvalidCredentialOffer } from '../../lib/errors';
+import { CredentialOfferResolver } from '../CredentialOfferResolver';
+
 import {
   AuthorizationServerMetadata,
   CredentialIssuerMetadata,
@@ -9,7 +11,6 @@ import {
   ResolvedCredentialOffer,
   TxCodeInputMode,
 } from '../../lib/types';
-import { CredentialOfferResolver } from '../CredentialOfferResolver';
 
 import {
   credentialOfferObjectRef1,

@@ -1,5 +1,6 @@
 import * as jose from 'jose';
-import { OID4VCIServiceError } from '../errors';
+
+import { OID4VCIServiceError } from '../lib/errors';
 import { CLIENT_ID } from '../config';
 import { OID4VCI_PROOF_TYP } from '../constants';
 import { currentTimestampInSecs } from '../utils';

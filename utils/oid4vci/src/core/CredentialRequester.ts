@@ -1,7 +1,7 @@
 import { fetch } from 'cross-fetch';
 
-import { OID4VCIServiceError } from '../errors';
-import { TokenResponse } from '../types/tmp';
+import { OID4VCIServiceError } from '../lib/errors';
+import { TokenResponse } from '../lib/types/tmp';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 
 import {
@@ -10,7 +10,7 @@ import {
   CredentialTypeSelector,
   CredentialSupportedSdJwtVc,
   CredentialResponse,
-} from '../types';
+} from '../lib/types';
 
 export class CredentialRequester {
   /**

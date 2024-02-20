@@ -1,7 +1,7 @@
-import { TokenResponse } from '../../types/tmp';
+import { TokenResponse } from '../../lib/types/tmp';
 import { CredentialRequester } from '../CredentialRequester';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
-import { discoveryMetadataRef1 } from './__fixtures__';
+import { discoveryMetadataRef1 } from './fixtures';
 
 describe('CredentialRequester', () => {
   const identityProofGenerator = new IdentityProofGenerator();
@@ -14,12 +14,12 @@ describe('CredentialRequester', () => {
     const credentialTypeKey = 'IdentityCredential';
 
     const tokenResponse: TokenResponse = {
-      access_token: 'o-wb7jYoq3faRuhZPlNd-JQBAYSwFCRcMIDdERLRDfw',
+      access_token: 'iDV_P3mLcxbOxbMxySc9sgJ_OjwQbGPiQCcs5wPVXzA',
       token_type: 'Bearer',
       expires_in: 86400,
       scope: null,
-      refresh_token: 'mxIWl3Oun-2vdMF1UorZ7B_leEtD6xj4225gth6hNB0',
-      c_nonce: 'cHGOO6elWn31Avc9piCRYxNLDqN_cpTDJwInpH6oQIM',
+      refresh_token: 'QcxNHvTnwSoEVBbkacRWR2JfcJos-U21UQQ8HpfHr5U',
+      c_nonce: 'UMAELxhn4IY2a5_eLr_cVkPLmktVYv-29mEx9LULPQ0',
       c_nonce_expires_in: 86400,
     };
 
