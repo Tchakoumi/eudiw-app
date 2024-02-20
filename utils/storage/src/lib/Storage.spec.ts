@@ -42,17 +42,19 @@ describe('StorageFactory', () => {
   });
 
   beforeEach(async () => {
-    await storageFactory.insert('inlineKeyStore', {
-      value: {
-        email: 'johnsmith@gmail.com',
-        inlineId: 'john_smith_key',
-        name: 'John Smith',
-      },
-    });
-    await storageFactory.insert('testStore', {
-      key: 'test_value_1',
-      value: 'storing a test value...',
-    });
+    await Promise.all([
+      storageFactory.insert('inlineKeyStore', {
+        value: {
+          email: 'johnsmith@gmail.com',
+          inlineId: 'john_smith_key',
+          name: 'John Smith',
+        },
+      }),
+      storageFactory.insert('testStore', {
+        key: 'test_value_1',
+        value: 'storing a test value...',
+      }),
+    ]);
   });
 
   afterEach(async () => {
@@ -69,7 +71,7 @@ describe('StorageFactory', () => {
     ]);
   });
 
-  it('should be defined', async () => {
+  it('should be defined', () => {
     expect(storageFactory).toBeDefined();
     expect(storageFactory).toBeInstanceOf(StorageFactory);
   });
@@ -158,7 +160,7 @@ describe('StorageFactory', () => {
     ).rejects.toThrow('No objectStore named someStore in this database');
   });
 
-  it('should delete many values in store', async () => {
+  it('should delete many values in store', () => {
     const keysToBeDelected: IDBValidKey[] = ['john_smith_key'];
 
     expect(storageFactory.deleteMany('testStore')).resolves.not.toThrow();
@@ -249,5 +251,12 @@ describe('StorageFactory', () => {
       transactionCallback
     );
     expect(transactionCallback).toHaveBeenCalled();
+  });
+
+  it('should clear all data in store', () => {
+    expect(storageFactory.clear('testStore')).resolves.not.toThrow();
+    expect(
+      storageFactory.clear('someStore' as StoreNames<TestDBSchema>)
+    ).rejects.toThrow('No objectStore named someStore in this database');
   });
 });
