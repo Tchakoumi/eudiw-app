@@ -11,6 +11,7 @@ import {
   StoreRecordKey,
   StoreRecordValue,
   QueryStore,
+  StorageTransaction,
   TransactionCallback,
 } from './Storage.types';
 
@@ -53,9 +54,17 @@ export class StorageFactory<T extends DBSchema> {
    * @param payload Data to be stored in key/value format
    * @returns the newly added key
    */
-  async insert(storeName: StoreNames<T>, payload: StoreRecord<T>) {
+  async insert(
+    storeName: StoreNames<T>,
+    payload: StoreRecord<T>,
+    tx?: StorageTransaction<T, 'readwrite'>
+  ) {
     if (!this.db) this.db = await this.#dbPromise;
 
+    if (tx) {
+      const store = tx.objectStore(storeName);
+      return await store.add(payload.value, payload.key);
+    }
     return await this.db.add(storeName, payload.value, payload.key);
   }
 
@@ -68,13 +77,19 @@ export class StorageFactory<T extends DBSchema> {
    */
   async findOne(
     storeName: StoreNames<T>,
-    key: IDBValidKey
+    key: IDBValidKey,
+    tx?: StorageTransaction<T, 'readonly' | 'readwrite'>
   ): Promise<StoreRecord<T> | null> {
     if (!this.db) this.db = await this.#dbPromise;
 
-    const value = await this.db.get(storeName, key as StoreRecordKey<T>);
+    let value: StoreRecordValue<T> | undefined;
+    const storedKey = key as StoreRecordKey<T>;
+
+    if (tx) value = await tx.objectStore(storeName).get(storedKey);
+    else value = await this.db.get(storeName, key as StoreRecordKey<T>);
+
     if (!value) return null;
-    return { key: key as StoreRecordKey<T>, value } satisfies StoreRecord<T>;
+    return { key: storedKey, value } satisfies StoreRecord<T>;
   }
 
   /**
@@ -83,18 +98,20 @@ export class StorageFactory<T extends DBSchema> {
    * @param storeName Name of the store
    * @returns all the records of the store
    */
-  async findAll(storeName: StoreNames<T>) {
+  async findAll(
+    storeName: StoreNames<T>,
+    tx?: StorageTransaction<T, 'readonly' | 'readwrite'>
+  ) {
     if (!this.db) this.db = await this.#dbPromise;
 
     const allKeys = await this.db.getAllKeys(storeName);
 
-    const tx = this.db.transaction(storeName, 'readonly');
+    const txn = tx ?? this.db.transaction(storeName, 'readonly');
     const result = await Promise.all([
-      ...allKeys.map((key) => tx.store.get(key)),
-      tx.done,
+      ...allKeys.map((key) => txn.objectStore(storeName).get(key)),
     ]);
-
-    result.pop();
+    
+    if (!tx) await txn.done;
     return result.map(
       (value, i) =>
         ({
@@ -113,22 +130,24 @@ export class StorageFactory<T extends DBSchema> {
   async update(
     storeName: StoreNames<T>,
     key: IDBValidKey,
-    payload: Partial<StoreRecordValue<T>>
+    payload: Partial<StoreRecordValue<T>>,
+    tx?: StorageTransaction<T, 'readwrite'>
   ) {
     if (!this.db) this.db = await this.#dbPromise;
-    const tx = this.db.transaction(storeName);
-    const hasKeyPath = Boolean(tx.store.keyPath);
-    tx.done;
+    const txn = tx ?? this.db.transaction(storeName, 'readwrite');
+    const store = txn.objectStore(storeName);
+    const hasKeyPath = Boolean(store.keyPath);
 
     const payloadKey = key as StoreRecordKey<T>;
-    const value = await this.db.get(storeName, payloadKey);
+    const value = await store.get(payloadKey);
+
     if (!value) throw new Error(`No such key as ${payloadKey} in store`);
 
-    await this.db.put(
-      storeName,
+    await store.put(
       { ...value, ...payload },
       hasKeyPath ? undefined : payloadKey
     );
+    if (!tx) await txn.done;
   }
 
   /**
@@ -137,10 +156,16 @@ export class StorageFactory<T extends DBSchema> {
    * @param storeName Name of the store.
    * @param key
    */
-  async delete(storeName: StoreNames<T>, key: IDBValidKey) {
+  async delete(
+    storeName: StoreNames<T>,
+    key: IDBValidKey,
+    tx?: StorageTransaction<T, 'readwrite'>
+  ) {
     if (!this.db) this.db = await this.#dbPromise;
 
-    await this.db.delete(storeName, key as StoreRecordKey<T>);
+    const storedKey = key as StoreRecordKey<T>;
+    if (tx) await tx.objectStore(storeName).delete(storedKey);
+    else await this.db.delete(storeName, storedKey);
   }
 
   /**
@@ -151,7 +176,11 @@ export class StorageFactory<T extends DBSchema> {
    * @param storeName Name of the store
    * @param keys keys to delete
    */
-  async deleteMany(storeName: StoreNames<T>, keys?: IDBValidKey[]) {
+  async deleteMany(
+    storeName: StoreNames<T>,
+    keys?: IDBValidKey[],
+    tx?: StorageTransaction<T, 'readwrite'>
+  ) {
     if (!this.db) this.db = await this.#dbPromise;
 
     let allKeys = await this.db.getAllKeys(storeName);
@@ -160,8 +189,18 @@ export class StorageFactory<T extends DBSchema> {
         (keys as StoreRecordKey<T>[]).includes(key)
       );
     }
-    const tx = this.db.transaction(storeName, 'readwrite');
-    await Promise.all([...allKeys.map((key) => tx.store.delete(key)), tx.done]);
+    const txn = tx ?? this.db.transaction(storeName, 'readwrite');
+    await Promise.all([
+      ...allKeys.map((key) => {
+        const store = txn.objectStore(storeName);
+        if (!store.delete)
+          throw new Error(
+            'deleteAll method cannot be called within this transaction!!'
+          );
+        return store.delete(key);
+      }),
+    ]);
+    if (!tx) await txn.done;
   }
 
   /**
@@ -195,22 +234,30 @@ export class StorageFactory<T extends DBSchema> {
    * @param query query params
    * @returns number of occurrences
    */
-  async count<S extends StoreNames<T>>(storeName: S, query?: QueryStore<T, S>) {
+  async count<S extends StoreNames<T>>(
+    storeName: S,
+    query?: QueryStore<T, S>,
+    tx?: StorageTransaction<T, 'readonly' | 'readwrite'>
+  ) {
     if (!this.db) this.db = await this.#dbPromise;
+
     if (query?.indexName)
       return await this.db.countFromIndex(storeName, query?.indexName);
-    return await this.db.count(storeName, query?.key);
+    else if (tx) {
+      return await tx.objectStore(storeName).count(query?.key);
+    } else return await this.db.count(storeName, query?.key);
   }
 
   /**
+   * Start and close new transaction.
    *
    * @param storeNames Names of the store involved in the transaction
    * @param mode "readonly" | "readwrite"
-   * @param callbacks
+   * @param callback
    */
-  async $transaction(
+  async $transaction<M extends IDBTransactionMode>(
     storeNames: StoreNames<T>[],
-    mode: IDBTransactionMode,
+    mode: M,
     /**
      * Callbacks to be executed within the context of the transaction
      * @example
@@ -219,12 +266,11 @@ export class StorageFactory<T extends DBSchema> {
      *  store.add({ name: "Marcjazz", email: "kuidjamarco@gmail.com" })
      * }
      */
-    callbacks: TransactionCallback<T>[]
+    callback: TransactionCallback<T, M>
   ) {
     if (!this.db) this.db = await this.#dbPromise;
 
-    const tx = this.db.transaction(storeNames, mode);
-    await Promise.all([...callbacks.map((callback) => callback(tx)), tx.done]);
+    await callback(this.db.transaction(storeNames, mode));
   }
 
   /**

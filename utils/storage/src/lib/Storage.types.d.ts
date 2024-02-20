@@ -1,4 +1,10 @@
-import { IndexNames, StoreKey, StoreNames, StoreValue } from 'idb';
+import {
+  IDBPTransaction,
+  IndexNames,
+  StoreKey,
+  StoreNames,
+  StoreValue,
+} from 'idb';
 
 export type StoreRecordKey<T> = StoreKey<T, StoreNames<T>>;
 export type StoreRecordValue<T> = StoreValue<T, StoreNames<T>>;
@@ -19,6 +25,10 @@ export type QueryStore<T, S> = {
   indexName: StoreIndexNames<T, S>;
 };
 
-export interface TransactionCallback<T> {
-  (tx: IDBPTransaction<T, StoreNames<T>[], IDBTransactionMode>): void;
+export type StorageTransaction<
+  T,
+  M extends IDBTransactionMode
+> = IDBPTransaction<T, StoreNames<T>[], M>;
+export interface TransactionCallback<T, M extends IDBTransactionMode> {
+  (tx: StorageTransaction<T, M>): void | Promise<void>;
 }
