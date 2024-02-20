@@ -7,6 +7,7 @@ import {
   CredentialIssuerMetadata,
   CredentialOffer,
   ResolvedCredentialOffer,
+  TxCodeInputMode,
 } from '../../lib/types';
 import { CredentialOfferResolver } from '../CredentialOfferResolver';
 
@@ -48,7 +49,7 @@ describe('CredentialOfferResolver', () => {
         grants: {
           'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
             'pre-authorized_code': 'oaKazRN8I0IbtZ0C7JuMn5',
-            tx_code: { input_mode: 'text' },
+            tx_code: { input_mode: TxCodeInputMode.Text },
           },
         },
       },
@@ -57,7 +58,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } as ResolvedCredentialOffer);
+    } satisfies ResolvedCredentialOffer);
   });
 
   it('should resolve offer by value (schemeless link)', async () => {
@@ -77,7 +78,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } as ResolvedCredentialOffer);
+    } satisfies ResolvedCredentialOffer);
   });
 
   it('should resolve offer by reference (v1)', async () => {
@@ -99,7 +100,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } as ResolvedCredentialOffer);
+    } satisfies ResolvedCredentialOffer);
   });
 
   it('should resolve offer by reference (v2)', async () => {

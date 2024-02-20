@@ -48,6 +48,6 @@ export interface AuthorizationServerMetadata {
   credential_endpoint?: string;
   deferred_credential_endpoint?: string;
 
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [x: string]: any; // Dynamic properties.
 }
