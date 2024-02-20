@@ -1,5 +1,9 @@
 import { DBSchema, StoreNames } from 'idb';
-import { StoreRecord, StoreRecordValue } from './Storage.types';
+import {
+  StoreRecord,
+  StoreRecordValue,
+  TransactionCallback,
+} from './Storage.types';
 import { StorageFactory } from './StorageFactory';
 
 // Mocking indexdedDB functionality
@@ -52,13 +56,17 @@ describe('StorageFactory', () => {
   });
 
   afterEach(async () => {
-    await storageFactory.delete('testStore', 'test_value_1');
-    await storageFactory.delete('inlineKeyStore', 'john_smith_key');
+    await Promise.all([
+      storageFactory.delete('testStore', 'test_value_1'),
+      storageFactory.delete('inlineKeyStore', 'john_smith_key'),
+    ]);
   });
 
-  afterAll(() => {
-    storageFactory.clear('testStore');
-    storageFactory.clear('inlineKeyStore');
+  afterAll(async () => {
+    await Promise.all([
+      storageFactory.clear('testStore'),
+      storageFactory.clear('inlineKeyStore'),
+    ]);
   });
 
   it('should be defined', async () => {
@@ -212,5 +220,28 @@ describe('StorageFactory', () => {
             },
           ]
     );
+  });
+
+  it('should start and close a new transaction', async () => {
+    const transactionCallback: TransactionCallback<TestDBSchema, 'readwrite'> =
+      jest.fn(async (transaction) => {
+        await storageFactory.insert(
+          'testStore',
+          {
+            value: 'tx_value_1',
+            key: 'tx_key_1',
+          },
+          transaction
+        );
+        await storageFactory.findOne('testStore', 'tx_key_1', transaction);
+        await storageFactory.delete('testStore', 'tx_key_2', transaction);
+      });
+
+    await storageFactory.$transaction(
+      ['testStore'],
+      'readwrite',
+      transactionCallback
+    );
+    expect(transactionCallback).toHaveBeenCalled();
   });
 });
