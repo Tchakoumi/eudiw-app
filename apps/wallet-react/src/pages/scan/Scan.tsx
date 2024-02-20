@@ -51,7 +51,9 @@ export default function Scan() {
         setPermissionStatus('denied');
       });
   };
-  eventBus.on('scan-event', (scanResult) => setConnectionString(scanResult));
+  eventBus.on('scan-event', (scanResult: string) =>
+    setConnectionString(scanResult)
+  );
 
   return (
     <>
