@@ -233,7 +233,13 @@ describe('StorageFactory', () => {
           },
           transaction
         );
-        await storageFactory.findOne('testStore', 'tx_key_1', transaction);
+        storageFactory.findOne('testStore', 'tx_key_1', transaction);
+        storageFactory.update(
+          'testStore',
+          'tx_key_1',
+          'tx_value_2',
+          transaction
+        );
         await storageFactory.delete('testStore', 'tx_key_2', transaction);
       });
 
