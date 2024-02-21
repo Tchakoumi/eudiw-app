@@ -200,10 +200,6 @@ export class StorageFactory<T extends DBSchema> {
     await Promise.all([
       ...allKeys.map((key) => {
         const store = txn.objectStore(storeName);
-        if (!store.delete)
-          throw new Error(
-            'deleteAll method cannot be called within this transaction!!'
-          );
         return store.delete(key);
       }),
     ]);

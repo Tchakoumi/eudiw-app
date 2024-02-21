@@ -136,15 +136,16 @@ describe('StorageFactory', () => {
   });
 
   it('should update value in store', async () => {
-    const updateFn = (storeName: StoreNames<TestDBSchema>) =>
+    const updateFn = jest.fn((storeName: StoreNames<TestDBSchema>) =>
       storageFactory.update(storeName, 'john_smith_key', {
         name: 'Jean Kamdem',
-      });
+      })
+    );
 
     expect(updateFn('inlineKeyStore')).resolves.not.toThrow();
-    await updateFn('testStore').catch((error) => {
-      expect(error.message).toBe(`No such key as john_smith_key in store`);
-    });
+    expect(updateFn('testStore')).rejects.toThrow(
+      `No such key as john_smith_key in store`
+    );
   });
 
   it('should delete value in store', () => {
@@ -168,6 +169,7 @@ describe('StorageFactory', () => {
       storageFactory.deleteMany('inlineKeyStore', keysToBeDelected)
     ).resolves.not.toThrow();
 
+    // will only delete data for existing keys, will then ignored `test_value_1` key
     expect(
       storageFactory.deleteMany('inlineKeyStore', [
         ...keysToBeDelected,
