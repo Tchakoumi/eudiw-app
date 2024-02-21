@@ -32,10 +32,15 @@ export interface CredentialOffer {
   grants?: Grant;
 }
 
+export const PRE_AUTHORIZED_GRANT_TYPE =
+  'urn:ietf:params:oauth:grant-type:pre-authorized_code';
+
 export interface Grant {
   authorization_code?: AuthorizationCodeGrant;
-  'urn:ietf:params:oauth:grant-type:pre-authorized_code'?: PreAuthorizedCodeGrant;
+  [PRE_AUTHORIZED_GRANT_TYPE]?: PreAuthorizedCodeGrant;
 }
+
+export type GrantType = keyof Grant;
 
 export interface AuthorizationCodeGrant {
   /**

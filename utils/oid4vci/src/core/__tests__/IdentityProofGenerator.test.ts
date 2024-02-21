@@ -1,7 +1,8 @@
+import * as jose from 'jose';
+
 import { CLIENT_ID } from '../../config';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
-import * as jose from 'jose';
 
 describe('IdentityProofGenerator', () => {
   const identityProofGenerator = new IdentityProofGenerator();

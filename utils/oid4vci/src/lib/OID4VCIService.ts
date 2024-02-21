@@ -1,4 +1,4 @@
-import { Grant, ResolvedCredentialOffer } from '../lib/types';
+import { GrantType, ResolvedCredentialOffer } from '../lib/types';
 import EventEmitter from 'eventemitter3';
 
 /**
@@ -32,19 +32,17 @@ export interface OID4VCIService {
   resolveCredentialOffer(opts: { credentialOffer: string }): Promise<void>;
 
   /**
-   * Request a credential from a credential issuer given a credential type.
+   * Requests a credential from a credential issuer given a credential type.
    *
    * @param resolvedCredentialOffer a credential offer object with discovery metadata.
    * @param credentialTypeKey a credential type identifier as specified in the
-   *                          credential issuer metadata.
+   * credential issuer metadata.
    * @param grantType a grant type indicative of the issuance flow type, Authorize or
-   *                  Pre-Authorized.
-   *
-   * @returns the issued credential
+   * Pre-Authorized.
    */
-  requestCredentialIssuance(
-    resolvedCredentialOffer: ResolvedCredentialOffer,
-    credentialTypeKey: string,
-    grantType: keyof Grant
-  ): Promise<string>;
+  requestCredentialIssuance(opts: {
+    resolvedCredentialOffer: ResolvedCredentialOffer;
+    credentialTypeKey: string;
+    grantType?: GrantType;
+  }): Promise<void>;
 }

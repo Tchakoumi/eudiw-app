@@ -1,3 +1,5 @@
+import * as jose from 'jose';
+
 /**
  * JWT Issuer Metadata.
  *
@@ -22,5 +24,7 @@ export interface JwtIssuerMetadata {
    * Issuer's public keys. The value of this field MUST be a JSON object containing
    * a valid JWK Set.
    */
-  jwks?: string;
+  jwks?: {
+    keys: jose.JWK[];
+  };
 }
