@@ -76,7 +76,14 @@ export default function Scan() {
       />
 
       <Box sx={{ display: 'grid', gridTemplateRows: '1fr auto' }}>
-        <Box sx={{ display: 'grid', rowGap: 1, gridTemplateRows: 'auto 1fr' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            rowGap: 1,
+            gridTemplateRows: 'auto 1fr',
+            position: 'relative',
+          }}
+        >
           <Box
             sx={{
               display: 'grid',
@@ -103,22 +110,15 @@ export default function Scan() {
             onError={(error) => console.log(error.message)}
             facingMode={facingMode}
           />
-        </Box>
-        <Box
-          sx={{
-            backgroundColor: 'black',
-            height: '100%',
-            display: 'grid',
-            justifyItems: 'center',
-            alignItems: 'start',
-            paddingTop: 4,
-          }}
-        >
           <Tooltip arrow title={'Swap Camera'}>
             <IconButton
               color="secondary"
               sx={{
                 backgroundColor: 'white',
+                position: 'absolute',
+                bottom: 0,
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
                 '&:hover': {
                   backgroundColor: 'white',
                 },
@@ -133,6 +133,12 @@ export default function Scan() {
             </IconButton>
           </Tooltip>
         </Box>
+        <Box
+          sx={{
+            backgroundColor: 'black',
+            height: '22px',
+          }}
+        />
       </Box>
     </>
   );
