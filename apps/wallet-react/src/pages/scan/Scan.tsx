@@ -98,7 +98,7 @@ export default function Scan() {
           <QrScanner
             onResult={(result: string) => {
               setIsDetailsDialogOpen(true);
-              setConnectionString(result)
+              setConnectionString(result);
             }}
             validate={(result) => {
               return String(result);
