@@ -6,9 +6,7 @@
  * @returns Targeted class
  */
 
-export function ApplyClassWrapper<
-  T extends { new (...args: any[]): object }
->(
+export function ApplyClassWrapper<T extends { new (...args: any[]): object }>(
   wrapperMethod: (
     methodName: keyof InstanceType<T>,
     originalMethod: (...args: any[]) => any
