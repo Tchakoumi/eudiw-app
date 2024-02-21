@@ -1,5 +1,6 @@
 import { AccessTokenClient } from '../AccessTokenClient';
 import { InvalidCredentialOffer } from '../errors';
+
 import {
   AccessTokenRequest,
   AccessTokenResponse,
@@ -123,4 +124,29 @@ describe('AccessTokenResolver', () => {
       ),
     );
   });
+
+  it(
+    'should throw invalid grant.',
+    async () => {
+      const accessTokenClient: AccessTokenClient = new AccessTokenClient();
+
+      const accessTokenRequest: AccessTokenRequest = {
+        grant_type: GrantTypes.PRE_AUTHORIZED_CODE,
+        'pre-authorized_code': '20221013',
+        client_id: '218232426',
+      } as AccessTokenRequest;
+
+      nock(MOCK_URL).post(/.*/).replyWithError('invalid_grant', 200);
+
+      await expect(
+        accessTokenClient.acquireAccessTokenUsingRequest({
+          accessTokenRequest,
+          asOpts: { as: MOCK_URL },
+        }),
+      ).rejects.toThrow(
+        `request to https://trial.authlete.net/api/token failed, reason: invalid_grant`,
+      );
+    },
+    UNIT_TEST_TIMEOUT,
+  );
 });

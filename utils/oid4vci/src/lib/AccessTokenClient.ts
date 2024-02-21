@@ -1,5 +1,6 @@
 import { OID4VCIServiceError } from './errors';
 import { InvalidCredentialOffer } from './errors/AccessToken.errors';
+import { convertJsonToURI } from './functions';
 import { formPost } from './functions/HttpUtils';
 import {
   AccessTokenRequest,
@@ -38,7 +39,10 @@ export class AccessTokenClient {
     requestTokenURL: string,
     accessTokenRequest: AccessTokenRequest,
   ): Promise<OpenIDResponse<AccessTokenResponse>> {
-    return await formPost(requestTokenURL, JSON.stringify(accessTokenRequest));
+    return await formPost(
+      requestTokenURL,
+      convertJsonToURI(accessTokenRequest),
+    );
   }
 
   private validate(accessTokenRequest: AccessTokenRequest): void {
