@@ -52,6 +52,7 @@ export class StorageFactory<T extends DBSchema> {
    *
    * @param storeName The name of the store you want to insert data to. Stores are simalar to collections
    * @param payload Data to be stored in key/value format
+   * @param tx opened transaction
    * @returns the newly added key
    */
   async insert(
@@ -73,6 +74,7 @@ export class StorageFactory<T extends DBSchema> {
    *
    * @param storeName Name of the store
    * @param key record key
+   * @param tx opened transaction
    * @returns an object with `key` and `value`
    */
   async findOne(
@@ -96,6 +98,7 @@ export class StorageFactory<T extends DBSchema> {
    * Retrieves the records in a store
    *
    * @param storeName Name of the store
+   * @param tx opened transaction
    * @returns all the records of the store
    */
   async findAll(
@@ -125,7 +128,9 @@ export class StorageFactory<T extends DBSchema> {
    * Puts an item in the store. Replaces any item with the same key.
    *
    * @param storeName Name of the store
+   * @param key key of the item to be updated
    * @param payload item to be put in the store
+   * @param tx opened transaction
    */
   async update(
     storeName: StoreNames<T>,
@@ -155,6 +160,7 @@ export class StorageFactory<T extends DBSchema> {
    *
    * @param storeName Name of the store.
    * @param key
+   * @param tx opened transaction
    */
   async delete(
     storeName: StoreNames<T>,
@@ -175,6 +181,7 @@ export class StorageFactory<T extends DBSchema> {
    *
    * @param storeName Name of the store
    * @param keys keys to delete
+   * @param tx opened transaction
    */
   async deleteMany(
     storeName: StoreNames<T>,
@@ -232,6 +239,7 @@ export class StorageFactory<T extends DBSchema> {
    *
    * @param storeName Name of the store
    * @param query query params
+   * @param tx opened transaction
    * @returns number of occurrences
    */
   async count<S extends StoreNames<T>>(
@@ -259,12 +267,25 @@ export class StorageFactory<T extends DBSchema> {
     storeNames: StoreNames<T>[],
     mode: M,
     /**
-     * Callbacks to be executed within the context of the transaction
+     * Callback to be executed within the context of the transaction.
+     * 
+     * Only await the `StorageFactory` methods supporting the `tx` parameter in this callback
+     * 
      * @example
-     * const callback1 = (tx) => {
-     *  const store = tx.objectStore(storeName);
-     *  store.add({ name: "Marcjazz", email: "kuidjamarco@gmail.com" })
-     * }
+     * const transactionCallback: TransactionCallback<DBSchema, 'readwrite'> =
+        async (transaction) => {
+          const records = storageFactory.findAll('testStore', transaction);
+          if(records.length > 0)
+            await storageFactory.update('testStore', records[0].key, 'tx_value_2', transaction);
+          else await storageFactory.insert(
+            'testStore',
+            {
+              key: 'tx_key_1',
+              value: 'tx_value_1',
+            },
+            transaction
+          );
+        };
      */
     callback: TransactionCallback<T, M>
   ) {
