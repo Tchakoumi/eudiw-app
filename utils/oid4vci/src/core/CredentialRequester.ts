@@ -1,10 +1,10 @@
 import { fetch } from 'cross-fetch';
 import * as jose from 'jose';
-import sdjwt from '@hopae/sd-jwt';
 
 import { OID4VCIServiceError } from '../lib/errors';
 import { TokenResponse } from '../lib/types/tmp';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
+import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
 import { CLIENT_ID } from '../config';
 
 import {
@@ -18,9 +18,12 @@ import {
   AuthorizationServerMetadata,
   CredentialOffer,
   CredentialSupported,
+  ProcessedCredential,
 } from '../lib/types';
 
 export class CredentialRequester {
+  readonly sdJwtCredentialProcessor = new SdJwtCredentialProcessor();
+
   /**
    * Constructor.
    */
@@ -33,7 +36,7 @@ export class CredentialRequester {
     resolvedCredentialOffer: ResolvedCredentialOffer,
     credentialTypeKey: string,
     grantType: GrantType
-  ): Promise<string> {
+  ): Promise<ProcessedCredential> {
     const { credentialOffer, discoveryMetadata } = resolvedCredentialOffer;
 
     // Enforce grant type to match the pre-authorized flow
@@ -55,17 +58,18 @@ export class CredentialRequester {
     }
 
     // Request an access token to present at the credential endpoint
-    const { access_token: accessToken, c_nonce: nonce } = await this.requestAccessToken(
-      grantType,
-      credentialOffer,
-      discoveryMetadata.authorizationServerMetadata
-    );
+    const { access_token: accessToken, c_nonce: nonce } =
+      await this.requestAccessToken(
+        grantType,
+        credentialOffer,
+        discoveryMetadata.authorizationServerMetadata
+      );
 
     // Prepare credential issuance request
     const credentialRequestParams = await this.prepareCredentialIssuanceRequest(
       credentialTypeKey,
       discoveryMetadata,
-      nonce,
+      nonce
     );
 
     // Send credential request
@@ -74,13 +78,14 @@ export class CredentialRequester {
       accessToken
     );
 
-    // Verify credential
-    const verifyingKeys = await this.resolveIssuerVerifyingKeys(
-      discoveryMetadata
+    // Process credential: verify + decode + store
+    // TODO! Support other credential formats.
+    const processedCredential = await this.sdJwtCredentialProcessor.processCredential(
+      credential,
+      await this.resolveIssuerVerifyingKeys(discoveryMetadata)
     );
-    await this.verifyCredential(credential, verifyingKeys);
 
-    return credential;
+    return processedCredential;
   }
 
   /**
@@ -160,13 +165,12 @@ export class CredentialRequester {
 
     // Generate a wallet's key proof embedding the received nonce
 
-    const keyProof = credentialSupported.cryptographic_binding_methods_supported
-      ? await this.identityProofGenerator.generateCompatibleKeyProof(
-          credentialSupported,
-          credentialIssuerMetadata.credential_issuer,
-          nonce
-        )
-      : undefined;
+    const keyProof =
+      await this.identityProofGenerator.generateCompatibleKeyProof(
+        credentialSupported,
+        credentialIssuerMetadata.credential_issuer,
+        nonce
+      );
 
     // Read credential endpoint
 
@@ -207,15 +211,11 @@ export class CredentialRequester {
     params: CredentialRequestParams,
     accessToken: string
   ): Promise<string> {
-    const {
-      credentialTypeSelector,
-      credentialEndpoint,
-      keyProof,
-    } = params;
+    const { credentialTypeSelector, credentialEndpoint, keyProof } = params;
 
     const data = {
       ...credentialTypeSelector,
-      ...keyProof
+      ...keyProof,
     };
 
     const credentialResponse: CredentialResponse = await fetch(
@@ -229,11 +229,15 @@ export class CredentialRequester {
         body: JSON.stringify(data),
       }
     ).then(async (response) => {
+      const payload = await response.json();
+
       if (!response.ok) {
-        throw new Error('Not 2xx response');
+        throw new OID4VCIServiceError(
+          `CredentialIssuerError: ${payload.error}`
+        );
       }
 
-      return response.json();
+      return payload;
     });
 
     return credentialResponse.credential;
@@ -252,15 +256,16 @@ export class CredentialRequester {
       return jwtIssuerMetadata?.jwks.keys;
     }
 
-    const uri =
+    const jwksUri =
       jwtIssuerMetadata?.jwks_uri ?? authorizationServerMetadata?.jwks_uri;
-    if (!uri) {
+
+    if (!jwksUri) {
       throw new OID4VCIServiceError(
         'Could not find a URI to retrieve issuer verifying keys from.'
       );
     }
 
-    const jwks = await fetch(uri).then(async (response) => {
+    const jwks = await fetch(jwksUri).then(async (response) => {
       if (!response.ok) {
         throw new Error('Not 2xx response');
       }
@@ -269,44 +274,5 @@ export class CredentialRequester {
     });
 
     return jwks.keys as jose.JWK[];
-  }
-
-  /**
-   * Verifies credential.
-   * TODO! No longer assume the credential to be an SD-JWT VC.
-   */
-  private async verifyCredential(
-    credential: string,
-    verifyingKeys: jose.JWK[]
-  ): Promise<jose.JWK> {
-    const { kid } = jose.decodeProtectedHeader(credential);
-    const verify = async (verifyingKey: jose.JWK) => {
-      return await sdjwt.validate(credential, {
-        publicKey: await jose.importJWK(verifyingKey),
-      });
-    };
-
-    if (kid) {
-      const verifyingKey = verifyingKeys.find((key) => key.kid == kid);
-      if (verifyingKey) {
-        const valid = await verify(verifyingKey);
-
-        console.log({ valid });
-        return verifyingKey;
-      }
-
-      throw new OID4VCIServiceError('Could find referenced verifying key.');
-    } else {
-      verifyingKeys.forEach(async (verifyingKey) => {
-        const valid = await sdjwt.validate(credential, {
-          publicKey: await jose.importJWK(verifyingKey),
-        });
-
-        console.log({ valid });
-        return verifyingKey;
-      });
-    }
-
-    throw new OID4VCIServiceError('Could not verify credential.');
   }
 }

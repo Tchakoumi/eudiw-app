@@ -4,7 +4,7 @@ import { OID4VCIServiceError } from '../lib/errors';
 import { CLIENT_ID } from '../config';
 import { OID4VCI_PROOF_TYP } from '../constants';
 import { currentTimestampInSecs } from '../utils';
-import { CredentialSupported, KeyProof } from '../lib/types';
+import { CredentialSupported, JwtKeyProof, KeyProof } from '../lib/types';
 
 export class IdentityProofGenerator {
   /**
@@ -20,17 +20,14 @@ export class IdentityProofGenerator {
     credentialIssuer: string,
     nonce?: string
   ): Promise<KeyProof> {
-    const bindingMethods =
-      credentialSupported.cryptographic_binding_methods_supported ?? [];
-
-    if (!bindingMethods.includes('jwt' satisfies KeyProof['proof_type'])) {
+    const proofTypes = credentialSupported.proof_types;
+    if (proofTypes && !proofTypes.includes('jwt')) {
       throw new OID4VCIServiceError(
         'The issuer does not support JWT key proofs.'
       );
     }
 
     const jwk = this.getJwkIdentity();
-
     if (!jwk.alg) {
       throw new OID4VCIServiceError(
         'The wallet identity must embed an algorithm for signature.'
@@ -39,10 +36,8 @@ export class IdentityProofGenerator {
 
     const algs =
       credentialSupported.cryptographic_suites_supported ??
-      credentialSupported.credential_signing_alg_values_supported ??
-      [];
-
-    if (!algs.includes(jwk.alg)) {
+      credentialSupported.credential_signing_alg_values_supported;
+    if (algs && !algs.includes(jwk.alg)) {
       throw new OID4VCIServiceError(
         'The wallet identity does not match any algorithm supported by the issuer.'
       );
@@ -58,7 +53,7 @@ export class IdentityProofGenerator {
     key: jose.JWK,
     aud: string,
     nonce?: string
-  ): Promise<KeyProof> {
+  ): Promise<JwtKeyProof> {
     const priv = await jose.importJWK(key);
 
     const jws = await new jose.SignJWT({ nonce })

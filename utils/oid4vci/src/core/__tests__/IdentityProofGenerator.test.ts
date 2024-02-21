@@ -4,6 +4,8 @@ import { CLIENT_ID } from '../../config';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
 
+import { keyRef1 } from './fixtures/IndentityProofGenerator.fixtures';
+
 describe('IdentityProofGenerator', () => {
   const identityProofGenerator = new IdentityProofGenerator();
 
@@ -17,7 +19,11 @@ describe('IdentityProofGenerator', () => {
     const aud = 'https://trial.authlete.net';
     const nonce = '8ef0d890-c1e2-4339-a245-9b53f6c16632';
 
-    const jws = await identityProofGenerator.generateKeyProof(aud, nonce);
+    const { proof_type: proofType, jwt: jws } =
+      await identityProofGenerator.generateJwtKeyProof(keyRef1, aud, nonce);
+
+    expect(proofType).toEqual('jwt');
+
     const { header, payload } = decodeJws(jws);
     const jwk = header.jwk as jose.JWK;
 
