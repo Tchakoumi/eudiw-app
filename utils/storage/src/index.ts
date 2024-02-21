@@ -1,3 +1,3 @@
-export * from './lib/StorageFactory';
 export type * from './lib/Storage.types';
-export * from './lib/error/ApplyClassWrapper';
+export { StorageFactory } from './lib/StorageFactory';
+export { ApplyClassWrapper } from './lib/error/ApplyClassWrapper';

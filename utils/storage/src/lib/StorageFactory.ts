@@ -2,9 +2,9 @@ import {
   DBSchema,
   IDBPDatabase,
   IndexNames,
-  OpenDBCallbacks,
   StoreNames,
   openDB,
+  type OpenDBCallbacks,
 } from 'idb';
 import {
   StoreRecord,
