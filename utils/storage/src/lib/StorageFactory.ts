@@ -14,10 +14,13 @@ import {
   StorageTransaction,
   TransactionCallback,
 } from './Storage.types';
+import { ApplyClassWrapper } from './error/ApplyClassWrapper';
+import { storageErrorHandler } from './error/StorageErrorHandler';
 
 /**
  * A factory class for indexedDB's common CRUD operations
  */
+@ApplyClassWrapper(storageErrorHandler)
 export class StorageFactory<T extends DBSchema> {
   /** Opened database */
   private db: IDBPDatabase<T> | null = null;
