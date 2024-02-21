@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import CameraAccessDialog from '../../components/scan-details/CameraAccessDialog';
 import LoadingScanDetails from '../../components/scan-details/LoadingScanDetails';
 import { useTheme } from '../../utils/theme';
-import { eventBus } from '@datev/event-bus';
 
 export default function Scan() {
   const theme = useTheme();
@@ -51,9 +50,6 @@ export default function Scan() {
         setPermissionStatus('denied');
       });
   };
-  eventBus.on('scan-event', (scanResult: string) =>
-    setConnectionString(scanResult)
-  );
 
   return (
     <>
@@ -102,7 +98,7 @@ export default function Scan() {
           <QrScanner
             onResult={(result: string) => {
               setIsDetailsDialogOpen(true);
-              eventBus.emit('scan-event', result);
+              setConnectionString(result)
             }}
             validate={(result) => {
               return String(result);
