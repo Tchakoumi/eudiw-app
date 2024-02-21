@@ -7,9 +7,11 @@ describe('CredentialRequester', () => {
   const identityProofGenerator = new IdentityProofGenerator();
   const credentialRequester = new CredentialRequester(identityProofGenerator);
 
-  it('should successfully request a credential', async () => {
+  beforeAll(() => {
     jest.setTimeout(30e3);
+  });
 
+  it('should successfully request a credential', async () => {
     const credentialOffer = credentialOfferObjectRef1;
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';

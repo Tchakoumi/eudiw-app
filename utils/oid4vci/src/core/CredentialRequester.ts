@@ -19,6 +19,8 @@ import {
   CredentialOffer,
   CredentialSupported,
   ProcessedCredential,
+  CredentialIssuerMetadata,
+  DisplayCredential,
 } from '../lib/types';
 
 export class CredentialRequester {
@@ -78,12 +80,20 @@ export class CredentialRequester {
       accessToken
     );
 
-    // Process credential: verify + decode + store
-    // TODO! Support other credential formats.
-    const processedCredential = await this.sdJwtCredentialProcessor.processCredential(
-      credential,
-      await this.resolveIssuerVerifyingKeys(discoveryMetadata)
+    // Prefill display credential
+    const displayCredentialStarter = await this.prefillDisplayCredential(
+      discoveryMetadata.credentialIssuerMetadata,
+      credentialTypeKey
     );
+
+    // Process credential: validate + decode + store
+    // TODO! Add support other credential formats.
+    const processedCredential =
+      await this.sdJwtCredentialProcessor.processCredential(
+        credential,
+        await this.resolveIssuerVerifyingKeys(discoveryMetadata),
+        displayCredentialStarter
+      );
 
     return processedCredential;
   }
@@ -108,12 +118,12 @@ export class CredentialRequester {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const tokenResponse: TokenResponse = {
-      access_token: 'iDV_P3mLcxbOxbMxySc9sgJ_OjwQbGPiQCcs5wPVXzA',
+      access_token: 'IPuHfCiJUkamvVuY2Vn2e47J7c5s9wedHYcGlXBR7GY',
       token_type: 'Bearer',
       expires_in: 86400,
       scope: null,
-      refresh_token: 'QcxNHvTnwSoEVBbkacRWR2JfcJos-U21UQQ8HpfHr5U',
-      c_nonce: 'UMAELxhn4IY2a5_eLr_cVkPLmktVYv-29mEx9LULPQ0',
+      refresh_token: 'fnKw1U8dtxXK-Id74AIK-1tQl64j0qCy3Jjkwdocv-8',
+      c_nonce: 'ydgr1wPZ2xaOg7wmmZcUIJk0bFDZFghCcyEn3LqwFGY',
       c_nonce_expires_in: 86400,
     };
 
@@ -159,6 +169,7 @@ export class CredentialRequester {
     }
 
     // Look up identifier fields for selected credential type
+    // Add support for `credential_identifier` selection
 
     const credentialTypeSelector =
       this.extractCredentialTypeSelector(credentialSupported);
@@ -215,7 +226,7 @@ export class CredentialRequester {
 
     const data = {
       ...credentialTypeSelector,
-      ...keyProof,
+      proof: keyProof,
     };
 
     const credentialResponse: CredentialResponse = await fetch(
@@ -229,15 +240,13 @@ export class CredentialRequester {
         body: JSON.stringify(data),
       }
     ).then(async (response) => {
-      const payload = await response.json();
-
       if (!response.ok) {
         throw new OID4VCIServiceError(
-          `CredentialIssuerError: ${payload.error}`
+          `CredentialIssuerError: ${response.status} ${response.statusText}`
         );
       }
 
-      return payload;
+      return response.json();
     });
 
     return credentialResponse.credential;
@@ -274,5 +283,59 @@ export class CredentialRequester {
     });
 
     return jwks.keys as jose.JWK[];
+  }
+
+  /**
+   * Prefill display credential with non-format specific fields.
+   *
+   * TODO! Handle i18n.
+   */
+  private async prefillDisplayCredential(
+    credentialIssuerMetadata: CredentialIssuerMetadata,
+    credentialTypeKey: string,
+    locale: string = 'en-US'
+  ): Promise<DisplayCredential> {
+    const credentialSupported =
+      credentialIssuerMetadata.credential_configurations_supported[
+        credentialTypeKey
+      ];
+
+    // Read title
+    const title =
+      credentialSupported?.display?.find(
+        (e) => e.locale == undefined || e.locale == locale
+      )?.name ?? credentialTypeKey;
+
+    // Issuer display metadata
+    const display = credentialIssuerMetadata.display?.find(
+      (e) => e.locale == undefined || e.locale == locale
+    );
+
+    // Read issuer
+    const issuer = display?.name ?? credentialIssuerMetadata.credential_issuer;
+
+    // Fetch logo
+    const logo = display?.logo?.uri ?? display?.logo?.url;
+    // if (logo?.startsWith('http://') || logo?.startsWith('https://')) {
+    //   logo = await fetch(logo)
+    //     .then((response) => {
+    //       if (!response.ok) {
+    //         throw new Error('Not 2xx response');
+    //       }
+
+    //       return response.blob();
+    //     })
+    //     .then((blob) => {
+    //       const reader = new FileReader();
+    //       reader.onloadend = function () {
+    //         const base64String = reader.result;
+    //         console.log('Base64:', base64String);
+    //       };
+    //       reader.readAsDataURL(blob);
+    //     })
+    //     .catch(() => logo);
+    // }
+
+    return { title, issuer, logo } satisfies DisplayCredential;
   }
 }

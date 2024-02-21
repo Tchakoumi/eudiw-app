@@ -46,5 +46,17 @@ export interface CredentialResponse {
 export type ProcessedCredential = SdJwtProcessedCredential;
 
 export interface SdJwtProcessedCredential {
-  encoded: string
+  encoded: string;
+  display: DisplayCredential;
+}
+
+export interface DisplayCredential {
+  id?: string;
+  title?: string;
+  issuer?: string;
+  logo?: string;
+
+  // Specific claims
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [x: string]: any;
 }
