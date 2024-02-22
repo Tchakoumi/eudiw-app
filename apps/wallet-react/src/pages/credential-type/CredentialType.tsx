@@ -8,8 +8,13 @@ import {
 } from '../../components/credential-offer/credentials.types';
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
+import { removeUnderscoresFromWord } from '../../utils/common';
 
 export default function CredentialType() {
+  /*TODO: the CREDENTIAL_ISSUER_METADATA is to be removed during the integration
+  at this point, we'll listen to the event that'll be emitted from the /scan route
+  and use the data found in there as the credential offer.
+   */
   const CREDENTIAL_ISSUER_METADATA = {
     credential_issuer: 'https://trial.authlete.net',
     credential_endpoint: 'https://trial.authlete.net/api/credential',
@@ -294,31 +299,6 @@ export default function CredentialType() {
 
   type ISupportedCredential =
     keyof typeof CREDENTIAL_ISSUER_METADATA.credential_configurations_supported;
-
-  /**
-   * This function is used to capitalise the first
-   * letter in a given phrase
-   *
-   * @param {string} phrase - phrase to be capitalized
-   * @returns {string} - the capitalized phrase
-   */
-  function capitalize(phrase: string): string {
-    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
-  }
-
-  /**
-   * This function removes underscores(_) in a word
-   * and seperate in different words, all capitalized.
-   *
-   * @param word - Key of the claim to cleanup
-   * @returns {string} - text without underscores
-   */
-  function removeUnderscoresFromWord(word: string): string {
-    return word
-      .split('_')
-      .map((jj) => capitalize(jj))
-      .join(' ');
-  }
 
   /**
    * This function helps to get the selected credential type's

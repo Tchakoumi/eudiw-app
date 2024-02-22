@@ -48,7 +48,7 @@ export default function CredentialOfferDetails({
         <CredentialIssued
           handleClose={() => {
             close();
-            push('/credential');
+            push('/credentials');
           }}
         />
       ) : isIssuing ? (
