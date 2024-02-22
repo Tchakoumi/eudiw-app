@@ -164,4 +164,44 @@ describe('CredentialRequester', () => {
 
     await expect(promise).rejects.toThrow('Could not validate credential.');
   });
+
+  it('should throw on unsupported credential format', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const discoveryMetadata = discoveryMetadataRef1;
+    const credentialTypeKey = 'org.iso.18013.5.1.mDL';
+
+    nock(credentialOffer.credential_issuer)
+      .post(/credential/)
+      .reply(200, credentialResponseRef1)
+      .get(/jwks/)
+      .reply(200, jwksRef1);
+
+    const promise = credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata },
+      credentialTypeKey,
+      PRE_AUTHORIZED_GRANT_TYPE
+    );
+
+    await expect(promise).rejects.toThrow(
+      'Unsupported credential type format.'
+    );
+  });
+
+  it('should throw on credential issuer error', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const discoveryMetadata = discoveryMetadataRef1;
+    const credentialTypeKey = 'IdentityCredential';
+
+    nock(credentialOffer.credential_issuer)
+      .post(/credential/)
+      .reply(401);
+
+    const promise = credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata },
+      credentialTypeKey,
+      PRE_AUTHORIZED_GRANT_TYPE
+    );
+
+    await expect(promise).rejects.toThrow('401 Unauthorized');
+  });
 });
