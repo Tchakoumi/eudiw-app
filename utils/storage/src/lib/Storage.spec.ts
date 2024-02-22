@@ -24,6 +24,15 @@ interface TestDBSchema extends DBSchema {
     };
     indexes: { byEmail: 'email' };
   };
+  inlineAutoIncrement: {
+    key: number;
+    value: {
+      data: {
+        id?: number;
+        value: string;
+      };
+    };
+  };
 }
 
 describe('StorageFactory', () => {
@@ -33,6 +42,12 @@ describe('StorageFactory', () => {
     storageFactory = new StorageFactory<TestDBSchema>('testDB', 1, {
       upgrade(db) {
         db.createObjectStore('testStore');
+        db.createObjectStore('inlineAutoIncrement', {
+          keyPath: 'data.id',
+
+          //default to `false`
+          autoIncrement: true,
+        });
         const inlineKeyStore = db.createObjectStore('inlineKeyStore', {
           keyPath: 'inlineId',
         });
@@ -54,6 +69,9 @@ describe('StorageFactory', () => {
         key: 'test_value_1',
         value: 'storing a test value...',
       }),
+      storageFactory.insert('inlineAutoIncrement', {
+        value: { data: { value: 'Storing with incremental key' } },
+      }),
     ]);
   });
 
@@ -61,6 +79,7 @@ describe('StorageFactory', () => {
     await Promise.all([
       storageFactory.delete('testStore', 'test_value_1'),
       storageFactory.delete('inlineKeyStore', 'john_smith_key'),
+      storageFactory.deleteMany('inlineAutoIncrement'),
     ]);
   });
 
@@ -68,6 +87,7 @@ describe('StorageFactory', () => {
     await Promise.all([
       storageFactory.clear('testStore'),
       storageFactory.clear('inlineKeyStore'),
+      storageFactory.clear('inlineAutoIncrement'),
     ]);
   });
 
@@ -93,6 +113,18 @@ describe('StorageFactory', () => {
     };
     const addedKey2 = await storageFactory.insert('inlineKeyStore', payload2);
     expect(addedKey2).toBe('test_in_line_key');
+
+    const addedKey3 = await storageFactory.insert('inlineAutoIncrement', {
+      value: { data: { value: 'Incremented value' } },
+    });
+    expect(typeof addedKey3).toBe('number');
+
+    // clearing insertions
+    await Promise.all([
+      storageFactory.delete('testStore', 'test_key'),
+      storageFactory.delete('inlineKeyStore', 'test_in_line_key'),
+      storageFactory.deleteMany('inlineAutoIncrement'),
+    ]);
   });
 
   it('should find one', async () => {
@@ -111,28 +143,27 @@ describe('StorageFactory', () => {
 
   it('should find all', async () => {
     const records = await storageFactory.findAll('testStore');
-    expect(records.length).toBeGreaterThanOrEqual(1);
-    expect(records.length).toBeLessThanOrEqual(2);
+    expect(records.length).toEqual(1);
 
-    expect(records).toStrictEqual<StoreRecord<TestDBSchema>[]>(
-      records.length === 1
-        ? [
-            {
-              key: 'test_value_1',
-              value: 'storing a test value...',
-            },
-          ]
-        : [
-            {
-              key: 'test_key',
-              value: 'test_value',
-            },
-            {
-              key: 'test_value_1',
-              value: 'storing a test value...',
-            },
-          ]
-    );
+    expect(records).toStrictEqual<StoreRecord<TestDBSchema>[]>([
+      {
+        key: 'test_value_1',
+        value: 'storing a test value...',
+      },
+    ]);
+
+    const record3 = await storageFactory.findAll('inlineAutoIncrement');
+    expect(record3).toStrictEqual([
+      {
+        key: expect.any(Number),
+        value: {
+          data: {
+            id: expect.any(Number),
+            value: 'Storing with incremental key',
+          },
+        },
+      },
+    ]);
   });
 
   it('should update value in store', async () => {
@@ -184,14 +215,17 @@ describe('StorageFactory', () => {
 
   it('should retrieves the number of records matching the given query in a store', async () => {
     const itemCount = await storageFactory.count('testStore');
-    expect(itemCount).toBeGreaterThanOrEqual(1);
-    expect(itemCount).toBeLessThanOrEqual(2);
+    expect(itemCount).toEqual(1);
 
     const indexItemCount = await storageFactory.count('inlineKeyStore', {
       indexName: 'byEmail',
     });
-    expect(indexItemCount).toBeGreaterThanOrEqual(1);
-    expect(indexItemCount).toBeLessThanOrEqual(2);
+    expect(indexItemCount).toEqual(1);
+
+    const incrementItemCount = await storageFactory.count(
+      'inlineAutoIncrement'
+    );
+    expect(incrementItemCount).toEqual(1);
   });
 
   it('should retrieves values in an index that match the query.', async () => {
@@ -199,8 +233,7 @@ describe('StorageFactory', () => {
       'inlineKeyStore',
       'byEmail'
     );
-    expect(records.length).toBeGreaterThanOrEqual(1);
-    expect(records.length).toBeLessThanOrEqual(2);
+    expect(records.length).toEqual(1);
 
     expect(records).toStrictEqual<StoreRecordValue<TestDBSchema>[]>(
       records.length === 1
