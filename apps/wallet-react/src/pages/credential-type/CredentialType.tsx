@@ -10,6 +10,10 @@ import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
 
 export default function CredentialType() {
+  /*TODO: the CREDENTIAL_ISSUER_METADATA is to be removed during the integration
+  at this point, we'll listen to the event that'll be emitted from the /scan route
+  and use the data found in there as the credential offer.
+   */
   const CREDENTIAL_ISSUER_METADATA = {
     credential_issuer: 'https://trial.authlete.net',
     credential_endpoint: 'https://trial.authlete.net/api/credential',
