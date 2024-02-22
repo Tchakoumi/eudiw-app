@@ -1,5 +1,5 @@
 import { Box, Button, Dialog } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IVerifiableCredential } from '../../pages/credentials/Credentials';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
@@ -31,11 +31,40 @@ export default function CredentialDetails({
       address: 'Johannessgase #626',
     };
   }
-  const tt = getCredentialDetails(
-    selectedCredential ? selectedCredential.id : ''
-  );
+  //   const tt = getCredentialDetails(
+  //     selectedCredential ? selectedCredential.id : ''
+  //   );
+  const [tt, setTT] = useState<Record<string, string>>({});
+  const [canDisplayClaimValue, setCanDisplayClaimValue] = useState<
+    Record<keyof typeof tt, boolean>
+  >({});
+  useEffect(() => {
+    const bb = getCredentialDetails(
+      selectedCredential ? selectedCredential.id : ''
+    );
+    setTT(bb);
+    const obj: Record<string, boolean> = {};
+    Object.keys(bb).forEach((key) => {
+      obj[key] = false;
+    });
+    setCanDisplayClaimValue(obj);
+  }, [selectedCredential]);
 
-  const [showAll, setShowAll] = useState<boolean>(false);
+  function handleShowAllValues() {
+    const obj: Record<string, boolean> = {};
+    const values = Object.values(canDisplayClaimValue);
+    Object.keys(canDisplayClaimValue).forEach(
+      (claim) => (obj[claim] = !values.includes(true) ? true : false)
+    );
+    setCanDisplayClaimValue(obj);
+  }
+
+  function handleShowClaimValue(claimKey: string) {
+    setCanDisplayClaimValue((prev) => {
+      return { ...prev, [claimKey]: !prev[claimKey] };
+    });
+  }
+
   return (
     <Dialog
       fullScreen
@@ -69,9 +98,11 @@ export default function CredentialDetails({
             color="secondary"
             size="small"
             sx={{ justifySelf: 'end' }}
-            onClick={() => setShowAll((prev) => !prev)}
+            onClick={handleShowAllValues}
           >
-            {showAll ? 'Hide All' : 'Show All'}
+            {!Object.values(canDisplayClaimValue).includes(true)
+              ? 'Show All'
+              : 'Hide All'}
           </Button>
 
           <Box
@@ -85,18 +116,16 @@ export default function CredentialDetails({
           >
             {Object.keys(tt).map((attr, index) => (
               <CredentialDetailLine
+                key={index}
                 title={attr}
                 value={tt[attr as keyof typeof tt]}
-                showAll={showAll}
+                handleShowValue={() => handleShowClaimValue(attr)}
+                showClaimValue={canDisplayClaimValue[attr as keyof typeof tt]}
               />
             ))}
           </Box>
 
-          <Button
-            variant="text"
-            color="error"
-            fullWidth
-          >
+          <Button variant="text" color="error" fullWidth>
             Remove Credential
           </Button>
         </Box>
