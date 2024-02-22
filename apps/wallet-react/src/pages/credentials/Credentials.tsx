@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import AuthleteLogo from '../../assets/authlete-logo.png';
+import ConfirmDeleteVCDialog from '../../components/credentials/ConfirmDeleteVCDialog';
 import CredentialCard from '../../components/credentials/CredentialCard';
 import CredentialCardSkeleton from '../../components/credentials/CredentialCardSkeleton';
 import CredentialDetails from '../../components/credentials/CredentialDetails';
@@ -39,13 +40,26 @@ export default function Credentials() {
 
   const [selectedCredential, setSelectedCredential] =
     useState<IVerifiableCredential>();
+  const [isConfirmDeleteVCDialogOpen, setIsConfirmDeleteVCDialogOpen] =
+    useState<boolean>(false);
 
   return (
     <>
       <CredentialDetails
         closeDialog={() => setSelectedCredential(undefined)}
-        isDialogOpen={!!selectedCredential}
+        isDialogOpen={!!selectedCredential && !isConfirmDeleteVCDialogOpen}
         selectedCredential={selectedCredential}
+        deleteVC={() => {
+          setIsConfirmDeleteVCDialogOpen(true);
+        }}
+      />
+      <ConfirmDeleteVCDialog
+        closeDialog={() => setIsConfirmDeleteVCDialogOpen(false)}
+        confirmDelete={() => {
+          setIsConfirmDeleteVCDialogOpen(false);
+          setSelectedCredential(undefined);
+        }}
+        isDialogOpen={isConfirmDeleteVCDialogOpen}
       />
       <Box
         sx={{

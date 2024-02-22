@@ -1,4 +1,4 @@
-import { Box, Button, Dialog } from '@mui/material';
+import { Box, Button, Dialog, Divider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { IVerifiableCredential } from '../../pages/credentials/Credentials';
 import BackTitleBar from '../layout/BackTitleBar';
@@ -17,10 +17,12 @@ export default function CredentialDetails({
   isDialogOpen,
   closeDialog,
   selectedCredential,
+  deleteVC,
 }: {
   isDialogOpen: boolean;
   closeDialog: () => void;
   selectedCredential?: IVerifiableCredential;
+  deleteVC: () => void;
 }) {
   // TODO: FUNCTION WILL GET THE DETAILS OF A CREDENTIAL WHEN GIVEN A credential_id
   function getCredentialDetails(credential_id: string): IVcData {
@@ -88,7 +90,7 @@ export default function CredentialDetails({
           sx={{
             padding: '16px',
             display: 'grid',
-            gridTemplateRows: 'auto 1fr auto',
+            gridTemplateRows: 'auto 1fr auto auto',
             rowGap: '8px',
           }}
         >
@@ -125,8 +127,9 @@ export default function CredentialDetails({
               />
             ))}
           </Box>
+          <Divider sx={{ width: '80%', height: '', justifySelf: 'center' }} />
 
-          <Button variant="text" color="error" fullWidth>
+          <Button variant="text" color="error" fullWidth onClick={deleteVC}>
             Remove Credential
           </Button>
         </Box>
