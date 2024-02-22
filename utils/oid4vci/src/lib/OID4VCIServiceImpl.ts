@@ -1,14 +1,16 @@
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
 import { IdentityProofGenerator } from '../core/IdentityProofGenerator';
+import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
+import { EventEmitter } from 'eventemitter3';
+import { ServiceResponse } from './types';
+import { CredentialStorage } from './schemas/CredentialDBSchema';
+
 import {
   GrantType,
   PRE_AUTHORIZED_GRANT_TYPE,
   ResolvedCredentialOffer,
 } from '../lib/types';
-import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
-import { EventEmitter } from 'eventemitter3';
-import { ServiceResponse } from './types';
 
 /**
  * Concrete implementation of the OID4VCI service.
@@ -17,10 +19,16 @@ export class OID4VCIServiceImpl implements OID4VCIService {
   private readonly credentialOfferResolver: CredentialOfferResolver;
   private readonly credentialRequester: CredentialRequester;
 
-  public constructor(private eventBus: EventEmitter) {
+  public constructor(
+    private eventBus: EventEmitter,
+    private storage: CredentialStorage
+  ) {
     const identityProofGenerator = new IdentityProofGenerator();
     this.credentialOfferResolver = new CredentialOfferResolver();
-    this.credentialRequester = new CredentialRequester(identityProofGenerator);
+    this.credentialRequester = new CredentialRequester(
+      identityProofGenerator,
+      storage
+    );
   }
 
   public getEventBus(): EventEmitter {

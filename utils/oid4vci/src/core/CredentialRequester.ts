@@ -22,19 +22,26 @@ import {
   CredentialIssuerMetadata,
   DisplayCredential,
 } from '../lib/types';
+import { CredentialStorage } from '../lib/schemas/CredentialDBSchema';
 
 /**
  * This class is responsible for requesting credentials
  * and handling all post-issuance operations.
  */
 export class CredentialRequester {
-  readonly sdJwtCredentialProcessor = new SdJwtCredentialProcessor();
+  private readonly sdJwtCredentialProcessor: SdJwtCredentialProcessor;
 
   /**
    * Constructor.
    * @param identityProofGenerator an identify proof generator for key binding
+   * @param storage a storage to persist requested issued credentials
    */
-  public constructor(private identityProofGenerator: IdentityProofGenerator) {}
+  public constructor(
+    private identityProofGenerator: IdentityProofGenerator,
+    private storage: CredentialStorage
+  ) {
+    this.sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
+  }
 
   /**
    * Emits a credential issuance request, then processes the issued credential.

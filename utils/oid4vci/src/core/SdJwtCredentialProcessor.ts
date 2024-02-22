@@ -2,6 +2,12 @@ import * as jose from 'jose';
 import sdjwt from '@hopae/sd-jwt';
 import { OID4VCIServiceError } from '../lib/errors';
 import { DisplayCredential, SdJwtProcessedCredential } from '../lib/types';
+import { StoreRecord } from '@datev/storage';
+
+import {
+  CredentialDBSchema,
+  CredentialStorage,
+} from '../lib/schemas/CredentialDBSchema';
 
 /**
  * This class is responsible for processing, ie validating, decoding, and
@@ -11,8 +17,9 @@ import { DisplayCredential, SdJwtProcessedCredential } from '../lib/types';
 export class SdJwtCredentialProcessor {
   /**
    * Constructor.
+   * @param storage a storage to persist requested issued credentials
    */
-  public constructor() {}
+  public constructor(private storage: CredentialStorage) {}
 
   /**
    * Validates, decodes, and stores credential.
@@ -33,7 +40,9 @@ export class SdJwtCredentialProcessor {
       displayCredentialStarter
     );
 
-    return decoded;
+    const stored = await this.storeCredential(decoded);
+
+    return stored;
   }
 
   /**
@@ -105,5 +114,25 @@ export class SdJwtCredentialProcessor {
         claims: disclosed,
       },
     };
+  }
+
+  /**
+   * Stores a processed SD-JWT credential.
+   * @param credential the processed credential to store
+   * @returns the stored credential with a populated identifier
+   */
+  private async storeCredential(
+    credential: SdJwtProcessedCredential
+  ): Promise<SdJwtProcessedCredential> {
+    // Pre-populate a unique identifier
+    credential.display.id = crypto.randomUUID();
+
+    const payload: StoreRecord<CredentialDBSchema> = {
+      key: credential.display.id,
+      value: credential,
+    };
+
+    this.storage.insert('credentialStore', payload);
+    return credential;
   }
 }
