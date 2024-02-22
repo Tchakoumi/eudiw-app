@@ -28,7 +28,7 @@ export const currentTimestampInSecs = (): number => {
 export const fetchIntoDataUrl = async (uri: string): Promise<string> => {
   return await fetch(uri).then(async (response) => {
     if (!response.ok) {
-      throw new Error('Not 2xx response');
+      throw new Error(`${response.status} ${response.statusText}`);
     }
 
     const contentType = response.headers.get('content-type');

@@ -24,7 +24,9 @@ export interface JwtIssuerMetadata {
    * Issuer's public keys. The value of this field MUST be a JSON object containing
    * a valid JWK Set.
    */
-  jwks?: {
-    keys: jose.JWK[];
-  };
+  jwks?: JWKSet;
+}
+
+export interface JWKSet {
+  keys: jose.JWK[];
 }

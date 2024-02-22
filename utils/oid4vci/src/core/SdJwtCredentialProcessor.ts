@@ -69,7 +69,7 @@ export class SdJwtCredentialProcessor {
 
     for (const verifyingKey of verifyingKeys) {
       try {
-        sdjwt.validate(credential, {
+        await sdjwt.validate(credential, {
           publicKey: await jose.importJWK(verifyingKey),
         });
 
@@ -79,7 +79,7 @@ export class SdJwtCredentialProcessor {
       }
     }
 
-    throw new OID4VCIServiceError('Could not verify credential.');
+    throw new OID4VCIServiceError('Could not validate credential.');
   }
 
   /**

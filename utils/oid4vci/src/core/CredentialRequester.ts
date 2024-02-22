@@ -331,7 +331,7 @@ export class CredentialRequester {
   }
 
   /**
-   * Prefill display credential with non-format specific fields.
+   * Prefill display credential with non-claims fields.
    *
    * TODO! Handle i18n.
    *
