@@ -14,6 +14,8 @@ export interface IVerifiableCredentialDetails extends IVerifiableCredential {
   };
 }
 
+type IDisplayClaimValues = Record<string, boolean>;
+
 export default function CredentialDetails({
   isDialogOpen,
   closeDialog,
@@ -23,7 +25,7 @@ export default function CredentialDetails({
   closeDialog: () => void;
   selectedCredential?: IVerifiableCredential;
 }) {
-  // TODO: FUNCTION WILL GET THE DETAILS OF A CREDENTIAL WHEN GIVEN A CREDENTIAL_ID
+  // TODO: FUNCTION WILL GET THE DETAILS OF A CREDENTIAL WHEN GIVEN A credential_id
   function getCredentialDetails(credential_id: string) {
     return {
       'Phone number': 'Hans Schreiner',
@@ -31,32 +33,32 @@ export default function CredentialDetails({
       address: 'Johannessgase #626',
     };
   }
-  //   const tt = getCredentialDetails(
-  //     selectedCredential ? selectedCredential.id : ''
-  //   );
-  const [tt, setTT] = useState<Record<string, string>>({});
+  const [vcData, setVcData] = useState<Record<string, string>>({});
   const [canDisplayClaimValue, setCanDisplayClaimValue] = useState<
-    Record<keyof typeof tt, boolean>
+    Record<keyof typeof vcData, boolean>
   >({});
   useEffect(() => {
-    const bb = getCredentialDetails(
+    const vcData = getCredentialDetails(
       selectedCredential ? selectedCredential.id : ''
     );
-    setTT(bb);
-    const obj: Record<string, boolean> = {};
-    Object.keys(bb).forEach((key) => {
-      obj[key] = false;
+    setVcData(vcData);
+    const claimValuesDisplayStatus: IDisplayClaimValues = {};
+    Object.keys(vcData).forEach((key) => {
+      claimValuesDisplayStatus[key] = false;
     });
-    setCanDisplayClaimValue(obj);
+    setCanDisplayClaimValue(claimValuesDisplayStatus);
   }, [selectedCredential]);
 
   function handleShowAllValues() {
-    const obj: Record<string, boolean> = {};
+    const claimValuesDisplayStatus: IDisplayClaimValues = {};
     const values = Object.values(canDisplayClaimValue);
     Object.keys(canDisplayClaimValue).forEach(
-      (claim) => (obj[claim] = !values.includes(true) ? true : false)
+      (claim) =>
+        (claimValuesDisplayStatus[claim] = !values.includes(true)
+          ? true
+          : false)
     );
-    setCanDisplayClaimValue(obj);
+    setCanDisplayClaimValue(claimValuesDisplayStatus);
   }
 
   function handleShowClaimValue(claimKey: string) {
@@ -114,13 +116,15 @@ export default function CredentialDetails({
               overflow: 'auto',
             }}
           >
-            {Object.keys(tt).map((attr, index) => (
+            {Object.keys(vcData).map((claimKey, index) => (
               <CredentialDetailLine
                 key={index}
-                title={attr}
-                value={tt[attr as keyof typeof tt]}
-                handleShowValue={() => handleShowClaimValue(attr)}
-                showClaimValue={canDisplayClaimValue[attr as keyof typeof tt]}
+                title={claimKey}
+                value={vcData[claimKey as keyof typeof vcData]}
+                handleShowValue={() => handleShowClaimValue(claimKey)}
+                showClaimValue={
+                  canDisplayClaimValue[claimKey as keyof typeof vcData]
+                }
               />
             ))}
           </Box>
