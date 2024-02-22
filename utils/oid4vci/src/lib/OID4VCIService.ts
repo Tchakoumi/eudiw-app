@@ -34,10 +34,15 @@ export interface OID4VCIService {
   /**
    * Requests a credential from a credential issuer given a credential type.
    *
-   * @param resolvedCredentialOffer a credential offer object with discovery metadata.
-   * @param credentialTypeKey a credential type identifier as specified in the
+   * The service replies on `OID4VCIServiceEventChannel.???`
+   * with either:
+   * - a displayable credential,
+   * - or an error message indicative of what went wrong.
+   *
+   * @param opts.resolvedCredentialOffer a credential offer object with discovery metadata.
+   * @param opts.credentialTypeKey a credential type identifier as specified in the
    * credential issuer metadata.
-   * @param grantType a grant type indicative of the issuance flow type, Authorize or
+   * @param opts.grantType a grant type indicative of the issuance flow type, Authorize or
    * Pre-Authorized.
    */
   requestCredentialIssuance(opts: {

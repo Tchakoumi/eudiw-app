@@ -6,6 +6,7 @@ import { TokenResponse } from '../lib/types/tmp';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
 import { CLIENT_ID } from '../config';
+import { fetchIntoDataUrl } from '../utils';
 
 import {
   DiscoveryMetadata,
@@ -18,27 +19,41 @@ import {
   AuthorizationServerMetadata,
   CredentialOffer,
   CredentialSupported,
-  ProcessedCredential,
   CredentialIssuerMetadata,
   DisplayCredential,
 } from '../lib/types';
 
+/**
+ * This class is responsible for requesting credentials
+ * and handling all post-issuance operations.
+ */
 export class CredentialRequester {
   readonly sdJwtCredentialProcessor = new SdJwtCredentialProcessor();
 
   /**
    * Constructor.
+   * @param identityProofGenerator an identify proof generator for key binding
    */
   public constructor(private identityProofGenerator: IdentityProofGenerator) {}
 
   /**
-   * Emits a credential issuance request.
+   * Emits a credential issuance request, then processes the issued credential.
+   *
+   * This includes validating and persisting the credential.
+   *
+   * @param resolvedCredentialOffer a credential offer object with discovery metadata.
+   * @param credentialTypeKey a credential type identifier as specified in the
+   * credential issuer metadata.
+   * @param grantType a grant type indicative of the issuance flow type, Authorize or
+   * Pre-Authorized.
+   *
+   * @returns a displayable credential with all fields disclosed.
    */
   public async requestCredentialIssuance(
     resolvedCredentialOffer: ResolvedCredentialOffer,
     credentialTypeKey: string,
     grantType: GrantType
-  ): Promise<ProcessedCredential> {
+  ): Promise<DisplayCredential> {
     const { credentialOffer, discoveryMetadata } = resolvedCredentialOffer;
 
     // Enforce grant type to match the pre-authorized flow
@@ -95,11 +110,17 @@ export class CredentialRequester {
         displayCredentialStarter
       );
 
-    return processedCredential;
+    return processedCredential.display;
   }
 
   /**
    * Requests access token.
+   *
+   * @param grantType a grant type indicative of the issuance flow type
+   * @param credentialOffer a credential offer object embedding authorization means
+   * @param authorizationServerMetadata the metadata of the target authorization server
+   *
+   * @returns an OAuth token response
    */
   private async requestAccessToken(
     grantType: string,
@@ -132,6 +153,12 @@ export class CredentialRequester {
 
   /**
    * Prepares credential issuance request.
+   *
+   * @param credentialTypeKey a credential type identifier
+   * @param discoveryMetadata the discovered metadata upon credential offer resolution
+   * @param nonce a server-provided nonce value for key proof
+   *
+   * @returns a set of parameters to send a credential request
    */
   private async prepareCredentialIssuanceRequest(
     credentialTypeKey: string,
@@ -200,6 +227,10 @@ export class CredentialRequester {
    * Extracts credential type selector from credential issuer metadata.
    *
    * This encompasses specific fields to uniquely identify a credential type.
+   *
+   * @param credentialSupported the target credential type's configuration metadata
+   *
+   * @returns the specific fields to uniquely identify the credential type
    */
   private extractCredentialTypeSelector(
     credentialSupported: CredentialSupported
@@ -217,6 +248,11 @@ export class CredentialRequester {
 
   /**
    * Sends HTTP request for credential issuance.
+   *
+   * @param params a set of parameters to send a credential request
+   * @param accessToken a bearer token for authorization at the credential endpoint
+   *
+   * @returns the issued credential as is
    */
   private async sendCredentialRequest(
     params: CredentialRequestParams,
@@ -254,6 +290,8 @@ export class CredentialRequester {
 
   /**
    * Resolve issuer verifying keys.
+   * @param discoveryMetadata the discovered metadata upon credential offer resolution
+   * @returns an array of potential verifying keys
    */
   private async resolveIssuerVerifyingKeys(
     discoveryMetadata: DiscoveryMetadata
@@ -289,6 +327,12 @@ export class CredentialRequester {
    * Prefill display credential with non-format specific fields.
    *
    * TODO! Handle i18n.
+   *
+   * @param credentialIssuerMetadata the target credential issuer's metadata
+   * @param credentialTypeKey a credential type identifier
+   * @param locale the user's locale
+   *
+   * @returns a pre-filled display credential
    */
   private async prefillDisplayCredential(
     credentialIssuerMetadata: CredentialIssuerMetadata,
@@ -300,41 +344,28 @@ export class CredentialRequester {
         credentialTypeKey
       ];
 
-    // Read title
-    const title =
-      credentialSupported?.display?.find(
-        (e) => e.locale == undefined || e.locale == locale
-      )?.name ?? credentialTypeKey;
-
-    // Issuer display metadata
-    const display = credentialIssuerMetadata.display?.find(
+    // Credential display metadata
+    let display = credentialSupported?.display?.find(
       (e) => e.locale == undefined || e.locale == locale
     );
 
-    // Read issuer
-    const issuer = display?.name ?? credentialIssuerMetadata.credential_issuer;
+    // Read title
+    const title = display?.name ?? credentialTypeKey;
+
+    // Issuer display metadata
+    display = credentialIssuerMetadata.display?.find(
+      (e) => e.locale == undefined || e.locale == locale
+    );
+
+    // Read issuer name
+    const issuer =
+      display?.name ?? new URL(credentialIssuerMetadata.credential_issuer).host;
 
     // Fetch logo
-    const logo = display?.logo?.uri ?? display?.logo?.url;
-    // if (logo?.startsWith('http://') || logo?.startsWith('https://')) {
-    //   logo = await fetch(logo)
-    //     .then((response) => {
-    //       if (!response.ok) {
-    //         throw new Error('Not 2xx response');
-    //       }
-
-    //       return response.blob();
-    //     })
-    //     .then((blob) => {
-    //       const reader = new FileReader();
-    //       reader.onloadend = function () {
-    //         const base64String = reader.result;
-    //         console.log('Base64:', base64String);
-    //       };
-    //       reader.readAsDataURL(blob);
-    //     })
-    //     .catch(() => logo);
-    // }
+    let logo = display?.logo?.uri ?? display?.logo?.url;
+    if (logo?.startsWith('http://') || logo?.startsWith('https://')) {
+      logo = await fetchIntoDataUrl(logo).catch(() => logo);
+    }
 
     return { title, issuer, logo } satisfies DisplayCredential;
   }

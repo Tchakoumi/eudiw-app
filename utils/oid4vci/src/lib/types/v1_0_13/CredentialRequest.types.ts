@@ -1,9 +1,3 @@
-export interface CredentialRequestParams {
-  credentialTypeSelector: CredentialTypeSelector;
-  credentialEndpoint: string;
-  keyProof?: KeyProof;
-}
-
 export type CredentialTypeSelector =
   | {
       format: 'jwt_vc_json' | 'ldp_vc' | 'jwt_vc_json-ld';
@@ -41,22 +35,4 @@ export interface CredentialResponse {
   credential: string;
   c_nonce: string;
   c_nonce_expires_in: number;
-}
-
-export type ProcessedCredential = SdJwtProcessedCredential;
-
-export interface SdJwtProcessedCredential {
-  encoded: string;
-  display: DisplayCredential;
-}
-
-export interface DisplayCredential {
-  id?: string;
-  title?: string;
-  issuer?: string;
-  logo?: string;
-
-  // Specific claims
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [x: string]: any;
 }

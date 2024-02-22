@@ -3,6 +3,11 @@ import sdjwt from '@hopae/sd-jwt';
 import { OID4VCIServiceError } from '../lib/errors';
 import { DisplayCredential, SdJwtProcessedCredential } from '../lib/types';
 
+/**
+ * This class is responsible for processing, ie validating, decoding, and
+ * storing SD-JWT credentials. It handles all further actions to apply to
+ * an issued SD-JWT encoded credential.
+ */
 export class SdJwtCredentialProcessor {
   /**
    * Constructor.
@@ -33,6 +38,9 @@ export class SdJwtCredentialProcessor {
 
   /**
    * Validates SD-JWT credential.
+   * @param credential the credential to validate
+   * @param verifyingKeys the issuer keys to validate the credential
+   * @returns the verifying key that successfully validated the credential
    */
   private async validateCredential(
     credential: string,
@@ -66,6 +74,9 @@ export class SdJwtCredentialProcessor {
 
   /**
    * Decodes SD-JWT credential.
+   * @param credential the credential to decode
+   * @param displayCredentialStarter a starter for displayable fields
+   * @returns a persistable representation of the credential
    */
   private async decodeCredential(
     credential: string,
@@ -90,8 +101,8 @@ export class SdJwtCredentialProcessor {
       encoded: credential,
       display: {
         ...displayCredentialStarter,
-        iat: claims['iat'],
-        ...disclosed,
+        issued_at: claims['iat'],
+        claims: disclosed,
       },
     };
   }
