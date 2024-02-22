@@ -9,5 +9,5 @@ export interface CredentialDBSchema extends DBSchema {
   };
 }
 
-// export const credentialStoreName = 'credentialStore' as const;
+export const credentialStoreName = 'credentialStore';
 export type CredentialStorage = StorageFactory<CredentialDBSchema>;

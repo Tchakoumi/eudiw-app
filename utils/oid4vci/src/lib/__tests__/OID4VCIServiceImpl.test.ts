@@ -4,6 +4,7 @@ import EventEmitter from 'eventemitter3';
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
 import { ResolvedCredentialOffer, ServiceResponse } from '../types';
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
 
 import {
   authorizationServerMetadataRef1,
@@ -12,12 +13,12 @@ import {
   jwtIssuerMetadataRef1,
   encodeCredentialOffer,
   nockReplyWithMetadataRef1,
+  storage,
 } from '../../core/__tests__/fixtures';
-import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
 
 describe('OID4VCIServiceImpl', () => {
   const eventBus = new EventEmitter();
-  const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);
+  const service: OID4VCIService = new OID4VCIServiceImpl(eventBus, storage);
 
   beforeAll(async () => {
     nock.disableNetConnect();

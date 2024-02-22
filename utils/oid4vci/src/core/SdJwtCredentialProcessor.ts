@@ -7,6 +7,7 @@ import { StoreRecord } from '@datev/storage';
 import {
   CredentialDBSchema,
   CredentialStorage,
+  credentialStoreName,
 } from '../lib/schemas/CredentialDBSchema';
 
 /**
@@ -132,7 +133,7 @@ export class SdJwtCredentialProcessor {
       value: credential,
     };
 
-    this.storage.insert('credentialStore', payload);
+    this.storage.insert(credentialStoreName, payload);
     return credential;
   }
 }

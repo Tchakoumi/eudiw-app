@@ -7,6 +7,7 @@ import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
 import { CLIENT_ID } from '../config';
 import { fetchIntoDataUrl } from '../utils';
+import { CredentialStorage } from '../lib/schemas/CredentialDBSchema';
 
 import {
   DiscoveryMetadata,
@@ -22,7 +23,6 @@ import {
   CredentialIssuerMetadata,
   DisplayCredential,
 } from '../lib/types';
-import { CredentialStorage } from '../lib/schemas/CredentialDBSchema';
 
 /**
  * This class is responsible for requesting credentials
@@ -146,12 +146,12 @@ export class CredentialRequester {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const tokenResponse: TokenResponse = {
-      access_token: 'IPuHfCiJUkamvVuY2Vn2e47J7c5s9wedHYcGlXBR7GY',
+      access_token: '_KqJ5DH-JCSGsUJiJvYyAkp-RVk_xHvDHL55u7XqCgc',
       token_type: 'Bearer',
       expires_in: 86400,
       scope: null,
-      refresh_token: 'fnKw1U8dtxXK-Id74AIK-1tQl64j0qCy3Jjkwdocv-8',
-      c_nonce: 'ydgr1wPZ2xaOg7wmmZcUIJk0bFDZFghCcyEn3LqwFGY',
+      refresh_token: 'e7ROQXImyywhYnKgS1K4Hy5OX8FBPgmBCQg79PjvfLY',
+      c_nonce: 'QhVfho_Ar4oNAnPF8rrmSr5qjL8i-99ehaV5VIG7hSI',
       c_nonce_expires_in: 86400,
     };
 
