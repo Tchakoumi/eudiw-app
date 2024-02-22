@@ -7,14 +7,11 @@ import CredentialCard from './CredentialCard';
 import CredentialDetailLine from './CredentialDetailLine';
 
 export interface IVerifiableCredentialDetails extends IVerifiableCredential {
-  claims: {
-    'phone number': 'Hans Schreiner';
-    'email address': 'hans.schreiner@datev.com';
-    addres: 'Johannessgase #626';
-  };
+  claims: IVcData;
 }
 
 type IDisplayClaimValues = Record<string, boolean>;
+type IVcData = Record<string, string>;
 
 export default function CredentialDetails({
   isDialogOpen,
@@ -26,14 +23,14 @@ export default function CredentialDetails({
   selectedCredential?: IVerifiableCredential;
 }) {
   // TODO: FUNCTION WILL GET THE DETAILS OF A CREDENTIAL WHEN GIVEN A credential_id
-  function getCredentialDetails(credential_id: string) {
+  function getCredentialDetails(credential_id: string): IVcData {
     return {
       'Phone number': 'Hans Schreiner',
       'email address': 'hans.schreiner@datev.com',
       address: 'Johannessgase #626',
     };
   }
-  const [vcData, setVcData] = useState<Record<string, string>>({});
+  const [vcData, setVcData] = useState<IVcData>({});
   const [canDisplayClaimValue, setCanDisplayClaimValue] = useState<
     Record<keyof typeof vcData, boolean>
   >({});
