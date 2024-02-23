@@ -10,7 +10,7 @@ export default function CredentialCard({
 }) {
   return (
     <Box
-      onClick={()=>openDetails?openDetails():null}
+      onClick={() => (openDetails ? openDetails() : null)}
       sx={{
         background: '#FFFFFF',
         padding: '24px',

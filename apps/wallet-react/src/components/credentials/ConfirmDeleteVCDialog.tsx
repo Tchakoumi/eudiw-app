@@ -2,14 +2,14 @@ import caret from '@iconify/icons-fluent/chevron-down-24-filled';
 import dot from '@iconify/icons-fluent/circle-24-filled';
 import { Icon } from '@iconify/react';
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Button,
-    CircularProgress,
-    Dialog,
-    Typography,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Typography,
 } from '@mui/material';
 import { useState } from 'react';
 import BackTitleBar from '../layout/BackTitleBar';
