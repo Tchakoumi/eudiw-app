@@ -34,7 +34,7 @@ export default function CredentialDetails({
   }
   const [vcData, setVcData] = useState<IVcData>({});
   const [canDisplayClaimValue, setCanDisplayClaimValue] = useState<
-    Record<keyof typeof vcData, boolean>
+    Record<string, boolean>
   >({});
   useEffect(() => {
     const vcData = getCredentialDetails(
@@ -127,7 +127,7 @@ export default function CredentialDetails({
               />
             ))}
           </Box>
-          <Divider sx={{ width: '80%', height: '', justifySelf: 'center' }} />
+          <Divider sx={{ width: '80%', justifySelf: 'center' }} />
 
           <Button variant="text" color="error" fullWidth onClick={deleteVC}>
             Remove Credential
