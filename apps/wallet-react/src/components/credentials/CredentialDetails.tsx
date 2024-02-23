@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, Divider } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { IVerifiableCredential } from '../../pages/credentials/Credentials';
+import { IVerifiableCredential } from '../credential-offer/credentials.types';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
 import CredentialCard from './CredentialCard';

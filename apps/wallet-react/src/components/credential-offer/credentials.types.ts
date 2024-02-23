@@ -43,3 +43,11 @@ export interface ICredentialCard {
   issuer: string;
   data: CredentialConfiguration;
 }
+
+export interface IVerifiableCredential {
+  id: string;
+  title: string;
+  subtitle: string;
+  issuer: string;
+  logo: string;
+}
