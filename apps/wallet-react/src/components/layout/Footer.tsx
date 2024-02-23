@@ -1,33 +1,40 @@
-import list from '@iconify/icons-fluent/apps-list-24-regular';
-import connected from '@iconify/icons-fluent/connected-20-regular';
+import home from '@iconify/icons-fluent/home-24-regular';
+import homeFilled from '@iconify/icons-fluent/home-24-filled';
 import qr from '@iconify/icons-fluent/qr-code-28-filled';
-import settings from '@iconify/icons-fluent/settings-48-regular';
 import wallet from '@iconify/icons-fluent/wallet-48-regular';
+import walletFilled from '@iconify/icons-fluent/wallet-48-filled';
 import { Icon, IconifyIcon } from '@iconify/react';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 import line from '../../assets/line.png';
 import { useTheme } from '../../utils/theme';
-import { useNavigate } from 'react-router-dom';
 
 interface INavElements {
   icon: IconifyIcon;
   title: string;
+  route: string;
   isMain?: boolean;
-  action?: () => void;
 }
 
-export default function Footer() {
+export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
+  const location = useLocation();
   const NAV_ELEMENTS: INavElements[] = [
-    { icon: wallet, title: 'Wallet' },
-    { icon: connected, title: 'Contacts' },
+    {
+      icon: location.pathname === '/' ? homeFilled : home,
+      title: 'Home',
+      route: '/',
+    },
     {
       icon: qr,
       title: 'QR Code',
       isMain: true,
-      action: () => push('scan'),
+      route: '/scan',
     },
-    { icon: list, title: 'Activities' },
-    { icon: settings, title: 'Settings' },
+    {
+      icon: location.pathname === '/credentials' ? walletFilled : wallet,
+      title: 'Credentials',
+      route: '/credentials',
+    },
   ];
 
   const theme = useTheme();
@@ -42,17 +49,19 @@ export default function Footer() {
         padding: '12.5px 21px',
       }}
     >
-      <img
-        src={line}
-        alt="line"
-        style={{
-          position: 'absolute',
-          top: '-80px',
-          left: '51%',
-          transform: 'translate(-50%, -50%)',
-        }}
-      />
-      {NAV_ELEMENTS.map(({ icon, title, action, isMain }, index) => (
+      {showArrow && (
+        <img
+          src={line}
+          alt="line"
+          style={{
+            position: 'absolute',
+            top: '-80px',
+            left: '51%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      )}
+      {NAV_ELEMENTS.map(({ icon, title, isMain, route }, index) => (
         <Box
           key={index}
           sx={{
@@ -63,7 +72,7 @@ export default function Footer() {
         >
           <Tooltip arrow title={title}>
             <IconButton
-              onClick={() => (action ? action() : null)}
+              onClick={() => push(route)}
               size={isMain ? 'large' : 'medium'}
               sx={{
                 width: 'fit-content',
@@ -84,7 +93,10 @@ export default function Footer() {
             </IconButton>
           </Tooltip>
           <Typography
-            sx={{ fontWeight: 400, alignSelf: 'end' }}
+            sx={{
+              fontWeight: location.pathname === route ? 700 : 400,
+              alignSelf: 'end',
+            }}
             variant="subtitle2"
           >
             {title}

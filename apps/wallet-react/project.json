@@ -12,7 +12,7 @@
         "compiler": "babel",
         "outputPath": "dist/apps/wallet-react",
         "index": "apps/wallet-react/src/index.html",
-        "baseHref": "https://adorsys.github.io/eudiw-app/",
+        "baseHref": "/",
         "main": "apps/wallet-react/src/main.tsx",
         "tsConfig": "apps/wallet-react/tsconfig.app.json",
         "assets": [
@@ -52,8 +52,7 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "wallet-react:build",
-        "hmr": true,
-        "port": 3000
+        "hmr": true
       },
       "configurations": {
         "development": {
