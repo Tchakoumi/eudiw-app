@@ -60,7 +60,7 @@ export default function Credentials() {
         confirmDelete={() => {
           setIsConfirmDeleteVCDialogOpen(false);
           setSelectedCredential(undefined);
-          setShowDeleteSnackbar(true)
+          setShowDeleteSnackbar(true);
         }}
         isDialogOpen={isConfirmDeleteVCDialogOpen}
       />
