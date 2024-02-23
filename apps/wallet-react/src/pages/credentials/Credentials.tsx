@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import AuthleteLogo from '../../assets/authlete-logo.png';
+import { IVerifiableCredential } from '../../components/credential-offer/credentials.types';
 import ConfirmDeleteVCDialog from '../../components/credentials/ConfirmDeleteVCDialog';
 import CredentialCard from '../../components/credentials/CredentialCard';
 import CredentialCardSkeleton from '../../components/credentials/CredentialCardSkeleton';
@@ -8,14 +9,6 @@ import CredentialDetails from '../../components/credentials/CredentialDetails';
 import NoCredentials from '../../components/credentials/NoCredentials';
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
-
-export interface IVerifiableCredential {
-  id: string;
-  title: string;
-  subtitle: string;
-  issuer: string;
-  logo: string;
-}
 
 export default function Credentials() {
   const [credentials, setCredentials] = useState<IVerifiableCredential[]>([]);
