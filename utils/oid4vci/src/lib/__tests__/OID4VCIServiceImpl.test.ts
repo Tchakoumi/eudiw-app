@@ -61,7 +61,7 @@ describe('OID4VCIServiceImpl', () => {
     });
   });
 
-  it('should channel back errors', async () => {
+  it('should channel back errors (credential offer resolution)', async () => {
     const credentialOffer = 'invalid-credential-offer';
 
     const callback = jest.fn(() => {
