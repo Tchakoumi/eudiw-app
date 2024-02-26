@@ -53,6 +53,10 @@ describe('StorageFactory', () => {
       value: { data: { value: 'Storing with incremental key' } },
     },
   };
+  const unknownValues = {
+    store: 'unknownStore' as StoreNames<TestDBSchema>,
+    key: 'john_smith_unknow_key',
+  };
 
   beforeAll(() => {
     storageFactory = new StorageFactory<TestDBSchema>('testDB', 1, {
@@ -147,7 +151,7 @@ describe('StorageFactory', () => {
 
     const record2 = await storageFactory.findOne(
       'inlineKeyStore',
-      'john_smith_unknow_key'
+      unknownValues.key
     );
     expect(record2).toBe(null);
   });
@@ -175,49 +179,50 @@ describe('StorageFactory', () => {
   });
 
   it('should update value in store', async () => {
-    const updateFn = jest.fn((storeName: StoreNames<TestDBSchema>) =>
-      storageFactory.update(storeName, testData.inlineKeyStore.value.inlineId, {
+    const updateFn = (key: IDBValidKey) =>
+      storageFactory.update('inlineKeyStore', key, {
         name: 'Jean Kamdem',
-      })
-    );
-
-    expect(updateFn('inlineKeyStore')).resolves.not.toThrow();
-    expect(updateFn('testStore')).rejects.toThrow(
-      `No such key as john_smith_key in store`
+      });
+    const inlineId = testData.inlineKeyStore.value.inlineId;
+    await expect(updateFn(inlineId)).resolves.not.toThrow();
+    await expect(updateFn(unknownValues.key)).rejects.toThrow(
+      `No such key as ${unknownValues.key} in store`
     );
   });
 
-  it('should delete value in store', () => {
+  it('should delete value in store', async () => {
     const inlineId = testData.inlineKeyStore.value.inlineId;
-    expect(
+    await expect(
       storageFactory.delete('inlineKeyStore', inlineId)
     ).resolves.not.toThrow();
 
-    expect(
-      storageFactory.delete('someStore' as StoreNames<TestDBSchema>, inlineId)
-    ).rejects.toThrow('No objectStore named someStore in this database');
+    await expect(
+      storageFactory.delete(unknownValues.store, inlineId)
+    ).rejects.toThrow(
+      'StorageError: No objectStore named unknownStore in this database'
+    );
   });
 
-  it('should delete many values in store', () => {
+  it('should delete many values in store', async () => {
     const keysToBeDelected: IDBValidKey[] = [
       testData.inlineKeyStore.value.inlineId,
     ];
 
-    expect(storageFactory.deleteMany('testStore')).resolves.not.toThrow();
-    expect(
+    await expect(storageFactory.deleteMany('testStore')).resolves.not.toThrow();
+    await expect(
       storageFactory.deleteMany('inlineKeyStore', keysToBeDelected)
     ).resolves.not.toThrow();
 
     // will only delete data for existing keys, will then ignored `test_value_1` key
-    expect(
+    await expect(
       storageFactory.deleteMany('inlineKeyStore', [
         ...keysToBeDelected,
         'test_value_1',
       ])
     ).resolves.not.toThrow();
 
-    expect(
-      storageFactory.deleteMany('unknownStore' as StoreNames<TestDBSchema>)
+    await expect(
+      storageFactory.deleteMany(unknownValues.store)
     ).rejects.toThrow();
   });
 
@@ -259,8 +264,8 @@ describe('StorageFactory', () => {
           },
           transaction
         );
-        storageFactory.findOne('testStore', 'tx_key_1', transaction);
-        storageFactory.update(
+        await storageFactory.findOne('testStore', 'tx_key_1', transaction);
+        await storageFactory.update(
           'testStore',
           'tx_key_1',
           'tx_value_2',
@@ -275,12 +280,25 @@ describe('StorageFactory', () => {
       transactionCallback
     );
     expect(transactionCallback).toHaveBeenCalled();
+
+    await expect(
+      storageFactory.$transaction(
+        ['testStore'],
+        'readonly',
+        transactionCallback as unknown as TransactionCallback<
+          TestDBSchema,
+          'readonly'
+        >
+      )
+    ).rejects.toThrow(
+      'StorageError: The mutating operation was attempted in a "readonly" transaction.'
+    );
   });
 
-  it('should clear all data in store', () => {
-    expect(storageFactory.clear('testStore')).resolves.not.toThrow();
-    expect(
-      storageFactory.clear('someStore' as StoreNames<TestDBSchema>)
-    ).rejects.toThrow('No objectStore named someStore in this database');
+  it('should clear all data in store', async () => {
+    await expect(storageFactory.clear('testStore')).resolves.not.toThrow();
+    await expect(storageFactory.clear(unknownValues.store)).rejects.toThrow(
+      'StorageError: No objectStore named unknownStore in this database'
+    );
   });
 });

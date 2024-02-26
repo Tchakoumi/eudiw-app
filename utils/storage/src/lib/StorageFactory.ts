@@ -113,9 +113,9 @@ export class StorageFactory<T extends DBSchema> {
     const allKeys = await this.db.getAllKeys(storeName);
 
     const txn = tx ?? this.db.transaction(storeName, 'readonly');
-    const result = await Promise.all([
-      ...allKeys.map((key) => txn.objectStore(storeName).get(key)),
-    ]);
+    const result = await Promise.all(
+      allKeys.map((key) => txn.objectStore(storeName).get(key))
+    );
 
     if (!tx) await txn.done;
     return result.map(
