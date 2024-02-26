@@ -10,14 +10,14 @@ export const formPost = async <T>(
     accept?: string;
     customHeaders?: Record<string, string>;
     exceptionOnHttpErrorStatus?: boolean;
-  },
+  }
 ): Promise<OpenIDResponse<T>> => {
   return await post(
     url,
     body,
     opts?.contentType
       ? { ...opts }
-      : { contentType: Encoding.FORM_URL_ENCODED, ...opts },
+      : { contentType: Encoding.FORM_URL_ENCODED, ...opts }
   );
 };
 
@@ -30,7 +30,7 @@ export const post = async <T>(
     accept?: string;
     customHeaders?: Record<string, string>;
     exceptionOnHttpErrorStatus?: boolean;
-  },
+  }
 ): Promise<OpenIDResponse<T>> => {
   return await openIdFetch(url, body, { method: 'POST', ...opts });
 };
@@ -45,12 +45,15 @@ const openIdFetch = async <T>(
     accept?: string;
     customHeaders?: Record<string, string>;
     exceptionOnHttpErrorStatus?: boolean;
-  },
+  }
 ): Promise<OpenIDResponse<T>> => {
   const headers: Record<string, string> = opts?.customHeaders ?? {};
   if (opts?.bearerToken) {
-    headers['Authorization'] =
-      `Bearer ${typeof opts.bearerToken === 'function' ? await opts.bearerToken() : opts.bearerToken}`;
+    headers['Authorization'] = `Bearer ${
+      typeof opts.bearerToken === 'function'
+        ? await opts.bearerToken()
+        : opts.bearerToken
+    }`;
   }
   const method = opts?.method ? opts.method : body ? 'POST' : 'GET';
   const accept = opts?.accept ? opts.accept : 'application/json';
@@ -58,7 +61,7 @@ const openIdFetch = async <T>(
   if (headers['Content-Type']) {
     if (opts?.contentType && opts.contentType !== headers['Content-Type']) {
       throw Error(
-        `Mismatch in content-types from custom headers (${headers['Content-Type']}) and supplied content type option (${opts.contentType})`,
+        `Mismatch in content-types from custom headers (${headers['Content-Type']}) and supplied content type option (${opts.contentType})`
       );
     }
   } else {

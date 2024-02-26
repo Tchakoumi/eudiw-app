@@ -7,7 +7,7 @@ import {
   GrantTypes,
   OpenIDResponse,
 } from '../types';
-const nock = require('nock');
+import nock from 'nock';
 
 const MOCK_URL = 'https://trial.authlete.net/api';
 const UNIT_TEST_TIMEOUT = 30000;
@@ -60,7 +60,7 @@ describe('AccessTokenResolver', () => {
 
       expect(accessTokenResponse.successBody).toEqual(body);
     },
-    UNIT_TEST_TIMEOUT,
+    UNIT_TEST_TIMEOUT
   );
 
   it(
@@ -79,12 +79,12 @@ describe('AccessTokenResolver', () => {
         accessTokenClient.acquireAccessTokenUsingRequest({
           accessTokenRequest,
           asOpts: { as: MOCK_URL },
-        }),
+        })
       ).rejects.toThrow(
-        'Pre-authorization must be proven by presenting the pre-authorized code. Code must be present.',
+        'Pre-authorization must be proven by presenting the pre-authorized code. Code must be present.'
       );
     },
-    UNIT_TEST_TIMEOUT,
+    UNIT_TEST_TIMEOUT
   );
   // https://openid.github.io/OpenID4VCI/openid-4-verifiable-credential-issuance-wg-draft.html#section-6.3
   // The Authorization Server expects a Transaction Code in the Pre-Authorized Code Flow but the Client does not provide a Transaction Code.
@@ -105,10 +105,10 @@ describe('AccessTokenResolver', () => {
         accessTokenClient.acquireAccessTokenUsingRequest({
           accessTokenRequest,
           asOpts: { as: MOCK_URL },
-        }),
+        })
       ).rejects.toThrow(InvalidCredentialOffer.invalid_client);
     },
-    UNIT_TEST_TIMEOUT,
+    UNIT_TEST_TIMEOUT
   );
 
   it('should throw an error when determining the token URL if necessary parameters are missing', async () => {
@@ -117,11 +117,11 @@ describe('AccessTokenResolver', () => {
         asOpts: undefined,
         issuerOpts: undefined,
         metadata: undefined,
-      }),
+      })
     ).toThrow(
       Error(
-        'Cannot determine token URL if no issuer, metadata and no Authorization Server values are present',
-      ),
+        'Cannot determine token URL if no issuer, metadata and no Authorization Server values are present'
+      )
     );
   });
 
@@ -136,17 +136,16 @@ describe('AccessTokenResolver', () => {
         client_id: '218232426',
       } as AccessTokenRequest;
 
-      nock(MOCK_URL).post(/.*/).replyWithError('invalid_grant', 200);
+      nock(MOCK_URL).post(/.*/).reply(200, 'invalid_grant');
 
-      await expect(
-        accessTokenClient.acquireAccessTokenUsingRequest({
+      const accessTokenResponse: OpenIDResponse<AccessTokenResponse> =
+        await accessTokenClient.acquireAccessTokenUsingRequest({
           accessTokenRequest,
           asOpts: { as: MOCK_URL },
-        }),
-      ).rejects.toThrow(
-        `request to https://trial.authlete.net/api/token failed, reason: invalid_grant`,
-      );
+        });
+
+      expect(accessTokenResponse.successBody).toEqual('invalid_grant');
     },
-    UNIT_TEST_TIMEOUT,
+    UNIT_TEST_TIMEOUT
   );
 });

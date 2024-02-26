@@ -37,11 +37,11 @@ export class AccessTokenClient {
 
   private async sendAuthCode(
     requestTokenURL: string,
-    accessTokenRequest: AccessTokenRequest,
+    accessTokenRequest: AccessTokenRequest
   ): Promise<OpenIDResponse<AccessTokenResponse>> {
     return await formPost(
       requestTokenURL,
-      convertJsonToURI(accessTokenRequest),
+      convertJsonToURI(accessTokenRequest)
     );
   }
 
@@ -55,17 +55,17 @@ export class AccessTokenClient {
   private assertPreAuthorizedGrantType(grantType: GrantTypes): void {
     if (GrantTypes.PRE_AUTHORIZED_CODE !== grantType) {
       throw new Error(
-        "grant type must be 'urn:ietf:params:oauth:grant-type:pre-authorized_code'",
+        "grant type must be 'urn:ietf:params:oauth:grant-type:pre-authorized_code'"
       );
     }
   }
 
   private assertNonEmptyPreAuthorizedCode(
-    accessTokenRequest: AccessTokenRequest,
+    accessTokenRequest: AccessTokenRequest
   ): void {
     if (!accessTokenRequest[PRE_AUTH_CODE_LITERAL]) {
       throw new Error(
-        'Pre-authorization must be proven by presenting the pre-authorized code. Code must be present.',
+        'Pre-authorization must be proven by presenting the pre-authorized code. Code must be present.'
       );
     }
   }
@@ -81,7 +81,7 @@ export class AccessTokenClient {
   }): string {
     if (!asOpts && !metadata?.token_endpoint && !issuerOpts) {
       throw new Error(
-        'Cannot determine token URL if no issuer, metadata and no Authorization Server values are present',
+        'Cannot determine token URL if no issuer, metadata and no Authorization Server values are present'
       );
     }
     let url;
@@ -89,20 +89,20 @@ export class AccessTokenClient {
       url = this.createTokenURLFromURL(
         asOpts.as,
         asOpts?.allowInsecureEndpoints,
-        asOpts.tokenEndpoint,
+        asOpts.tokenEndpoint
       );
     } else if (metadata?.token_endpoint) {
       url = metadata.token_endpoint;
     } else {
       if (!issuerOpts?.issuer) {
         throw Error(
-          'Either authorization server options, a token endpoint or issuer options are required at this point',
+          'Either authorization server options, a token endpoint or issuer options are required at this point'
         );
       }
       url = this.createTokenURLFromURL(
         issuerOpts.issuer,
         asOpts?.allowInsecureEndpoints,
-        issuerOpts.tokenEndpoint,
+        issuerOpts.tokenEndpoint
       );
     }
 
@@ -112,11 +112,11 @@ export class AccessTokenClient {
   private static createTokenURLFromURL(
     url: string,
     allowInsecureEndpoints?: boolean,
-    tokenEndpoint?: string,
+    tokenEndpoint?: string
   ): string {
     if (allowInsecureEndpoints !== true && url.startsWith('http:')) {
       throw Error(
-        `Unprotected token endpoints are not allowed ${url}. Adjust settings if you really need this (dev/test settings only!!)`,
+        `Unprotected token endpoints are not allowed ${url}. Adjust settings if you really need this (dev/test settings only!!)`
       );
     }
     const hostname = url.replace(/https?:\/\//, '').replace(/\/$/, '');
