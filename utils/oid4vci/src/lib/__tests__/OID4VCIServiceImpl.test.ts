@@ -4,6 +4,7 @@ import { eventBus } from '@datev/event-bus';
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
 import { ServiceResponseStatus } from '../types';
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
 
 import {
   authorizationServerMetadataRef1,
@@ -13,7 +14,6 @@ import {
   encodeCredentialOffer,
   nockReplyWithMetadataRef1,
 } from '../../core/__tests__/fixtures';
-import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
 
 describe('OID4VCIServiceImpl', () => {
   const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);
