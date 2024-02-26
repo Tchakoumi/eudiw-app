@@ -1,16 +1,18 @@
 import { Box } from '@mui/material';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CredentialOfferDetails from '../../components/credential-offer/CredentialOfferDetails';
 import CredentialTypeCard from '../../components/credential-offer/CredentialTypeCard';
 import {
   Claims,
   ICredentialCard,
 } from '../../components/credential-offer/credentials.types';
+import BackTitleBar from '../../components/layout/BackTitleBar';
 import Footer from '../../components/layout/Footer';
-import Header from '../../components/layout/Header';
 import { removeUnderscoresFromWord } from '../../utils/common';
 
 export default function CredentialTypes() {
+  const push = useNavigate();
   /*TODO: the CREDENTIAL_ISSUER_METADATA is to be removed during the integration
   at this point, we'll listen to the event that'll be emitted from the /scan route
   and use the data found in there as the credential offer.
@@ -418,7 +420,7 @@ export default function CredentialTypes() {
           'en'
         )}
       />
-      <Header />
+      <BackTitleBar pageTitle="Credential Types" onBack={() => push('/scan')} />
       <Box
         sx={{
           display: 'grid',

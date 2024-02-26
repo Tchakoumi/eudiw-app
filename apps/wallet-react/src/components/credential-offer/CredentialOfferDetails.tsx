@@ -62,7 +62,7 @@ export default function CredentialOfferDetails({
           }}
         >
           <BackTitleBar
-            pageTitle="Credential Offer"
+            pageTitle="Credential Type Details"
             onBack={() => (isIssuing ? null : close())}
           />
           <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
