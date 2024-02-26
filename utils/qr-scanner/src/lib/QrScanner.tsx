@@ -95,7 +95,10 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
           )}
         </div>
       )}
-      <video ref={videoRef} style={{ width: '100%', height: '100%' }} />
+      <video
+        ref={videoRef}
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      />
     </div>
   );
 }
