@@ -24,15 +24,46 @@ interface TestDBSchema extends DBSchema {
     };
     indexes: { byEmail: 'email' };
   };
+  inlineAutoIncrement: {
+    key: number;
+    value: {
+      data: {
+        id?: number;
+        value: string;
+      };
+    };
+  };
 }
 
 describe('StorageFactory', () => {
   let storageFactory: StorageFactory<TestDBSchema>;
+  const testData = {
+    inlineKeyStore: {
+      value: {
+        email: 'johnsmith@gmail.com',
+        inlineId: 'john_smith_key',
+        name: 'John Smith',
+      },
+    },
+    testStore: {
+      key: 'test_value_1',
+      value: 'storing a test value...',
+    },
+    inlineAutoIncrement: {
+      value: { data: { value: 'Storing with incremental key' } },
+    },
+  };
 
   beforeAll(() => {
     storageFactory = new StorageFactory<TestDBSchema>('testDB', 1, {
       upgrade(db) {
         db.createObjectStore('testStore');
+        db.createObjectStore('inlineAutoIncrement', {
+          keyPath: 'data.id',
+
+          //default to `false`
+          autoIncrement: true,
+        });
         const inlineKeyStore = db.createObjectStore('inlineKeyStore', {
           keyPath: 'inlineId',
         });
@@ -43,24 +74,23 @@ describe('StorageFactory', () => {
 
   beforeEach(async () => {
     await Promise.all([
-      storageFactory.insert('inlineKeyStore', {
-        value: {
-          email: 'johnsmith@gmail.com',
-          inlineId: 'john_smith_key',
-          name: 'John Smith',
-        },
-      }),
-      storageFactory.insert('testStore', {
-        key: 'test_value_1',
-        value: 'storing a test value...',
-      }),
+      storageFactory.insert('inlineKeyStore', testData.inlineKeyStore),
+      storageFactory.insert('testStore', testData.testStore),
+      storageFactory.insert(
+        'inlineAutoIncrement',
+        testData.inlineAutoIncrement
+      ),
     ]);
   });
 
   afterEach(async () => {
     await Promise.all([
-      storageFactory.delete('testStore', 'test_value_1'),
-      storageFactory.delete('inlineKeyStore', 'john_smith_key'),
+      storageFactory.delete('testStore', testData.testStore.key),
+      storageFactory.delete(
+        'inlineKeyStore',
+        testData.inlineKeyStore.value.inlineId
+      ),
+      storageFactory.deleteMany('inlineAutoIncrement'),
     ]);
   });
 
@@ -68,6 +98,7 @@ describe('StorageFactory', () => {
     await Promise.all([
       storageFactory.clear('testStore'),
       storageFactory.clear('inlineKeyStore'),
+      storageFactory.clear('inlineAutoIncrement'),
     ]);
   });
 
@@ -77,30 +108,42 @@ describe('StorageFactory', () => {
   });
 
   it('should insert data', async () => {
-    const payload1: StoreRecord<TestDBSchema> = {
+    const addedKey1 = await storageFactory.insert('testStore', {
       key: 'test_key',
       value: 'test_value',
-    };
-    const addedKey1 = await storageFactory.insert('testStore', payload1);
+    });
     expect(addedKey1).toBe('test_key');
 
-    const payload2: StoreRecord<TestDBSchema> = {
+    const addedKey2 = await storageFactory.insert('inlineKeyStore', {
       value: {
         inlineId: 'test_in_line_key',
         name: 'Joe',
         email: 'joe237@gmail.com',
       },
-    };
-    const addedKey2 = await storageFactory.insert('inlineKeyStore', payload2);
+    });
     expect(addedKey2).toBe('test_in_line_key');
+
+    const addedKey3 = await storageFactory.insert('inlineAutoIncrement', {
+      value: { data: { value: 'Incremented value' } },
+    });
+    expect(typeof addedKey3).toBe('number');
+
+    // clearing insertions
+    await Promise.all([
+      storageFactory.delete('testStore', addedKey1),
+      storageFactory.delete('inlineKeyStore', addedKey2),
+      storageFactory.delete('inlineAutoIncrement', addedKey3),
+    ]);
   });
 
   it('should find one', async () => {
-    const record1 = await storageFactory.findOne('testStore', 'test_value_1');
-    expect(record1).toStrictEqual<StoreRecord<TestDBSchema>>({
-      key: 'test_value_1',
-      value: 'storing a test value...',
-    });
+    const record1 = await storageFactory.findOne(
+      'testStore',
+      testData.testStore.key
+    );
+    expect(record1).toStrictEqual<StoreRecord<TestDBSchema>>(
+      testData.testStore
+    );
 
     const record2 = await storageFactory.findOne(
       'inlineKeyStore',
@@ -111,33 +154,29 @@ describe('StorageFactory', () => {
 
   it('should find all', async () => {
     const records = await storageFactory.findAll('testStore');
-    expect(records.length).toBeGreaterThanOrEqual(1);
-    expect(records.length).toBeLessThanOrEqual(2);
+    expect(records.length).toEqual(1);
 
-    expect(records).toStrictEqual<StoreRecord<TestDBSchema>[]>(
-      records.length === 1
-        ? [
-            {
-              key: 'test_value_1',
-              value: 'storing a test value...',
-            },
-          ]
-        : [
-            {
-              key: 'test_key',
-              value: 'test_value',
-            },
-            {
-              key: 'test_value_1',
-              value: 'storing a test value...',
-            },
-          ]
-    );
+    expect(records).toStrictEqual<StoreRecord<TestDBSchema>[]>([
+      testData.testStore,
+    ]);
+
+    const record3 = await storageFactory.findAll('inlineAutoIncrement');
+    expect(record3).toStrictEqual([
+      {
+        key: expect.any(Number),
+        value: {
+          data: {
+            id: expect.any(Number),
+            value: testData.inlineAutoIncrement.value.data.value,
+          },
+        },
+      },
+    ]);
   });
 
   it('should update value in store', async () => {
     const updateFn = jest.fn((storeName: StoreNames<TestDBSchema>) =>
-      storageFactory.update(storeName, 'john_smith_key', {
+      storageFactory.update(storeName, testData.inlineKeyStore.value.inlineId, {
         name: 'Jean Kamdem',
       })
     );
@@ -149,20 +188,20 @@ describe('StorageFactory', () => {
   });
 
   it('should delete value in store', () => {
+    const inlineId = testData.inlineKeyStore.value.inlineId;
     expect(
-      storageFactory.delete('inlineKeyStore', 'john_smith_key')
+      storageFactory.delete('inlineKeyStore', inlineId)
     ).resolves.not.toThrow();
 
     expect(
-      storageFactory.delete(
-        'someStore' as StoreNames<TestDBSchema>,
-        'john_smith_key'
-      )
+      storageFactory.delete('someStore' as StoreNames<TestDBSchema>, inlineId)
     ).rejects.toThrow('No objectStore named someStore in this database');
   });
 
   it('should delete many values in store', () => {
-    const keysToBeDelected: IDBValidKey[] = ['john_smith_key'];
+    const keysToBeDelected: IDBValidKey[] = [
+      testData.inlineKeyStore.value.inlineId,
+    ];
 
     expect(storageFactory.deleteMany('testStore')).resolves.not.toThrow();
     expect(
@@ -184,14 +223,17 @@ describe('StorageFactory', () => {
 
   it('should retrieves the number of records matching the given query in a store', async () => {
     const itemCount = await storageFactory.count('testStore');
-    expect(itemCount).toBeGreaterThanOrEqual(1);
-    expect(itemCount).toBeLessThanOrEqual(2);
+    expect(itemCount).toEqual(1);
 
     const indexItemCount = await storageFactory.count('inlineKeyStore', {
       indexName: 'byEmail',
     });
-    expect(indexItemCount).toBeGreaterThanOrEqual(1);
-    expect(indexItemCount).toBeLessThanOrEqual(2);
+    expect(indexItemCount).toEqual(1);
+
+    const incrementItemCount = await storageFactory.count(
+      'inlineAutoIncrement'
+    );
+    expect(incrementItemCount).toEqual(1);
   });
 
   it('should retrieves values in an index that match the query.', async () => {
@@ -199,31 +241,11 @@ describe('StorageFactory', () => {
       'inlineKeyStore',
       'byEmail'
     );
-    expect(records.length).toBeGreaterThanOrEqual(1);
-    expect(records.length).toBeLessThanOrEqual(2);
+    expect(records.length).toEqual(1);
 
-    expect(records).toStrictEqual<StoreRecordValue<TestDBSchema>[]>(
-      records.length === 1
-        ? [
-            {
-              inlineId: 'john_smith_key',
-              email: 'johnsmith@gmail.com',
-              name: 'John Smith',
-            },
-          ]
-        : [
-            {
-              inlineId: 'test_in_line_key',
-              email: 'joe237@gmail.com',
-              name: 'Joe',
-            },
-            {
-              inlineId: 'john_smith_key',
-              email: 'johnsmith@gmail.com',
-              name: 'John Smith',
-            },
-          ]
-    );
+    expect(records).toStrictEqual<StoreRecordValue<TestDBSchema>[]>([
+      testData.inlineKeyStore.value,
+    ]);
   });
 
   it('should start and close a new transaction', async () => {
@@ -244,7 +266,7 @@ describe('StorageFactory', () => {
           'tx_value_2',
           transaction
         );
-        await storageFactory.delete('testStore', 'tx_key_2', transaction);
+        await storageFactory.delete('testStore', 'tx_key_1', transaction);
       });
 
     await storageFactory.$transaction(
