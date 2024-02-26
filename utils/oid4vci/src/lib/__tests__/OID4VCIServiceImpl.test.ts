@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3';
 
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
-import { ResolvedCredentialOffer, ServiceResponse } from '../types';
+import { ServiceResponseStatus } from '../types';
 
 import {
   authorizationServerMetadataRef1,
@@ -52,7 +52,7 @@ describe('OID4VCIServiceImpl', () => {
 
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith({
-      status: 'success',
+      status: ServiceResponseStatus.Success,
       payload: {
         credentialOffer: credentialOfferObjectRef1,
         discoveryMetadata: {
@@ -60,8 +60,8 @@ describe('OID4VCIServiceImpl', () => {
           authorizationServerMetadata: authorizationServerMetadataRef1,
           jwtIssuerMetadata: jwtIssuerMetadataRef1,
         },
-      } satisfies ResolvedCredentialOffer,
-    } satisfies ServiceResponse);
+      },
+    });
   });
 
   it('should channel back errors', async () => {
@@ -84,10 +84,10 @@ describe('OID4VCIServiceImpl', () => {
 
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith({
-      status: 'error',
+      status: ServiceResponseStatus.Error,
       payload: new OID4VCIServiceError(
         InvalidCredentialOffer.MissingQueryString
       ),
-    } satisfies ServiceResponse);
+    });
   });
 });

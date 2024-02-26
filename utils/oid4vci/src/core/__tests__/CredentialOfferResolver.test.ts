@@ -2,6 +2,8 @@ import nock from 'nock';
 
 import { WELL_KNOWN_ENDPOINTS } from '../../constants';
 import { InvalidCredentialOffer } from '../../lib/errors';
+import { CredentialOfferResolver } from '../CredentialOfferResolver';
+
 import {
   AuthorizationServerMetadata,
   CredentialIssuerMetadata,
@@ -9,7 +11,6 @@ import {
   ResolvedCredentialOffer,
   TxCodeInputMode,
 } from '../../lib/types';
-import { CredentialOfferResolver } from '../CredentialOfferResolver';
 
 import {
   credentialOfferObjectRef1,
@@ -58,7 +59,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } satisfies ResolvedCredentialOffer);
+    });
   });
 
   it('should resolve offer by value (schemeless link)', async () => {
@@ -78,7 +79,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } satisfies ResolvedCredentialOffer);
+    });
   });
 
   it('should resolve offer by reference (v1)', async () => {
@@ -100,7 +101,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } satisfies ResolvedCredentialOffer);
+    });
   });
 
   it('should resolve offer by reference (v2)', async () => {

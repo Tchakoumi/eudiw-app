@@ -1,7 +1,7 @@
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
 import { EventEmitter } from 'eventemitter3';
-import { ServiceResponse } from './types';
+import { ServiceResponse, ServiceResponseStatus } from './types';
 
 /**
  * Concrete implementation of the OID4VCI service.
@@ -20,19 +20,17 @@ export class OID4VCIServiceImpl implements OID4VCIService {
   }): Promise<void> {
     const channel = OID4VCIServiceEventChannel.SendCredentialOffer;
 
-    this.credentialOfferResolver
+    const response: ServiceResponse = await this.credentialOfferResolver
       .resolveCredentialOffer(opts.credentialOffer)
-      .then((resolvedCredentialOffer) =>
-        this.eventBus.emit(channel, {
-          status: 'success',
-          payload: resolvedCredentialOffer,
-        } satisfies ServiceResponse)
-      )
-      .catch((error) =>
-        this.eventBus.emit(channel, {
-          status: 'error',
-          payload: error,
-        } satisfies ServiceResponse)
-      );
+      .then((resolvedCredentialOffer) => ({
+        status: ServiceResponseStatus.Success,
+        payload: resolvedCredentialOffer,
+      }))
+      .catch((error) => ({
+        status: ServiceResponseStatus.Error,
+        payload: error,
+      }));
+
+    this.eventBus.emit(channel, response);
   }
 }
