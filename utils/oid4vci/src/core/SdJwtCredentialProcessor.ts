@@ -125,15 +125,14 @@ export class SdJwtCredentialProcessor {
   private async storeCredential(
     credential: SdJwtProcessedCredential
   ): Promise<SdJwtProcessedCredential> {
-    // Pre-populate a unique identifier
-    credential.display.id = crypto.randomUUID();
-
     const payload: StoreRecord<CredentialDBSchema> = {
-      key: credential.display.id,
       value: credential,
     };
 
-    this.storage.insert(credentialStoreName, payload);
+    // Persist the payload, expecting an autoincremented ID to be returned
+    const key = await this.storage.insert(credentialStoreName, payload);
+    credential.display.id = key;
+
     return credential;
   }
 }

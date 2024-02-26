@@ -20,7 +20,7 @@ export interface SdJwtProcessedCredential {
 }
 
 export interface DisplayCredential {
-  id?: string;
+  id?: number;
   title?: string;
   issuer?: string;
   logo?: string;
