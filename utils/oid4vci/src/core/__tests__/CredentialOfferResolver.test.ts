@@ -59,7 +59,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } satisfies ResolvedCredentialOffer);
+    });
   });
 
   it('should resolve offer by value (schemeless link)', async () => {
@@ -79,7 +79,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } satisfies ResolvedCredentialOffer);
+    });
   });
 
   it('should resolve offer by reference (v1)', async () => {
@@ -101,7 +101,7 @@ describe('CredentialOfferResolver', () => {
         authorizationServerMetadata: authorizationServerMetadataRef1,
         jwtIssuerMetadata: jwtIssuerMetadataRef1,
       },
-    } satisfies ResolvedCredentialOffer);
+    });
   });
 
   it('should resolve offer by reference (v2)', async () => {

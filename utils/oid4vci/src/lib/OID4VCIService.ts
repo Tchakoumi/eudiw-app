@@ -1,5 +1,4 @@
 import { GrantType, ResolvedCredentialOffer } from '../lib/types';
-import EventEmitter from 'eventemitter3';
 
 /**
  * Event channels on which implementations are to send back responses.
@@ -14,11 +13,6 @@ export enum OID4VCIServiceEventChannel {
  */
 export interface OID4VCIService {
   /**
-   * Returns a reference to the event bus on which to listen for responses.
-   */
-  getEventBus(): EventEmitter;
-
-  /**
    * Resolves an out-of-band credential offer (collecting issuer metadata).
    *
    * The service replies on `OID4VCIServiceEventChannel.SendCredentialOffer`
@@ -29,7 +23,7 @@ export interface OID4VCIService {
    * @param opts.credentialOffer a credential offer string provided as a link,
    * potentially resulting from a QR code scan
    */
-  resolveCredentialOffer(opts: { credentialOffer: string }): Promise<void>;
+  resolveCredentialOffer(opts: { credentialOffer: string }): void;
 
   /**
    * Requests a credential from a credential issuer given a credential type.

@@ -117,19 +117,16 @@ export class CredentialOfferResolver {
       );
     }
 
-    const credentialIssuerMetadata = await this.fetchCredentialIssuerMetadata(
-      credentialIssuer
-    );
+    const [credentialIssuerMetadata, jwtIssuerMetadata] = await Promise.all([
+      this.fetchCredentialIssuerMetadata(credentialIssuer),
+      this.fetchJwtIssuerMetadata(credentialIssuer),
+    ]);
 
     const authorizationServerMetadata =
       await this.fetchSuitableAuthorizationServerMetadata(
         credentialOffer,
         credentialIssuerMetadata
       );
-
-    const jwtIssuerMetadata = await this.fetchJwtIssuerMetadata(
-      credentialIssuer
-    );
 
     return {
       credentialIssuerMetadata,

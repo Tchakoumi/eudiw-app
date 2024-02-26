@@ -3,7 +3,7 @@ import { CredentialRequester } from '../core/CredentialRequester';
 import { IdentityProofGenerator } from '../core/IdentityProofGenerator';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
 import { EventEmitter } from 'eventemitter3';
-import { ServiceResponse } from './types';
+import { ServiceResponse, ServiceResponseStatus } from './types';
 import { CredentialStorage } from './schemas/CredentialDBSchema';
 
 import {
@@ -31,29 +31,27 @@ export class OID4VCIServiceImpl implements OID4VCIService {
     );
   }
 
-  public getEventBus(): EventEmitter {
-    return this.eventBus;
-  }
-
-  public async resolveCredentialOffer(opts: {
-    credentialOffer: string;
-  }): Promise<void> {
+  public resolveCredentialOffer(opts: { credentialOffer: string }): void {
     const channel = OID4VCIServiceEventChannel.SendCredentialOffer;
 
     this.credentialOfferResolver
       .resolveCredentialOffer(opts.credentialOffer)
-      .then((resolvedCredentialOffer) =>
-        this.eventBus.emit(channel, {
-          status: 'success',
+      .then((resolvedCredentialOffer) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Success,
           payload: resolvedCredentialOffer,
-        } satisfies ServiceResponse)
-      )
-      .catch((error) =>
-        this.eventBus.emit(channel, {
-          status: 'error',
+        };
+
+        this.eventBus.emit(channel, response);
+      })
+      .catch((error) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Error,
           payload: error,
-        } satisfies ServiceResponse)
-      );
+        };
+
+        this.eventBus.emit(channel, response);
+      });
   }
 
   public async requestCredentialIssuance(opts: {
@@ -75,17 +73,21 @@ export class OID4VCIServiceImpl implements OID4VCIService {
         credentialTypeKey,
         grantType
       )
-      .then((result) =>
-        this.eventBus.emit(channel, {
-          status: 'success',
+      .then((result) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Success,
           payload: result,
-        } satisfies ServiceResponse)
-      )
-      .catch((error) =>
-        this.eventBus.emit(channel, {
-          status: 'error',
+        };
+
+        this.eventBus.emit(channel, response);
+      })
+      .catch((error) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Error,
           payload: error,
-        } satisfies ServiceResponse)
-      );
+        };
+
+        this.eventBus.emit(channel, response);
+      });
   }
 }
