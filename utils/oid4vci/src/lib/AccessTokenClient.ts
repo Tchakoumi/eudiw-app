@@ -106,7 +106,6 @@ export class AccessTokenClient {
       );
     }
 
-    console.log(`Token endpoint determined to be ${url}`);
     return url;
   }
 

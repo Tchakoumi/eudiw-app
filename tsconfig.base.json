@@ -15,7 +15,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@datev/oid4vci": ["utils/oid4vci/src/index.ts"],
       "@datev/event-bus": ["utils/event-bus/src/index.ts"],
       "@datev/oid4vci": ["utils/oid4vci/src/index.ts"],
       "@datev/qr-scanner": ["utils/qr-scanner/src/index.ts"],
