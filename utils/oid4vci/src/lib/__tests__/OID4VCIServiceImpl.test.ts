@@ -38,7 +38,7 @@ describe('OID4VCIServiceImpl', () => {
       eventBus.emit('complete');
     });
 
-    eventBus.on(OID4VCIServiceEventChannel.SendCredentialOffer, callback);
+    eventBus.on(OID4VCIServiceEventChannel.ProcessCredentialOffer, callback);
     service.resolveCredentialOffer({ credentialOffer });
 
     // Wait for callback completion
@@ -67,7 +67,7 @@ describe('OID4VCIServiceImpl', () => {
       eventBus.emit('complete');
     });
 
-    eventBus.on(OID4VCIServiceEventChannel.SendCredentialOffer, callback);
+    eventBus.on(OID4VCIServiceEventChannel.ProcessCredentialOffer, callback);
     service.resolveCredentialOffer({ credentialOffer });
 
     // Wait for callback completion
