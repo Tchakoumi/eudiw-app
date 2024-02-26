@@ -94,7 +94,11 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
           </Tooltip>
           <Typography
             sx={{
-              fontWeight: location.pathname === route ? 700 : 400,
+              fontWeight:
+                location.pathname === route ||
+                (route === '/scan' && location.pathname === '/credential-types')
+                  ? 700
+                  : 400,
               alignSelf: 'end',
             }}
             variant="subtitle2"
