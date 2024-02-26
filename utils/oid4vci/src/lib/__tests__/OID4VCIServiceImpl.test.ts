@@ -1,5 +1,5 @@
 import nock from 'nock';
-import EventEmitter from 'eventemitter3';
+import { eventBus } from '@datev/event-bus';
 
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
@@ -16,7 +16,6 @@ import {
 import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
 
 describe('OID4VCIServiceImpl', () => {
-  const eventBus = new EventEmitter();
   const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);
 
   beforeAll(async () => {
@@ -39,10 +38,7 @@ describe('OID4VCIServiceImpl', () => {
       eventBus.emit('complete');
     });
 
-    service
-      .getEventBus()
-      .on(OID4VCIServiceEventChannel.SendCredentialOffer, callback);
-
+    eventBus.on(OID4VCIServiceEventChannel.SendCredentialOffer, callback);
     service.resolveCredentialOffer({ credentialOffer });
 
     // Wait for callback completion
@@ -71,10 +67,7 @@ describe('OID4VCIServiceImpl', () => {
       eventBus.emit('complete');
     });
 
-    service
-      .getEventBus()
-      .on(OID4VCIServiceEventChannel.SendCredentialOffer, callback);
-
+    eventBus.on(OID4VCIServiceEventChannel.SendCredentialOffer, callback);
     service.resolveCredentialOffer({ credentialOffer });
 
     // Wait for callback completion

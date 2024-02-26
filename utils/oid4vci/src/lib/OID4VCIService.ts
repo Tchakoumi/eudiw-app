@@ -1,5 +1,3 @@
-import EventEmitter from 'eventemitter3';
-
 /**
  * Event channels on which implementations are to send back responses.
  */
@@ -12,11 +10,6 @@ export enum OID4VCIServiceEventChannel {
  * A service for handling the OID4VCI flow.
  */
 export interface OID4VCIService {
-  /**
-   * Returns a reference to the event bus on which to listen for responses.
-   */
-  getEventBus(): EventEmitter;
-
   /**
    * Resolves an out-of-band credential offer (collecting issuer metadata).
    *

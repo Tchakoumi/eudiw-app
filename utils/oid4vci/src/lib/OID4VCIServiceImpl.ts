@@ -11,10 +11,6 @@ export class OID4VCIServiceImpl implements OID4VCIService {
 
   public constructor(private eventBus: EventEmitter) {}
 
-  public getEventBus(): EventEmitter {
-    return this.eventBus;
-  }
-
   public resolveCredentialOffer(opts: { credentialOffer: string }): void {
     const channel = OID4VCIServiceEventChannel.SendCredentialOffer;
 
