@@ -28,5 +28,5 @@ export interface OID4VCIService {
    * @param opts.credentialOffer a credential offer string provided as a link,
    * potentially resulting from a QR code scan
    */
-  resolveCredentialOffer(opts: { credentialOffer: string }): Promise<void>;
+  resolveCredentialOffer(opts: { credentialOffer: string }): void;
 }
