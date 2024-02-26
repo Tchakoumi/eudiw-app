@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Snackbar } from '@mui/material';
 import { useEffect, useState } from 'react';
 import AuthleteLogo from '../../assets/authlete-logo.png';
 import { IVerifiableCredential } from '../../components/credential-offer/credentials.types';
@@ -36,8 +36,17 @@ export default function Credentials() {
   const [isConfirmDeleteVCDialogOpen, setIsConfirmDeleteVCDialogOpen] =
     useState<boolean>(false);
 
+  const [showDeleteSnackbar, setShowDeleteSnackbar] = useState<boolean>(false);
+
   return (
     <>
+      <Snackbar
+        open={showDeleteSnackbar}
+        color="success"
+        autoHideDuration={6000}
+        onClose={() => setShowDeleteSnackbar(false)}
+        message="Note archived"
+      />
       <CredentialDetails
         closeDialog={() => setSelectedCredential(undefined)}
         isDialogOpen={!!selectedCredential && !isConfirmDeleteVCDialogOpen}
@@ -51,6 +60,7 @@ export default function Credentials() {
         confirmDelete={() => {
           setIsConfirmDeleteVCDialogOpen(false);
           setSelectedCredential(undefined);
+          setShowDeleteSnackbar(true);
         }}
         isDialogOpen={isConfirmDeleteVCDialogOpen}
       />
