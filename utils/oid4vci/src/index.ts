@@ -1,1 +1,5 @@
-export * from './lib/oid4vci';
+export * from './lib/AccessTokenClient';
+export * from './lib/OID4VCIService';
+export * from './lib/OID4VCIServiceImpl';
+export * from './lib/types';
+export * from './lib/errors';

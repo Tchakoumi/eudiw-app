@@ -1,4 +1,4 @@
-export * from './AccessToken.errors';
+export * from './CredentialOffer.errors';
 
 export class OID4VCIServiceError extends Error {
   public constructor(message: string) {

@@ -1,5 +1,5 @@
 import { OID4VCIServiceError } from './errors';
-import { InvalidCredentialOffer } from './errors/AccessToken.errors';
+import { InvalidCredentialOffer } from './errors/CredentialOffer.errors';
 import { convertJsonToURI } from './functions';
 import { formPost } from './functions/HttpUtils';
 import {
