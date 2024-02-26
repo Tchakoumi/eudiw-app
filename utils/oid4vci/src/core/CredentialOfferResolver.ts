@@ -95,7 +95,9 @@ export class CredentialOfferResolver {
   ): Promise<string> {
     return await fetch(credentialOfferURI).then((response) => {
       if (!response.ok) {
-        throw new Error('Not 2xx response');
+        throw new OID4VCIServiceError(
+          InvalidCredentialOffer.DereferencingError
+        );
       }
 
       return response.text();
@@ -274,7 +276,9 @@ export class CredentialOfferResolver {
   private async fetchMetadata(url: string): Promise<object> {
     return await fetch(url).then((response) => {
       if (!response.ok) {
-        throw new Error('Not 2xx response');
+        throw new OID4VCIServiceError(
+          InvalidCredentialOffer.UnresolvableMetadata
+        );
       }
 
       return response.json();
