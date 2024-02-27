@@ -2,23 +2,32 @@ import { StorageFactory } from '@datev/storage';
 import { CredentialResponse, JWKSet } from '../../../lib/types';
 import {
   CredentialDBSchema,
-  CredentialStorage,
+  IdentityDBSchema,
   credentialStoreName,
-} from '../../../lib/schemas/CredentialDBSchema';
+  identityStoreName,
+} from '../../../lib/schemas';
 
 // Mocking indexdedDB functionality
 import 'core-js/stable/structured-clone';
 import 'fake-indexeddb/auto';
 
-export const storage: CredentialStorage =
-  new StorageFactory<CredentialDBSchema>('testDB', 1, {
+export const storage: StorageFactory<CredentialDBSchema & IdentityDBSchema> =
+  new StorageFactory<CredentialDBSchema & IdentityDBSchema>('testDB', 1, {
     upgrade(db) {
       db.createObjectStore(credentialStoreName, {
         keyPath: 'display.id',
         autoIncrement: true,
       });
+
+      db.createObjectStore(identityStoreName);
     },
   });
+
+export const credentialStorage =
+  storage as unknown as StorageFactory<CredentialDBSchema>;
+
+export const identityStorage =
+  storage as unknown as StorageFactory<IdentityDBSchema>;
 
 export const credentialResponseRef1: CredentialResponse = {
   credential:

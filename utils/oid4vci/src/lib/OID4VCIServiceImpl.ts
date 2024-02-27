@@ -1,10 +1,10 @@
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
-import { IdentityProofGenerator } from '../core/IdentityProofGenerator';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
 import { EventEmitter } from 'eventemitter3';
 import { ServiceResponse, ServiceResponseStatus } from './types';
-import { CredentialStorage } from './schemas/CredentialDBSchema';
+import { StorageFactory } from '@datev/storage';
+import { CredentialDBSchema, IdentityDBSchema } from './schemas';
 
 import {
   GrantType,
@@ -21,14 +21,10 @@ export class OID4VCIServiceImpl implements OID4VCIService {
 
   public constructor(
     private eventBus: EventEmitter,
-    private storage: CredentialStorage
+    private storage: StorageFactory<CredentialDBSchema & IdentityDBSchema>
   ) {
-    const identityProofGenerator = new IdentityProofGenerator();
     this.credentialOfferResolver = new CredentialOfferResolver();
-    this.credentialRequester = new CredentialRequester(
-      identityProofGenerator,
-      storage
-    );
+    this.credentialRequester = new CredentialRequester(storage);
   }
 
   public resolveCredentialOffer(opts: { credentialOffer: string }): void {

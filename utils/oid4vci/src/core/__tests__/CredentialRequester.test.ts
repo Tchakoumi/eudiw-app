@@ -3,7 +3,6 @@ import nock from 'nock';
 import { credentialStoreName } from '../../lib/schemas/CredentialDBSchema';
 import { DiscoveryMetadata, PRE_AUTHORIZED_GRANT_TYPE } from '../../lib/types';
 import { CredentialRequester } from '../CredentialRequester';
-import { IdentityProofGenerator } from '../IdentityProofGenerator';
 
 import {
   credentialOfferObjectRef1,
@@ -16,11 +15,7 @@ import {
 } from './fixtures';
 
 describe('CredentialRequester', () => {
-  const identityProofGenerator = new IdentityProofGenerator();
-  const credentialRequester = new CredentialRequester(
-    identityProofGenerator,
-    storage
-  );
+  const credentialRequester = new CredentialRequester(storage);
 
   beforeAll(async () => {
     nock.disableNetConnect();
@@ -202,6 +197,8 @@ describe('CredentialRequester', () => {
       PRE_AUTHORIZED_GRANT_TYPE
     );
 
-    await expect(promise).rejects.toThrow('401 Unauthorized');
+    await expect(promise).rejects.toThrow(
+      'CredentialIssuerError: 401 Unauthorized'
+    );
   });
 });

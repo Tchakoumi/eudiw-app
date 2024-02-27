@@ -5,6 +5,7 @@ import { CLIENT_ID } from '../config';
 import { OID4VCI_PROOF_TYP } from '../constants';
 import { currentTimestampInSecs } from '../utils';
 import { CredentialSupported, JwtKeyProof, KeyProof } from '../lib/types';
+import { IdentityManager } from './IdentityManager';
 
 /**
  * This class is responsible for generating suitable key proofs of the
@@ -14,8 +15,9 @@ import { CredentialSupported, JwtKeyProof, KeyProof } from '../lib/types';
 export class IdentityProofGenerator {
   /**
    * Constructor.
+   * @param identityManager a source to retrieve the wallet identity from
    */
-  public constructor() {}
+  public constructor(private identityManager: IdentityManager) {}
 
   /**
    * Computes key proof of wallet's identity.
@@ -35,7 +37,7 @@ export class IdentityProofGenerator {
       );
     }
 
-    const jwk = this.getJwkIdentity();
+    const jwk = await this.getJwkIdentity();
     if (!jwk.alg) {
       throw new OID4VCIServiceError(
         'The wallet identity must embed an algorithm for signature.'
@@ -86,20 +88,11 @@ export class IdentityProofGenerator {
   }
 
   /**
-   * Reads current wallet's identity from store.
+   * Reads current wallet's identity.
    * @returns a JWK cryptographic identity
    */
-  private getJwkIdentity(): jose.JWK {
-    return {
-      kty: 'EC',
-      d: 'lPHtS-GHGLHoUUaRlJoIm920f0smWf1xN6fLgz7y3eA',
-      use: 'sig',
-      crv: 'P-256',
-      kid: 'umcsmPiYZT-IkOJddkEktykzYNNsXdiNj7LTSfStz7w',
-      x: '6FHJYsI0by91XSllDSHMNS20Rlw6LrPNmPAR7jadeFs',
-      y: 'gJiHCDP1jbAK_s5iItC7RtKV8Hx5RlLDoP_mEaWfe9w',
-      alg: 'ES256',
-    };
+  private async getJwkIdentity(): Promise<jose.JWK> {
+    return await this.identityManager.initializeJwkIdentity();
   }
 
   /**

@@ -7,7 +7,9 @@ import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
 import { CLIENT_ID } from '../config';
 import { fetchIntoDataUrl } from '../utils';
-import { CredentialStorage } from '../lib/schemas/CredentialDBSchema';
+import { CredentialDBSchema, IdentityDBSchema } from '../lib/schemas';
+import { StorageFactory } from '@datev/storage';
+import { StoreIdentityManager } from './IdentityManager';
 
 import {
   DiscoveryMetadata,
@@ -29,18 +31,27 @@ import {
  * and handling all post-issuance operations.
  */
 export class CredentialRequester {
+  private readonly identityProofGenerator: IdentityProofGenerator;
   private readonly sdJwtCredentialProcessor: SdJwtCredentialProcessor;
 
   /**
    * Constructor.
-   * @param identityProofGenerator an identify proof generator for key binding
    * @param storage a storage to persist requested issued credentials
    */
   public constructor(
-    private identityProofGenerator: IdentityProofGenerator,
-    private storage: CredentialStorage
+    private storage: StorageFactory<CredentialDBSchema & IdentityDBSchema>
   ) {
-    this.sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
+    this.identityProofGenerator = new IdentityProofGenerator(
+      new StoreIdentityManager(
+        // This surprisingly does not work automatically
+        storage as unknown as StorageFactory<IdentityDBSchema>
+      )
+    );
+
+    this.sdJwtCredentialProcessor = new SdJwtCredentialProcessor(
+      // This surprisingly does not work automatically
+      storage as unknown as StorageFactory<CredentialDBSchema>
+    );
   }
 
   /**

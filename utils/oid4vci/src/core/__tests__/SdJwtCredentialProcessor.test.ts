@@ -1,8 +1,13 @@
-import { credentialResponseRef1, jwksRef1, storage } from './fixtures';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
 
+import {
+  credentialResponseRef1,
+  credentialStorage,
+  jwksRef1,
+} from './fixtures';
+
 describe('SdJwtCredentialProcessor', () => {
-  const processor = new SdJwtCredentialProcessor(storage);
+  const processor = new SdJwtCredentialProcessor(credentialStorage);
 
   it('should process credentials even with no claims', async () => {
     const credential = credentialResponseRef1.credential.split('~', 2)[0];

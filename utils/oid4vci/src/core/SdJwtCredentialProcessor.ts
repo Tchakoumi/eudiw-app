@@ -2,13 +2,9 @@ import * as jose from 'jose';
 import sdjwt from '@hopae/sd-jwt';
 import { OID4VCIServiceError } from '../lib/errors';
 import { DisplayCredential, SdJwtProcessedCredential } from '../lib/types';
-import { StoreRecord } from '@datev/storage';
+import { StorageFactory, StoreRecord } from '@datev/storage';
 
-import {
-  CredentialDBSchema,
-  CredentialStorage,
-  credentialStoreName,
-} from '../lib/schemas/CredentialDBSchema';
+import { CredentialDBSchema, credentialStoreName } from '../lib/schemas';
 
 /**
  * This class is responsible for processing, ie validating, decoding, and
@@ -20,7 +16,7 @@ export class SdJwtCredentialProcessor {
    * Constructor.
    * @param storage a storage to persist requested issued credentials
    */
-  public constructor(private storage: CredentialStorage) {}
+  public constructor(private storage: StorageFactory<CredentialDBSchema>) {}
 
   /**
    * Validates, decodes, and stores credential.

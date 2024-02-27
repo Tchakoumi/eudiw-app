@@ -3,10 +3,30 @@ import * as jose from 'jose';
 import { CLIENT_ID } from '../../config';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
-import { keyRef1 } from './fixtures';
+import { identityStorage, keyRef1, storage } from './fixtures';
+import { StoreIdentityManager } from '../IdentityManager';
+import { identityStoreName } from '../../lib/schemas';
 
 describe('IdentityProofGenerator', () => {
-  const identityProofGenerator = new IdentityProofGenerator();
+  const identityProofGenerator = new IdentityProofGenerator(
+    new StoreIdentityManager(identityStorage)
+  );
+
+  beforeAll(async () => {
+    const jwkRef = {
+      kty: 'EC',
+      d: 'lPHtS-GHGLHoUUaRlJoIm920f0smWf1xN6fLgz7y3eA',
+      crv: 'P-256',
+      x: '6FHJYsI0by91XSllDSHMNS20Rlw6LrPNmPAR7jadeFs',
+      y: 'gJiHCDP1jbAK_s5iItC7RtKV8Hx5RlLDoP_mEaWfe9w',
+      alg: 'ES256',
+    };
+
+    await storage.insert(identityStoreName, {
+      key: 'current',
+      value: jwkRef,
+    });
+  });
 
   const decodeJws = (jws: string) => ({
     header: jose.decodeProtectedHeader(jws),
