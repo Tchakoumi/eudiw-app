@@ -1,4 +1,4 @@
-import { Box, Snackbar } from '@mui/material';
+import { Alert, Box, Snackbar } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
 import AuthleteLogo from '../../assets/authlete-logo.png';
@@ -43,11 +43,18 @@ export default function Credentials() {
     <>
       <Snackbar
         open={showDeleteSnackbar}
-        color="success"
         autoHideDuration={6000}
         onClose={() => setShowDeleteSnackbar(false)}
-        message="Note archived"
-      />
+      >
+        <Alert
+          onClose={() => setShowDeleteSnackbar(false)}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Credential removed
+        </Alert>
+      </Snackbar>
       <CredentialDetails
         closeDialog={() => setSelectedCredential(undefined)}
         isDialogOpen={!!selectedCredential && !isConfirmDeleteVCDialogOpen}
