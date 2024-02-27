@@ -197,7 +197,7 @@ describe('CredentialOfferResolver', () => {
     );
   });
 
-  it('should throw when fetching (dereferencing) credential offer fails', async () => {
+  it('should throw when fetching (dereferencing) credential offer fails (v1)', async () => {
     const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
       'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
     )}`;
@@ -208,6 +208,21 @@ describe('CredentialOfferResolver', () => {
 
     const promise = resolver.resolveCredentialOffer(credentialOffer);
     await expect(promise).rejects.toThrow('fetch failed');
+  });
+
+  it('should throw when fetching (dereferencing) credential offer fails (v2)', async () => {
+    const credentialOffer = `openid-credential-offer://?credential_offer_uri=${encodeURIComponent(
+      'https://server.example.com/offer/656d34df-7517-4074-857d-3442f35dc20e'
+    )}`;
+
+    nock(/example/)
+      .get(/offer/)
+      .reply(404);
+
+    const promise = resolver.resolveCredentialOffer(credentialOffer);
+    await expect(promise).rejects.toThrow(
+      InvalidCredentialOffer.DereferencingError
+    );
   });
 
   it('should throw on missing credential issuer', async () => {

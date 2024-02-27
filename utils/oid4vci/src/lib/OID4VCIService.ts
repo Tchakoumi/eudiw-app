@@ -5,7 +5,7 @@ import { GrantType, ResolvedCredentialOffer } from '../lib/types';
  */
 export enum OID4VCIServiceEventChannel {
   // Listen for resolved credential offers
-  SendCredentialOffer = 'send-credential-offer',
+  ProcessCredentialOffer = 'process-credential-offer',
 }
 
 /**
@@ -15,7 +15,7 @@ export interface OID4VCIService {
   /**
    * Resolves an out-of-band credential offer (collecting issuer metadata).
    *
-   * The service replies on `OID4VCIServiceEventChannel.SendCredentialOffer`
+   * The service replies on `OID4VCIServiceEventChannel.ProcessCredentialOffer`
    * with either:
    * - the resolved credential offer alongside issuer metadata,
    * - or an error message indicative of what went wrong.

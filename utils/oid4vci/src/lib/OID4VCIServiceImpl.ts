@@ -28,7 +28,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
   }
 
   public resolveCredentialOffer(opts: { credentialOffer: string }): void {
-    const channel = OID4VCIServiceEventChannel.SendCredentialOffer;
+    const channel = OID4VCIServiceEventChannel.ProcessCredentialOffer;
 
     this.credentialOfferResolver
       .resolveCredentialOffer(opts.credentialOffer)
