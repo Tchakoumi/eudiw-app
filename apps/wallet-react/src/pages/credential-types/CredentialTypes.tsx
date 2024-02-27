@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CredentialOfferDetails from '../../components/credential-offer/CredentialOfferDetails';
@@ -423,33 +424,41 @@ export default function CredentialTypes() {
       <BackTitleBar pageTitle="Credential Types" onBack={() => push('/scan')} />
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateRows: 'auto auto 1fr',
-          rowGap: 1,
           backgroundColor: '#F6F7F9',
-          padding: '12px',
+          height: '100%',
         }}
       >
-        {getVCSDJWTOffers(CREDENTIAL_ISSUER_METADATA).map((card, index) => {
-          const {
-            type,
-            issuer,
-            data: { display },
-          } = card;
-          return (
-            <CredentialTypeCard
-              key={index}
-              displayName={display[0].name}
-              issuer={issuer}
-              type={type}
-              selectCredentialType={() =>
-                setSelectedCredentialOffer((prevCard) =>
-                  prevCard && prevCard.type === card.type ? undefined : card
-                )
-              }
-            />
-          );
-        })}
+        <Scrollbars universal autoHide>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateRows: 'auto auto 1fr',
+              rowGap: 1,
+              padding: '12px',
+            }}
+          >
+            {getVCSDJWTOffers(CREDENTIAL_ISSUER_METADATA).map((card, index) => {
+              const {
+                type,
+                issuer,
+                data: { display },
+              } = card;
+              return (
+                <CredentialTypeCard
+                  key={index}
+                  displayName={display[0].name}
+                  issuer={issuer}
+                  type={type}
+                  selectCredentialType={() =>
+                    setSelectedCredentialOffer((prevCard) =>
+                      prevCard && prevCard.type === card.type ? undefined : card
+                    )
+                  }
+                />
+              );
+            })}
+          </Box>
+        </Scrollbars>
       </Box>
       <Footer showArrow={false} />
     </Box>
