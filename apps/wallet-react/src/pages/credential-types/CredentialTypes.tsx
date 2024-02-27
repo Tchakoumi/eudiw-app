@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CredentialOfferDetails from '../../components/credential-type/CredentialOfferDetails';
+import CredentialTypeDetails from '../../components/credential-type/CredentialTypeDetails';
 import CredentialTypeCard from '../../components/credential-type/CredentialTypeCard';
 import {
   Claims,
@@ -411,7 +411,7 @@ export default function CredentialTypes() {
         height: '100%',
       }}
     >
-      <CredentialOfferDetails
+      <CredentialTypeDetails
         closeDialog={() => setSelectedCredentialOffer(undefined)}
         isDialogOpen={!!selectedCredentialOffer}
         selectedCredentialOffer={selectedCredentialOffer}

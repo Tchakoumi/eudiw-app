@@ -9,7 +9,7 @@ import CredentialTypeCard from './CredentialTypeCard';
 import WaitingCredential from './WaitingCredential';
 import { ICredentialCard } from './credentials.types';
 
-export default function CredentialOfferDetails({
+export default function CredentialTypeDetails({
   isDialogOpen,
   closeDialog,
   credentialOfferAttributes,
