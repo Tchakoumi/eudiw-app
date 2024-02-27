@@ -1,16 +1,19 @@
 import { Box } from '@mui/material';
+import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
-import CredentialOfferDetails from '../../components/credential-offer/CredentialOfferDetails';
-import CredentialTypeCard from '../../components/credential-offer/CredentialTypeCard';
+import { useNavigate } from 'react-router-dom';
+import CredentialTypeCard from '../../components/credential-types/CredentialTypeCard';
+import CredentialTypeDetails from '../../components/credential-types/CredentialTypeDetails';
 import {
   Claims,
   ICredentialCard,
-} from '../../components/credential-offer/credentials.types';
+} from '../../components/credential-types/credentials.types';
+import BackTitleBar from '../../components/layout/BackTitleBar';
 import Footer from '../../components/layout/Footer';
-import Header from '../../components/layout/Header';
 import { removeUnderscoresFromWord } from '../../utils/common';
 
-export default function CredentialType() {
+export default function CredentialTypes() {
+  const push = useNavigate();
   /*TODO: the CREDENTIAL_ISSUER_METADATA is to be removed during the integration
   at this point, we'll listen to the event that'll be emitted from the /scan route
   and use the data found in there as the credential offer.
@@ -397,7 +400,7 @@ export default function CredentialType() {
     return [];
   }
 
-  const [selectedCredentialOffer, setSelectedCredentialOffer] =
+  const [selectedCredentialType, setSelectedCredentialType] =
     useState<ICredentialCard>();
 
   return (
@@ -408,46 +411,54 @@ export default function CredentialType() {
         height: '100%',
       }}
     >
-      <CredentialOfferDetails
-        closeDialog={() => setSelectedCredentialOffer(undefined)}
-        isDialogOpen={!!selectedCredentialOffer}
-        selectedCredentialOffer={selectedCredentialOffer}
-        credentialOfferAttributes={getVCClaims(
-          selectedCredentialOffer?.type as ISupportedCredential,
+      <CredentialTypeDetails
+        closeDialog={() => setSelectedCredentialType(undefined)}
+        isDialogOpen={!!selectedCredentialType}
+        selectedCredentialType={selectedCredentialType}
+        credntialTypeClaims={getVCClaims(
+          selectedCredentialType?.type as ISupportedCredential,
           CREDENTIAL_ISSUER_METADATA,
           'en'
         )}
       />
-      <Header />
+      <BackTitleBar pageTitle="Credential Types" onBack={() => push('/scan')} />
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateRows: 'auto auto 1fr',
-          rowGap: 1,
           backgroundColor: '#F6F7F9',
-          padding: '12px',
+          height: '100%',
         }}
       >
-        {getVCSDJWTOffers(CREDENTIAL_ISSUER_METADATA).map((card, index) => {
-          const {
-            type,
-            issuer,
-            data: { display },
-          } = card;
-          return (
-            <CredentialTypeCard
-              key={index}
-              displayName={display[0].name}
-              issuer={issuer}
-              type={type}
-              selectCredentialType={() =>
-                setSelectedCredentialOffer((prevCard) =>
-                  prevCard && prevCard.type === card.type ? undefined : card
-                )
-              }
-            />
-          );
-        })}
+        <Scrollbars universal autoHide>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateRows: 'auto auto 1fr',
+              rowGap: 1,
+              padding: '12px',
+            }}
+          >
+            {getVCSDJWTOffers(CREDENTIAL_ISSUER_METADATA).map((card, index) => {
+              const {
+                type,
+                issuer,
+                data: { display },
+              } = card;
+              return (
+                <CredentialTypeCard
+                  key={index}
+                  displayName={display[0].name}
+                  issuer={issuer}
+                  type={type}
+                  selectCredentialType={() =>
+                    setSelectedCredentialType((prevCard) =>
+                      prevCard && prevCard.type === card.type ? undefined : card
+                    )
+                  }
+                />
+              );
+            })}
+          </Box>
+        </Scrollbars>
       </Box>
       <Footer showArrow={false} />
     </Box>
