@@ -69,7 +69,6 @@ export default function Credentials() {
           height: '100%',
           display: 'grid',
           gridTemplateRows: 'auto 1fr auto',
-          rowGap: 1,
         }}
       >
         <Header />
