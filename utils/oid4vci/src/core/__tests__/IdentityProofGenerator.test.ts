@@ -3,9 +3,16 @@ import * as jose from 'jose';
 import { CLIENT_ID } from '../../config';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
-import { identityStorage, keyRef1, storage } from './fixtures';
 import { StoreIdentityManager } from '../IdentityManager';
 import { identityStoreName } from '../../lib/schemas';
+import { CredentialSupported } from '../../lib/types';
+
+import {
+  credentialIssuerMetadataRef1,
+  identityStorage,
+  keyRef1,
+  storage,
+} from './fixtures';
 
 describe('IdentityProofGenerator', () => {
   const identityProofGenerator = new IdentityProofGenerator(
@@ -69,5 +76,47 @@ describe('IdentityProofGenerator', () => {
       expect(payload['nonce']).toEqual(nonce);
       expect(payload['iat']).toBeGreaterThanOrEqual(now);
     }
+  });
+
+  it('should throw when a non-JWT key proof is required', async () => {
+    const credentialSupportedRef1 =
+      credentialIssuerMetadataRef1.credential_configurations_supported[
+        'IdentityCredential'
+      ];
+
+    const credentialSupported: CredentialSupported = {
+      ...credentialSupportedRef1,
+      proof_types: ['x5c'],
+    };
+
+    const promise = identityProofGenerator.generateCompatibleKeyProof(
+      credentialSupported,
+      credentialIssuerMetadataRef1.credential_issuer
+    );
+
+    await expect(promise).rejects.toThrow(
+      'The issuer does not support JWT key proofs.'
+    );
+  });
+
+  it('should throw when no issuer signing algorithm is supported', async () => {
+    const credentialSupportedRef1 =
+      credentialIssuerMetadataRef1.credential_configurations_supported[
+        'IdentityCredential'
+      ];
+
+    const credentialSupported: CredentialSupported = {
+      ...credentialSupportedRef1,
+      credential_signing_alg_values_supported: [],
+    };
+
+    const promise = identityProofGenerator.generateCompatibleKeyProof(
+      credentialSupported,
+      credentialIssuerMetadataRef1.credential_issuer
+    );
+
+    await expect(promise).rejects.toThrow(
+      'The wallet identity does not match any algorithm supported by the issuer.'
+    );
   });
 });

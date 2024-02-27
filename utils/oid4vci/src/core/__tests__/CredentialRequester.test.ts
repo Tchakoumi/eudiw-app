@@ -54,13 +54,13 @@ describe('CredentialRequester', () => {
     const credentialTypeKey = 'IdentityCredential';
     const credentialOffer = credentialOfferObjectRef1;
 
-    const discoveryMetadata = {
+    const discoveryMetadata: DiscoveryMetadata = {
       ...discoveryMetadataRef1,
       jwtIssuerMetadata: {
         issuer: credentialOffer.credential_issuer,
         jwks: jwksRef1,
       },
-    } satisfies DiscoveryMetadata;
+    };
 
     nock(credentialOffer.credential_issuer)
       .post(/credential/)
@@ -84,13 +84,13 @@ describe('CredentialRequester', () => {
     const credentialTypeKey = 'IdentityCredential';
     const credentialOffer = credentialOfferObjectRef1;
 
-    const discoveryMetadata = {
+    const discoveryMetadata: DiscoveryMetadata = {
       ...discoveryMetadataRef1,
       jwtIssuerMetadata: {
         issuer: credentialOffer.credential_issuer,
         jwks: jwksRef2,
       },
-    } satisfies DiscoveryMetadata;
+    };
 
     nock(credentialOffer.credential_issuer)
       .post(/credential/)
@@ -103,17 +103,64 @@ describe('CredentialRequester', () => {
     );
   });
 
+  it('should resolve logos to base64', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const credentialTypeKey = 'IdentityCredential';
+
+    if (!discoveryMetadataRef1.credentialIssuerMetadata) throw 'unreachable';
+    const discoveryMetadata: DiscoveryMetadata = {
+      ...discoveryMetadataRef1,
+      credentialIssuerMetadata: {
+        ...discoveryMetadataRef1.credentialIssuerMetadata,
+        display: [
+          {
+            locale: 'en-US',
+            name: 'Authlete',
+            logo: {
+              url: `${credentialOffer.credential_issuer}/logo`,
+            },
+          },
+        ],
+      },
+    };
+
+    nock(credentialOffer.credential_issuer)
+      .post(/credential/)
+      .reply(200, credentialResponseRef1)
+      .get(/jwks/)
+      .reply(200, jwksRef1)
+      .get(/logo/)
+      .replyWithFile(200, __dirname + '/fixtures/images/icon.jpg', {
+        'Content-Type': 'image/jpeg',
+      });
+
+    const credential = await credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata },
+      { credentialTypeKey },
+      PRE_AUTHORIZED_GRANT_TYPE
+    );
+
+    const stored = await storage.findOne(
+      credentialStoreName,
+      credential.id as IDBValidKey
+    );
+
+    expect(credential).toEqual(stored?.value.display);
+    expect(credential.issuer).toEqual('Authlete');
+    expect(credential.logo?.startsWith('data:image/jpeg;base64')).toBe(true);
+  });
+
   it('should throw on missing verifying key', async () => {
     const credentialTypeKey = 'IdentityCredential';
     const credentialOffer = credentialOfferObjectRef1;
 
-    const discoveryMetadata = {
+    const discoveryMetadata: DiscoveryMetadata = {
       ...discoveryMetadataRef1,
       jwtIssuerMetadata: {
         issuer: credentialOffer.credential_issuer,
         jwks: { keys: [] },
       },
-    } satisfies DiscoveryMetadata;
+    };
 
     nock(credentialOffer.credential_issuer)
       .post(/credential/)
@@ -134,7 +181,7 @@ describe('CredentialRequester', () => {
     const credentialTypeKey = 'IdentityCredential';
     const credentialOffer = credentialOfferObjectRef1;
 
-    const discoveryMetadata = {
+    const discoveryMetadata: DiscoveryMetadata = {
       ...discoveryMetadataRef1,
       jwtIssuerMetadata: {
         issuer: credentialOffer.credential_issuer,
@@ -145,7 +192,7 @@ describe('CredentialRequester', () => {
           ],
         },
       },
-    } satisfies DiscoveryMetadata;
+    };
 
     nock(credentialOffer.credential_issuer)
       .post(/credential/)
@@ -199,6 +246,129 @@ describe('CredentialRequester', () => {
 
     await expect(promise).rejects.toThrow(
       'CredentialIssuerError: 401 Unauthorized'
+    );
+  });
+
+  it('should throw on unsupported grant type', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const discoveryMetadata = discoveryMetadataRef1;
+    const credentialTypeKey = 'IdentityCredential';
+
+    const promise = credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata },
+      { credentialTypeKey },
+      'authorization_code'
+    );
+
+    await expect(promise).rejects.toThrow(
+      'There is only support for the Pre-Authorized Code flow.'
+    );
+  });
+
+  it('should throw on missing discovery metadata', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const credentialTypeKey = 'IdentityCredential';
+
+    const promise = credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata: undefined },
+      { credentialTypeKey },
+      PRE_AUTHORIZED_GRANT_TYPE
+    );
+
+    await expect(promise).rejects.toThrow(
+      'Cannot proceed without discovery metadata.'
+    );
+  });
+
+  it('should throw on missing configuration metadata for selected credential type', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const discoveryMetadata = discoveryMetadataRef1;
+    const credentialTypeKey = 'InvalidKey';
+
+    const promise = credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata },
+      { credentialTypeKey },
+      PRE_AUTHORIZED_GRANT_TYPE
+    );
+
+    await expect(promise).rejects.toThrow(
+      'Configuration metadata for selected credential type not found.'
+    );
+  });
+
+  it('should throw on encrypted credential response required', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const credentialTypeKey = 'IdentityCredential';
+
+    const discoveryMetadata: DiscoveryMetadata = JSON.parse(
+      JSON.stringify(discoveryMetadataRef1)
+    );
+
+    const credentialResponseEncryption =
+      discoveryMetadata.credentialIssuerMetadata
+        ?.credential_response_encryption;
+    if (!credentialResponseEncryption) throw 'unreachable';
+    credentialResponseEncryption.encryption_required = true;
+
+    const promise = credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata },
+      { credentialTypeKey },
+      PRE_AUTHORIZED_GRANT_TYPE
+    );
+
+    await expect(promise).rejects.toThrow(
+      'No support for credential response encryption.'
+    );
+  });
+
+  it('should throw on missing JWKS URI', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const credentialTypeKey = 'IdentityCredential';
+
+    if (!discoveryMetadataRef1.authorizationServerMetadata) throw 'unreachable';
+    const discoveryMetadata: DiscoveryMetadata = {
+      ...discoveryMetadataRef1,
+      authorizationServerMetadata: {
+        ...discoveryMetadataRef1.authorizationServerMetadata,
+        jwks_uri: undefined,
+      },
+      jwtIssuerMetadata: undefined,
+    };
+
+    nock(credentialOffer.credential_issuer)
+      .post(/credential/)
+      .reply(200, credentialResponseRef1);
+
+    const promise = credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata },
+      { credentialTypeKey },
+      PRE_AUTHORIZED_GRANT_TYPE
+    );
+
+    await expect(promise).rejects.toThrow(
+      'Could not find a URI to retrieve issuer verifying keys from.'
+    );
+  });
+
+  it('should throw on failure to fetch verifying keys', async () => {
+    const credentialOffer = credentialOfferObjectRef1;
+    const discoveryMetadata = discoveryMetadataRef1;
+    const credentialTypeKey = 'IdentityCredential';
+
+    nock(credentialOffer.credential_issuer)
+      .post(/credential/)
+      .reply(200, credentialResponseRef1)
+      .get(/jwks/)
+      .reply(404);
+
+    const promise = credentialRequester.requestCredentialIssuance(
+      { credentialOffer, discoveryMetadata },
+      { credentialTypeKey },
+      PRE_AUTHORIZED_GRANT_TYPE
+    );
+
+    await expect(promise).rejects.toThrow(
+      'Could not retrieve issuer verifying keys.'
     );
   });
 });

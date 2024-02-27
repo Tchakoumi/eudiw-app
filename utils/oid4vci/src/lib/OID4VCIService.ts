@@ -6,6 +6,8 @@ import { GrantType, ResolvedCredentialOffer } from '../lib/types';
 export enum OID4VCIServiceEventChannel {
   // Listen for resolved credential offers
   ProcessCredentialOffer = 'process-credential-offer',
+  // Listen for credential propositions
+  CredentialProposition = 'credential-proposition',
 }
 
 /**
@@ -28,7 +30,7 @@ export interface OID4VCIService {
   /**
    * Requests a credential from a credential issuer given a credential type.
    *
-   * The service replies on `OID4VCIServiceEventChannel.???`
+   * The service replies on `OID4VCIServiceEventChannel.CredentialProposition`
    * with either:
    * - a displayable credential,
    * - or an error message indicative of what went wrong.

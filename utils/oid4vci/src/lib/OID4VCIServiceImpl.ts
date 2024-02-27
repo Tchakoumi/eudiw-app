@@ -55,7 +55,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
     userOpts: { credentialTypeKey: string; txCode?: string },
     grantType: GrantType = PRE_AUTHORIZED_GRANT_TYPE
   ): Promise<void> {
-    const channel = '';
+    const channel = OID4VCIServiceEventChannel.CredentialProposition;
 
     this.credentialRequester
       .requestCredentialIssuance(resolvedCredentialOffer, userOpts, grantType)
