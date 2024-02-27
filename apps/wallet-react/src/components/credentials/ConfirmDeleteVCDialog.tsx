@@ -29,7 +29,7 @@ export default function ConfirmDeleteVCDialog({
     'Your credential within the system that issued you your credential.',
     'The issuing organization as a Contact.',
   ];
-  const getCredentialBackSteps = [
+  const restoreCredentialMessages = [
     'You will have to go to the organization that issued you this credential and request it again.',
   ];
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -117,7 +117,7 @@ export default function ConfirmDeleteVCDialog({
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box sx={{ display: 'grid', rowGap: 1 }}>
-                    {getCredentialBackSteps.map((line) => (
+                    {restoreCredentialMessages.map((line) => (
                       <Box
                         sx={{
                           display: 'grid',
