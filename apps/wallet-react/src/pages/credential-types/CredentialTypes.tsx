@@ -2,8 +2,8 @@ import { Box } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CredentialTypeDetails from '../../components/credential-type/CredentialTypeDetails';
 import CredentialTypeCard from '../../components/credential-type/CredentialTypeCard';
+import CredentialTypeDetails from '../../components/credential-type/CredentialTypeDetails';
 import {
   Claims,
   ICredentialCard,
@@ -400,7 +400,7 @@ export default function CredentialTypes() {
     return [];
   }
 
-  const [selectedCredentialOffer, setSelectedCredentialOffer] =
+  const [selectedCredentialType, setSelectedCredentialType] =
     useState<ICredentialCard>();
 
   return (
@@ -412,11 +412,11 @@ export default function CredentialTypes() {
       }}
     >
       <CredentialTypeDetails
-        closeDialog={() => setSelectedCredentialOffer(undefined)}
-        isDialogOpen={!!selectedCredentialOffer}
-        selectedCredentialOffer={selectedCredentialOffer}
-        credentialOfferAttributes={getVCClaims(
-          selectedCredentialOffer?.type as ISupportedCredential,
+        closeDialog={() => setSelectedCredentialType(undefined)}
+        isDialogOpen={!!selectedCredentialType}
+        selectedCredentialType={selectedCredentialType}
+        credntialTypeClaims={getVCClaims(
+          selectedCredentialType?.type as ISupportedCredential,
           CREDENTIAL_ISSUER_METADATA,
           'en'
         )}
@@ -450,7 +450,7 @@ export default function CredentialTypes() {
                   issuer={issuer}
                   type={type}
                   selectCredentialType={() =>
-                    setSelectedCredentialOffer((prevCard) =>
+                    setSelectedCredentialType((prevCard) =>
                       prevCard && prevCard.type === card.type ? undefined : card
                     )
                   }

@@ -12,13 +12,13 @@ import { ICredentialCard } from './credentials.types';
 export default function CredentialTypeDetails({
   isDialogOpen,
   closeDialog,
-  credentialOfferAttributes,
-  selectedCredentialOffer,
+  credntialTypeClaims,
+  selectedCredentialType,
 }: {
   isDialogOpen: boolean;
   closeDialog: () => void;
-  credentialOfferAttributes: string[];
-  selectedCredentialOffer?: ICredentialCard;
+  credntialTypeClaims: string[];
+  selectedCredentialType?: ICredentialCard;
 }) {
   const push = useNavigate();
   const [isIssuing, setIsIssuing] = useState<boolean>(false);
@@ -67,11 +67,11 @@ export default function CredentialTypeDetails({
             onBack={() => (isIssuing ? null : close())}
           />
           <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
-            {selectedCredentialOffer && (
+            {selectedCredentialType && (
               <CredentialTypeCard
-                displayName={selectedCredentialOffer.data.display[0].name}
-                issuer={selectedCredentialOffer.issuer}
-                type={selectedCredentialOffer.type}
+                displayName={selectedCredentialType.data.display[0].name}
+                issuer={selectedCredentialType.issuer}
+                type={selectedCredentialType.type}
               />
             )}
           </Box>
@@ -93,9 +93,9 @@ export default function CredentialTypeDetails({
                   overflow: 'auto',
                 }}
               >
-                {credentialOfferAttributes.map((attr, index) => (
+                {credntialTypeClaims.map((claim, index) => (
                   <Typography sx={{ fontSize: '14px' }} key={index}>
-                    {attr}
+                    {claim}
                   </Typography>
                 ))}
               </Box>
