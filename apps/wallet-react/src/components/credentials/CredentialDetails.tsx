@@ -1,7 +1,7 @@
 import { Box, Button, Dialog, Divider } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
-import { IVerifiableCredential } from '../credential-type/credentials.types';
+import { IVerifiableCredential } from '../credential-types/credentials.types';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
 import CredentialCard from './CredentialCard';

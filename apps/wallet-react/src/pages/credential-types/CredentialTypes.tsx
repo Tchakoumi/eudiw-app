@@ -2,12 +2,12 @@ import { Box } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CredentialTypeCard from '../../components/credential-type/CredentialTypeCard';
-import CredentialTypeDetails from '../../components/credential-type/CredentialTypeDetails';
+import CredentialTypeCard from '../../components/credential-types/CredentialTypeCard';
+import CredentialTypeDetails from '../../components/credential-types/CredentialTypeDetails';
 import {
   Claims,
   ICredentialCard,
-} from '../../components/credential-type/credentials.types';
+} from '../../components/credential-types/credentials.types';
 import BackTitleBar from '../../components/layout/BackTitleBar';
 import Footer from '../../components/layout/Footer';
 import { removeUnderscoresFromWord } from '../../utils/common';
