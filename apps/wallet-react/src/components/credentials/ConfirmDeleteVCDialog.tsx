@@ -11,10 +11,10 @@ import {
   Dialog,
   Typography,
 } from '@mui/material';
+import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
-import Scrollbars from 'rc-scrollbars';
 
 export default function ConfirmDeleteVCDialog({
   isDialogOpen,
@@ -25,6 +25,13 @@ export default function ConfirmDeleteVCDialog({
   closeDialog: () => void;
   confirmDelete: () => void;
 }) {
+  const notLostOnDelete = [
+    'Your credential within the system that issued you your credential.',
+    'The issuing organization as a Contact.',
+  ];
+  const getCredentialBackSteps = [
+    'You will have to go to the organization that issued you this credential and request it again.',
+  ];
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   //TODO: CALL API HERE TO DELETE VC
@@ -82,10 +89,7 @@ export default function ConfirmDeleteVCDialog({
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box sx={{ display: 'grid', rowGap: 1 }}>
-                    {[
-                      'Your credential within the system that issued you your credential.',
-                      'The issuing organization as a Contact.',
-                    ].map((line) => (
+                    {notLostOnDelete.map((line) => (
                       <Box
                         sx={{
                           display: 'grid',
@@ -113,9 +117,7 @@ export default function ConfirmDeleteVCDialog({
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box sx={{ display: 'grid', rowGap: 1 }}>
-                    {[
-                      'You will have to go to the organization that issued you this credential and request it again.',
-                    ].map((line) => (
+                    {getCredentialBackSteps.map((line) => (
                       <Box
                         sx={{
                           display: 'grid',
