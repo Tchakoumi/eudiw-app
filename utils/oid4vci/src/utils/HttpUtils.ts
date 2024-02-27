@@ -1,4 +1,4 @@
-import { Encoding, OpenIDResponse } from '../types';
+import { Encoding, OpenIDResponse } from '../lib/types';
 import { fetch } from 'cross-fetch';
 
 export const formPost = async <T>(

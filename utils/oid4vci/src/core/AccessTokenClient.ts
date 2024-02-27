@@ -1,5 +1,7 @@
-import { OID4VCIServiceError, InvalidCredentialOffer } from './errors';
-import { formPost, convertJsonToURI } from './functions';
+import { OID4VCIServiceError, InvalidCredentialOffer } from '../lib/errors';
+import { convertJsonToURI } from '../utils/Encoding';
+import { formPost } from '../utils/HttpUtils';
+
 import {
   AccessTokenRequest,
   AuthorizationServerOpts,
@@ -9,7 +11,7 @@ import {
   PRE_AUTH_CODE_LITERAL,
   OpenIDResponse,
   AccessTokenResponse,
-} from './types';
+} from '../lib/types';
 
 export class AccessTokenClient {
   public async acquireAccessTokenUsingRequest({

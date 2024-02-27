@@ -1,12 +1,12 @@
 import { AccessTokenClient } from '../AccessTokenClient';
-import { InvalidCredentialOffer } from '../errors';
+import { InvalidCredentialOffer } from '../../lib/errors';
 
 import {
   AccessTokenRequest,
   AccessTokenResponse,
   GrantTypes,
   OpenIDResponse,
-} from '../types';
+} from '../../lib/types';
 import nock from 'nock';
 
 const MOCK_URL = 'https://trial.authlete.net/api';
