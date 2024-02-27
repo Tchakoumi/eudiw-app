@@ -1,4 +1,5 @@
 import { Box, Button, Dialog, Divider } from '@mui/material';
+import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
 import { IVerifiableCredential } from '../credential-offer/credentials.types';
 import BackTitleBar from '../layout/BackTitleBar';
@@ -106,27 +107,29 @@ export default function CredentialDetails({
               : 'Hide All'}
           </Button>
 
-          <Box
-            sx={{
-              display: 'grid',
-              rowGap: '14px',
-              maxHeight: '100%',
-              alignContent: 'start',
-              overflow: 'auto',
-            }}
-          >
-            {Object.keys(vcData).map((claimKey, index) => (
-              <CredentialDetailLine
-                key={index}
-                title={claimKey}
-                value={vcData[claimKey as keyof typeof vcData]}
-                handleShowValue={() => handleShowClaimValue(claimKey)}
-                showClaimValue={
-                  canDisplayClaimValue[claimKey as keyof typeof vcData]
-                }
-              />
-            ))}
-          </Box>
+          <Scrollbars autoHide universal>
+            <Box
+              sx={{
+                display: 'grid',
+                rowGap: '14px',
+                maxHeight: '100%',
+                alignContent: 'start',
+                overflow: 'auto',
+              }}
+            >
+              {Object.keys(vcData).map((claimKey, index) => (
+                <CredentialDetailLine
+                  key={index}
+                  title={claimKey}
+                  value={vcData[claimKey as keyof typeof vcData]}
+                  handleShowValue={() => handleShowClaimValue(claimKey)}
+                  showClaimValue={
+                    canDisplayClaimValue[claimKey as keyof typeof vcData]
+                  }
+                />
+              ))}
+            </Box>
+          </Scrollbars>
           <Divider sx={{ width: '80%', justifySelf: 'center' }} />
 
           <Button variant="text" color="error" fullWidth onClick={deleteVC}>
