@@ -33,15 +33,16 @@ export interface OID4VCIService {
    * - a displayable credential,
    * - or an error message indicative of what went wrong.
    *
-   * @param opts.resolvedCredentialOffer a credential offer object with discovery metadata.
-   * @param opts.credentialTypeKey a credential type identifier as specified in the
-   * credential issuer metadata.
-   * @param opts.grantType a grant type indicative of the issuance flow type, Authorize or
-   * Pre-Authorized.
+   * @param resolvedCredentialOffer a credential offer object with discovery metadata
+   * @param userOpts.credentialTypeKey a credential type identifier as specified in the
+   * credential issuer metadata
+   * @param userOpts.txCode a transaction code for increased security
+   * @param grantType a grant type indicative of the issuance flow type, Authorize or
+   * Pre-Authorized
    */
-  requestCredentialIssuance(opts: {
-    resolvedCredentialOffer: ResolvedCredentialOffer;
-    credentialTypeKey: string;
-    grantType?: GrantType;
-  }): Promise<void>;
+  requestCredentialIssuance(
+    resolvedCredentialOffer: ResolvedCredentialOffer,
+    userOpts: { credentialTypeKey: string; txCode?: string },
+    grantType?: GrantType
+  ): Promise<void>;
 }

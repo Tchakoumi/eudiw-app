@@ -49,8 +49,9 @@ export class CredentialRequester {
    * This includes validating and persisting the credential.
    *
    * @param resolvedCredentialOffer a credential offer object with discovery metadata.
-   * @param credentialTypeKey a credential type identifier as specified in the
+   * @param userOpts.credentialTypeKey a credential type identifier as specified in the
    * credential issuer metadata.
+   * @param userOpts.txCode a transaction code for increased security
    * @param grantType a grant type indicative of the issuance flow type, Authorize or
    * Pre-Authorized.
    *
@@ -58,10 +59,11 @@ export class CredentialRequester {
    */
   public async requestCredentialIssuance(
     resolvedCredentialOffer: ResolvedCredentialOffer,
-    credentialTypeKey: string,
+    userOpts: { credentialTypeKey: string; txCode?: string },
     grantType: GrantType
   ): Promise<DisplayCredential> {
     const { credentialOffer, discoveryMetadata } = resolvedCredentialOffer;
+    const { credentialTypeKey, txCode } = userOpts;
 
     // Enforce grant type to match the pre-authorized flow
     if (grantType != 'urn:ietf:params:oauth:grant-type:pre-authorized_code') {
@@ -82,24 +84,23 @@ export class CredentialRequester {
     }
 
     // Request an access token to present at the credential endpoint
-    const { access_token: accessToken, c_nonce: nonce } =
-      await this.requestAccessToken(
-        grantType,
-        credentialOffer,
-        discoveryMetadata.authorizationServerMetadata
-      );
+    const tokenResponse = await this.requestAccessToken(
+      grantType,
+      credentialOffer,
+      discoveryMetadata.authorizationServerMetadata,
+      txCode
+    );
 
     // Prepare credential issuance request
     const credentialRequestParams = await this.prepareCredentialIssuanceRequest(
       credentialTypeKey,
       discoveryMetadata,
-      nonce
+      tokenResponse
     );
 
     // Send credential request
     const credential = await this.sendCredentialRequest(
-      credentialRequestParams,
-      accessToken
+      credentialRequestParams
     );
 
     // Prefill display credential
@@ -126,13 +127,15 @@ export class CredentialRequester {
    * @param grantType a grant type indicative of the issuance flow type
    * @param credentialOffer a credential offer object embedding authorization means
    * @param authorizationServerMetadata the metadata of the target authorization server
+   * @param txCode a transaction code for added security
    *
    * @returns an OAuth token response
    */
   private async requestAccessToken(
     grantType: string,
     credentialOffer: CredentialOffer,
-    authorizationServerMetadata: AuthorizationServerMetadata
+    authorizationServerMetadata: AuthorizationServerMetadata,
+    txCode?: string
   ): Promise<TokenResponse> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const params = {
@@ -140,6 +143,7 @@ export class CredentialRequester {
       grant_type: grantType,
       credentialOffer,
       authorizationServerMetadata,
+      txCode,
       // pre_authorized_code: credentialOffer.grants?.['urn:ietf:params:oauth:grant-type:pre-authorized_code']?.['pre-authorized_code'],
       // token_endpoint: discoveryMetadata?.authorizationServerMetadata?.token_endpoint,
     };
@@ -163,16 +167,17 @@ export class CredentialRequester {
    *
    * @param credentialTypeKey a credential type identifier
    * @param discoveryMetadata the discovered metadata upon credential offer resolution
-   * @param nonce a server-provided nonce value for key proof
+   * @param tokenResponse a successful access token response
    *
    * @returns a set of parameters to send a credential request
    */
   private async prepareCredentialIssuanceRequest(
     credentialTypeKey: string,
     discoveryMetadata: DiscoveryMetadata,
-    nonce?: string
+    tokenResponse: TokenResponse
   ): Promise<CredentialRequestParams> {
     const { credentialIssuerMetadata } = discoveryMetadata;
+    const { access_token: accessToken, c_nonce: nonce } = tokenResponse;
 
     // Assertions
 
@@ -224,9 +229,9 @@ export class CredentialRequester {
     // Return params
 
     return {
-      credentialTypeSelector,
+      request: { ...credentialTypeSelector, proof: keyProof },
       credentialEndpoint,
-      keyProof,
+      accessToken,
     };
   }
 
@@ -257,20 +262,13 @@ export class CredentialRequester {
    * Sends HTTP request for credential issuance.
    *
    * @param params a set of parameters to send a credential request
-   * @param accessToken a bearer token for authorization at the credential endpoint
    *
    * @returns the issued credential as is
    */
   private async sendCredentialRequest(
-    params: CredentialRequestParams,
-    accessToken: string
+    params: CredentialRequestParams
   ): Promise<string> {
-    const { credentialTypeSelector, credentialEndpoint, keyProof } = params;
-
-    const data = {
-      ...credentialTypeSelector,
-      proof: keyProof,
-    };
+    const { request, credentialEndpoint, accessToken } = params;
 
     const credentialResponse: CredentialResponse = await fetch(
       credentialEndpoint,
@@ -280,7 +278,7 @@ export class CredentialRequester {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(request),
       }
     ).then(async (response) => {
       if (!response.ok) {
@@ -321,7 +319,9 @@ export class CredentialRequester {
 
     const jwks = await fetch(jwksUri).then(async (response) => {
       if (!response.ok) {
-        throw new Error('Not 2xx response');
+        throw new OID4VCIServiceError(
+          'Could not retrieve issuer verifying keys.'
+        );
       }
 
       return response.json();
@@ -374,6 +374,6 @@ export class CredentialRequester {
       logo = await fetchIntoDataUrl(logo).catch(() => logo);
     }
 
-    return { title, issuer, logo } satisfies DisplayCredential;
+    return { title, issuer, logo };
   }
 }

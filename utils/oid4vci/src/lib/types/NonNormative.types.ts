@@ -1,4 +1,4 @@
-import { CredentialTypeSelector, KeyProof } from './v1_0_13';
+import { CredentialRequest } from './v1_0_13';
 
 export enum ServiceResponseStatus {
   Success = 'success',
@@ -12,9 +12,9 @@ export interface ServiceResponse {
 }
 
 export interface CredentialRequestParams {
-  credentialTypeSelector: CredentialTypeSelector;
+  request: CredentialRequest;
   credentialEndpoint: string;
-  keyProof?: KeyProof;
+  accessToken: string;
 }
 
 export type ProcessedCredential = SdJwtProcessedCredential;

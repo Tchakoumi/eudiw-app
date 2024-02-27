@@ -54,25 +54,15 @@ export class OID4VCIServiceImpl implements OID4VCIService {
       });
   }
 
-  public async requestCredentialIssuance(opts: {
-    resolvedCredentialOffer: ResolvedCredentialOffer;
-    credentialTypeKey: string;
-    grantType?: GrantType;
-  }): Promise<void> {
-    const {
-      resolvedCredentialOffer,
-      credentialTypeKey,
-      grantType = PRE_AUTHORIZED_GRANT_TYPE,
-    } = opts;
-
+  public async requestCredentialIssuance(
+    resolvedCredentialOffer: ResolvedCredentialOffer,
+    userOpts: { credentialTypeKey: string; txCode?: string },
+    grantType: GrantType = PRE_AUTHORIZED_GRANT_TYPE
+  ): Promise<void> {
     const channel = '';
 
     this.credentialRequester
-      .requestCredentialIssuance(
-        resolvedCredentialOffer,
-        credentialTypeKey,
-        grantType
-      )
+      .requestCredentialIssuance(resolvedCredentialOffer, userOpts, grantType)
       .then((result) => {
         const response: ServiceResponse = {
           status: ServiceResponseStatus.Success,

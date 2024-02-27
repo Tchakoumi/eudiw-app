@@ -43,7 +43,7 @@ describe('CredentialRequester', () => {
 
     const credential = await credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
-      credentialTypeKey,
+      { credentialTypeKey },
       PRE_AUTHORIZED_GRANT_TYPE
     );
 
@@ -73,7 +73,7 @@ describe('CredentialRequester', () => {
 
     const credential = await credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
-      credentialTypeKey,
+      { credentialTypeKey },
       PRE_AUTHORIZED_GRANT_TYPE
     );
 
@@ -103,7 +103,7 @@ describe('CredentialRequester', () => {
 
     await credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
-      credentialTypeKey,
+      { credentialTypeKey },
       PRE_AUTHORIZED_GRANT_TYPE
     );
   });
@@ -126,7 +126,7 @@ describe('CredentialRequester', () => {
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
-      credentialTypeKey,
+      { credentialTypeKey },
       PRE_AUTHORIZED_GRANT_TYPE
     );
 
@@ -158,7 +158,7 @@ describe('CredentialRequester', () => {
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
-      credentialTypeKey,
+      { credentialTypeKey },
       PRE_AUTHORIZED_GRANT_TYPE
     );
 
@@ -178,7 +178,7 @@ describe('CredentialRequester', () => {
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
-      credentialTypeKey,
+      { credentialTypeKey },
       PRE_AUTHORIZED_GRANT_TYPE
     );
 
@@ -198,7 +198,7 @@ describe('CredentialRequester', () => {
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
-      credentialTypeKey,
+      { credentialTypeKey },
       PRE_AUTHORIZED_GRANT_TYPE
     );
 
