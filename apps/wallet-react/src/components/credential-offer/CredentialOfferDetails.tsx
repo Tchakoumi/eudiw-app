@@ -1,4 +1,5 @@
 import { Box, Button, Dialog, Typography } from '@mui/material';
+import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackTitleBar from '../layout/BackTitleBar';
@@ -82,21 +83,23 @@ export default function CredentialOfferDetails({
               rowGap: '8px',
             }}
           >
-            <Box
-              sx={{
-                display: 'grid',
-                rowGap: '14px',
-                maxHeight: '100%',
-                alignContent: 'start',
-                overflow: 'auto',
-              }}
-            >
-              {credentialOfferAttributes.map((attr, index) => (
-                <Typography sx={{ fontSize: '14px' }} key={index}>
-                  {attr}
-                </Typography>
-              ))}
-            </Box>
+            <Scrollbars autoHide universal>
+              <Box
+                sx={{
+                  display: 'grid',
+                  rowGap: '14px',
+                  maxHeight: '100%',
+                  alignContent: 'start',
+                  overflow: 'auto',
+                }}
+              >
+                {credentialOfferAttributes.map((attr, index) => (
+                  <Typography sx={{ fontSize: '14px' }} key={index}>
+                    {attr}
+                  </Typography>
+                ))}
+              </Box>
+            </Scrollbars>
 
             <Button
               variant="contained"
