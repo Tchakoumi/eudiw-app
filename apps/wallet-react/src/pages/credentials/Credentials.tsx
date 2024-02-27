@@ -2,7 +2,7 @@ import { Alert, Box, Snackbar } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
 import AuthleteLogo from '../../assets/authlete-logo.png';
-import { IVerifiableCredential } from '../../components/credential-offer/credentials.types';
+import { IVerifiableCredential } from '../../components/credential-type/credentials.types';
 import ConfirmDeleteVCDialog from '../../components/credentials/ConfirmDeleteVCDialog';
 import CredentialCard from '../../components/credentials/CredentialCard';
 import CredentialCardSkeleton from '../../components/credentials/CredentialCardSkeleton';
