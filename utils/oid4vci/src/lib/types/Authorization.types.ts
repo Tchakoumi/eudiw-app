@@ -55,5 +55,4 @@ export enum GrantTypes {
 export interface IssuerOpts {
   issuer: string;
   tokenEndpoint?: string;
-  fetchMetadata?: boolean;
 }

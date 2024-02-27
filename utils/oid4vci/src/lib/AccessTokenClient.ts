@@ -1,7 +1,5 @@
-import { OID4VCIServiceError } from './errors';
-import { InvalidCredentialOffer } from './errors/CredentialOffer.errors';
-import { convertJsonToURI } from './functions';
-import { formPost } from './functions/HttpUtils';
+import { OID4VCIServiceError, InvalidCredentialOffer } from './errors';
+import { formPost, convertJsonToURI } from './functions';
 import {
   AccessTokenRequest,
   AuthorizationServerOpts,
@@ -9,8 +7,9 @@ import {
   GrantTypes,
   IssuerOpts,
   PRE_AUTH_CODE_LITERAL,
+  OpenIDResponse,
+  AccessTokenResponse,
 } from './types';
-import { OpenIDResponse, AccessTokenResponse } from './types';
 
 export class AccessTokenClient {
   public async acquireAccessTokenUsingRequest({
@@ -25,7 +24,7 @@ export class AccessTokenClient {
     issuerOpts?: IssuerOpts;
   }): Promise<OpenIDResponse<AccessTokenResponse>> {
     this.validate(accessTokenRequest);
-    this.assertTx_Code(accessTokenRequest.tx_code);
+    this.assertTxCode(accessTokenRequest.tx_code);
     const requestTokenURL = AccessTokenClient.determineTokenURL({
       asOpts,
       issuerOpts,
@@ -129,7 +128,7 @@ export class AccessTokenClient {
     return `${scheme ? scheme + '://' : 'https://'}${hostname}${endpoint}`;
   }
 
-  private assertTx_Code(tx_code?: string): void {
+  private assertTxCode(tx_code?: string): void {
     // Check if tx_code is not undefined but is an empty string
     if (tx_code !== undefined && tx_code.trim() === '') {
       // Throw an error with a specific type/message
