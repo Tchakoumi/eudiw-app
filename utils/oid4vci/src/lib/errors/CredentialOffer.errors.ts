@@ -8,4 +8,5 @@ export enum InvalidCredentialOffer {
   UnresolvableMetadata = `${Generic}: could not resolve metadata`,
   MissingCredentialIssuer = `${Generic}: missing credential issuer`,
   UnresolvableAuthorizationServer = `${Generic}: unresolvable authorization server`,
+  invalid_client = 'invalid_client',
 }
