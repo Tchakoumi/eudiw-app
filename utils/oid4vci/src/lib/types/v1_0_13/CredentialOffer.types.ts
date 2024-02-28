@@ -1,6 +1,7 @@
 import { AuthorizationServerMetadata } from '../AuthorizationServerMetadata.types';
 import { JwtIssuerMetadata } from '../JwtIssuerMetadata.types';
 import { CredentialIssuerMetadata } from './CredentialIssuerMetadata.types';
+import { GrantType } from '../Authorization.types';
 
 /**
  * The OpenID for VC Issuance Flow may start with a Credential Offer.
@@ -32,15 +33,10 @@ export interface CredentialOffer {
   grants?: Grant;
 }
 
-export const PRE_AUTHORIZED_GRANT_TYPE =
-  'urn:ietf:params:oauth:grant-type:pre-authorized_code';
-
 export interface Grant {
-  authorization_code?: AuthorizationCodeGrant;
-  [PRE_AUTHORIZED_GRANT_TYPE]?: PreAuthorizedCodeGrant;
+  [GrantType.AUTHORIZATION_CODE]?: AuthorizationCodeGrant;
+  [GrantType.PRE_AUTHORIZED_CODE]?: PreAuthorizedCodeGrant;
 }
-
-export type GrantType = keyof Grant;
 
 export interface AuthorizationCodeGrant {
   /**

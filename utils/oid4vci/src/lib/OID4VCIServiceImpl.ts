@@ -6,11 +6,7 @@ import { ServiceResponse, ServiceResponseStatus } from './types';
 import { StorageFactory } from '@datev/storage';
 import { CredentialDBSchema, IdentityDBSchema } from './schemas';
 
-import {
-  GrantType,
-  PRE_AUTHORIZED_GRANT_TYPE,
-  ResolvedCredentialOffer,
-} from '../lib/types';
+import { GrantType, ResolvedCredentialOffer } from '../lib/types';
 
 /**
  * Concrete implementation of the OID4VCI service.
@@ -53,7 +49,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
   public async requestCredentialIssuance(
     resolvedCredentialOffer: ResolvedCredentialOffer,
     userOpts: { credentialTypeKey: string; txCode?: string },
-    grantType: GrantType = PRE_AUTHORIZED_GRANT_TYPE
+    grantType: GrantType = GrantType.PRE_AUTHORIZED_CODE
   ): Promise<void> {
     const channel = OID4VCIServiceEventChannel.CredentialProposition;
 

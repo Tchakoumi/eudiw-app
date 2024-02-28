@@ -2,7 +2,6 @@ import { fetch } from 'cross-fetch';
 import * as jose from 'jose';
 
 import { OID4VCIServiceError } from '../lib/errors';
-import { TokenResponse } from '../lib/types/tmp';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
 import { CLIENT_ID } from '../config';
@@ -10,11 +9,13 @@ import { fetchIntoDataUrl } from '../utils';
 import { CredentialDBSchema, IdentityDBSchema } from '../lib/schemas';
 import { StorageFactory } from '@datev/storage';
 import { StoreIdentityManager } from './IdentityManager';
+import { AccessTokenClient } from './AccessTokenClient';
 
 import {
   DiscoveryMetadata,
   CredentialTypeSelector,
   CredentialSupportedSdJwtVc,
+  AccessTokenResponse,
   CredentialResponse,
   CredentialRequestParams,
   GrantType,
@@ -24,6 +25,9 @@ import {
   CredentialSupported,
   CredentialIssuerMetadata,
   DisplayCredential,
+  AccessTokenRequest,
+  EndpointMetadata,
+  OpenIDResponse,
 } from '../lib/types';
 
 /**
@@ -31,6 +35,7 @@ import {
  * and handling all post-issuance operations.
  */
 export class CredentialRequester {
+  private readonly accessTokenClient: AccessTokenClient;
   private readonly identityProofGenerator: IdentityProofGenerator;
   private readonly sdJwtCredentialProcessor: SdJwtCredentialProcessor;
 
@@ -41,6 +46,8 @@ export class CredentialRequester {
   public constructor(
     private storage: StorageFactory<CredentialDBSchema & IdentityDBSchema>
   ) {
+    this.accessTokenClient = new AccessTokenClient();
+
     this.identityProofGenerator = new IdentityProofGenerator(
       new StoreIdentityManager(
         // This surprisingly does not work automatically
@@ -77,7 +84,7 @@ export class CredentialRequester {
     const { credentialTypeKey, txCode } = userOpts;
 
     // Enforce grant type to match the pre-authorized flow
-    if (grantType != 'urn:ietf:params:oauth:grant-type:pre-authorized_code') {
+    if (grantType != GrantType.PRE_AUTHORIZED_CODE) {
       throw new OID4VCIServiceError(
         'There is only support for the Pre-Authorized Code flow.'
       );
@@ -143,32 +150,51 @@ export class CredentialRequester {
    * @returns an OAuth token response
    */
   private async requestAccessToken(
-    grantType: string,
+    grantType: GrantType,
     credentialOffer: CredentialOffer,
     authorizationServerMetadata: AuthorizationServerMetadata,
     txCode?: string
-  ): Promise<TokenResponse> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const params = {
+  ): Promise<AccessTokenResponse> {
+    // Enforce grant type to match the pre-authorized flow
+
+    if (grantType != GrantType.PRE_AUTHORIZED_CODE) {
+      throw new OID4VCIServiceError(
+        'There is only support for the Pre-Authorized Code flow.'
+      );
+    }
+
+    // Extract pre-authorized code
+
+    const preAuthorizedCode =
+      credentialOffer.grants?.[grantType]?.['pre-authorized_code'];
+
+    if (!preAuthorizedCode) {
+      throw new OID4VCIServiceError(
+        'Cannot proceed without a pre-authorized code.'
+      );
+    }
+
+    // Prepare data for access token request
+
+    const accessTokenRequest: AccessTokenRequest = {
       client_id: CLIENT_ID,
       grant_type: grantType,
-      credentialOffer,
-      authorizationServerMetadata,
-      txCode,
-      // pre_authorized_code: credentialOffer.grants?.['urn:ietf:params:oauth:grant-type:pre-authorized_code']?.['pre-authorized_code'],
-      // token_endpoint: discoveryMetadata?.authorizationServerMetadata?.token_endpoint,
+      'pre-authorized_code': preAuthorizedCode,
+      tx_code: txCode,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const tokenResponse: TokenResponse = {
-      access_token: '_KqJ5DH-JCSGsUJiJvYyAkp-RVk_xHvDHL55u7XqCgc',
-      token_type: 'Bearer',
-      expires_in: 86400,
-      scope: null,
-      refresh_token: 'e7ROQXImyywhYnKgS1K4Hy5OX8FBPgmBCQg79PjvfLY',
-      c_nonce: 'QhVfho_Ar4oNAnPF8rrmSr5qjL8i-99ehaV5VIG7hSI',
-      c_nonce_expires_in: 86400,
-    };
+    // Delegate request to access token client
+
+    const accessTokenResponse: OpenIDResponse<AccessTokenResponse> =
+      await this.accessTokenClient.acquireAccessTokenUsingRequest({
+        accessTokenRequest,
+        metadata: authorizationServerMetadata as EndpointMetadata,
+      });
+
+    const tokenResponse = accessTokenResponse.successBody;
+    if (!tokenResponse) {
+      throw new OID4VCIServiceError('Could not obtain an access token.');
+    }
 
     return tokenResponse;
   }
@@ -185,7 +211,7 @@ export class CredentialRequester {
   private async prepareCredentialIssuanceRequest(
     credentialTypeKey: string,
     discoveryMetadata: DiscoveryMetadata,
-    tokenResponse: TokenResponse
+    tokenResponse: AccessTokenResponse
   ): Promise<CredentialRequestParams> {
     const { credentialIssuerMetadata } = discoveryMetadata;
     const { access_token: accessToken, c_nonce: nonce } = tokenResponse;

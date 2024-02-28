@@ -1,5 +1,11 @@
 import { StorageFactory } from '@datev/storage';
-import { CredentialResponse, JWKSet } from '../../../lib/types';
+
+import {
+  AccessTokenResponse,
+  CredentialResponse,
+  JWKSet,
+} from '../../../lib/types';
+
 import {
   CredentialDBSchema,
   IdentityDBSchema,
@@ -28,6 +34,16 @@ export const credentialStorage =
 
 export const identityStorage =
   storage as unknown as StorageFactory<IdentityDBSchema>;
+
+export const tokenResponseRef1: AccessTokenResponse = {
+  access_token: 'ZoR1S8Its2dfbhdCMf5uGkUbB0TBWpctOUv-chU1-6M',
+  token_type: 'Bearer',
+  expires_in: 86400,
+  refresh_token: 'DBOY_G9H9qcshxorjptrr442MUePjzyjkL4352qEeM8',
+  c_nonce: 'Wy8WzWM87HmVTDuD7-3c_V6AlVYFfxY2imjwbP5CNAs',
+  c_nonce_expires_in: 86400,
+  authorization_details: [],
+};
 
 export const credentialResponseRef1: CredentialResponse = {
   credential:

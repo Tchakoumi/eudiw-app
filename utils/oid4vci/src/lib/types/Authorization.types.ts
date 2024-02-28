@@ -38,7 +38,7 @@ export interface AuthorizationDetail {
 }
 
 export interface AccessTokenRequest {
-  grant_type: GrantTypes;
+  grant_type: GrantType;
   client_id?: string;
   code?: string;
   code_verifier?: string;
@@ -47,7 +47,7 @@ export interface AccessTokenRequest {
   tx_code?: string;
 }
 
-export enum GrantTypes {
+export enum GrantType {
   AUTHORIZATION_CODE = 'authorization_code',
   PRE_AUTHORIZED_CODE = 'urn:ietf:params:oauth:grant-type:pre-authorized_code',
 }

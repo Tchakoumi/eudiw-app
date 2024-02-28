@@ -5,20 +5,18 @@ import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
 import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
 import { ServiceResponse, ServiceResponseStatus } from '../types';
+import { credentialStoreName } from '../schemas';
 
 import {
-  authorizationServerMetadataRef1,
-  credentialIssuerMetadataRef1,
   credentialOfferObjectRef1,
-  jwtIssuerMetadataRef1,
   encodeCredentialOffer,
   nockReplyWithMetadataRef1,
   storage,
   discoveryMetadataRef1,
   credentialResponseRef1,
   jwksRef1,
+  tokenResponseRef1,
 } from '../../core/__tests__/fixtures';
-import { credentialStoreName } from '../schemas';
 
 describe('OID4VCIServiceImpl', () => {
   const service: OID4VCIService = new OID4VCIServiceImpl(eventBus, storage);
@@ -56,11 +54,7 @@ describe('OID4VCIServiceImpl', () => {
       status: ServiceResponseStatus.Success,
       payload: {
         credentialOffer: credentialOfferObjectRef1,
-        discoveryMetadata: {
-          credentialIssuerMetadata: credentialIssuerMetadataRef1,
-          authorizationServerMetadata: authorizationServerMetadataRef1,
-          jwtIssuerMetadata: jwtIssuerMetadataRef1,
-        },
+        discoveryMetadata: discoveryMetadataRef1,
       },
     });
   });
@@ -95,6 +89,8 @@ describe('OID4VCIServiceImpl', () => {
     const credentialTypeKey = 'IdentityCredential';
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef1)
       .get(/jwks/)
@@ -132,9 +128,7 @@ describe('OID4VCIServiceImpl', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';
 
-    nock(credentialOffer.credential_issuer)
-      .post(/credential/)
-      .reply(404);
+    nock(credentialOffer.credential_issuer).post(/token/).reply(401);
 
     const callback = jest.fn(() => {
       eventBus.emit('complete');
@@ -154,7 +148,7 @@ describe('OID4VCIServiceImpl', () => {
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith({
       status: ServiceResponseStatus.Error,
-      payload: new OID4VCIServiceError('CredentialIssuerError: 404 Not Found'),
+      payload: new OID4VCIServiceError('Could not obtain an access token.'),
     });
   });
 });

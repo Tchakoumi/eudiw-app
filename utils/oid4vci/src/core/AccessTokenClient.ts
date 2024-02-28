@@ -6,7 +6,7 @@ import {
   AccessTokenRequest,
   AuthorizationServerOpts,
   EndpointMetadata,
-  GrantTypes,
+  GrantType,
   IssuerOpts,
   PRE_AUTH_CODE_LITERAL,
   OpenIDResponse,
@@ -47,14 +47,14 @@ export class AccessTokenClient {
   }
 
   private validate(accessTokenRequest: AccessTokenRequest): void {
-    if (accessTokenRequest.grant_type === GrantTypes.PRE_AUTHORIZED_CODE) {
+    if (accessTokenRequest.grant_type === GrantType.PRE_AUTHORIZED_CODE) {
       this.assertPreAuthorizedGrantType(accessTokenRequest.grant_type);
       this.assertNonEmptyPreAuthorizedCode(accessTokenRequest);
     }
   }
 
-  private assertPreAuthorizedGrantType(grantType: GrantTypes): void {
-    if (GrantTypes.PRE_AUTHORIZED_CODE !== grantType) {
+  private assertPreAuthorizedGrantType(grantType: GrantType): void {
+    if (GrantType.PRE_AUTHORIZED_CODE !== grantType) {
       throw new Error(
         "grant type must be 'urn:ietf:params:oauth:grant-type:pre-authorized_code'"
       );

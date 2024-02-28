@@ -1,17 +1,18 @@
 import nock from 'nock';
 
 import { credentialStoreName } from '../../lib/schemas/CredentialDBSchema';
-import { DiscoveryMetadata, PRE_AUTHORIZED_GRANT_TYPE } from '../../lib/types';
+import { DiscoveryMetadata, GrantType } from '../../lib/types';
 import { CredentialRequester } from '../CredentialRequester';
 
 import {
-  credentialOfferObjectRef1,
-  discoveryMetadataRef1,
   storage,
-  credentialResponseRef1,
   jwksRef1,
-  credentialResponseRef2,
   jwksRef2,
+  tokenResponseRef1,
+  discoveryMetadataRef1,
+  credentialResponseRef1,
+  credentialResponseRef2,
+  credentialOfferObjectRef1,
 } from './fixtures';
 
 describe('CredentialRequester', () => {
@@ -31,6 +32,8 @@ describe('CredentialRequester', () => {
     const credentialTypeKey = 'IdentityCredential';
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef1)
       .get(/jwks/)
@@ -39,7 +42,7 @@ describe('CredentialRequester', () => {
     const credential = await credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     const stored = await storage.findOne(
@@ -63,13 +66,15 @@ describe('CredentialRequester', () => {
     };
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef1);
 
     const credential = await credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     const stored = await storage.findOne(
@@ -93,13 +98,15 @@ describe('CredentialRequester', () => {
     };
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef2);
 
     await credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
   });
 
@@ -125,6 +132,8 @@ describe('CredentialRequester', () => {
     };
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef1)
       .get(/jwks/)
@@ -137,7 +146,7 @@ describe('CredentialRequester', () => {
     const credential = await credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     const stored = await storage.findOne(
@@ -163,13 +172,15 @@ describe('CredentialRequester', () => {
     };
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef1);
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow(
@@ -195,13 +206,15 @@ describe('CredentialRequester', () => {
     };
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef2);
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow('Could not validate credential.');
@@ -213,6 +226,8 @@ describe('CredentialRequester', () => {
     const credentialTypeKey = 'org.iso.18013.5.1.mDL';
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef1)
       .get(/jwks/)
@@ -221,7 +236,7 @@ describe('CredentialRequester', () => {
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow(
@@ -235,13 +250,15 @@ describe('CredentialRequester', () => {
     const credentialTypeKey = 'IdentityCredential';
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(401);
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow(
@@ -257,7 +274,7 @@ describe('CredentialRequester', () => {
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      'authorization_code'
+      GrantType.AUTHORIZATION_CODE
     );
 
     await expect(promise).rejects.toThrow(
@@ -272,7 +289,7 @@ describe('CredentialRequester', () => {
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata: undefined },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow(
@@ -285,10 +302,14 @@ describe('CredentialRequester', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'InvalidKey';
 
+    nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1);
+
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow(
@@ -310,10 +331,14 @@ describe('CredentialRequester', () => {
     if (!credentialResponseEncryption) throw 'unreachable';
     credentialResponseEncryption.encryption_required = true;
 
+    nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1);
+
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow(
@@ -336,13 +361,15 @@ describe('CredentialRequester', () => {
     };
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef1);
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow(
@@ -356,6 +383,8 @@ describe('CredentialRequester', () => {
     const credentialTypeKey = 'IdentityCredential';
 
     nock(credentialOffer.credential_issuer)
+      .post(/token/)
+      .reply(200, tokenResponseRef1)
       .post(/credential/)
       .reply(200, credentialResponseRef1)
       .get(/jwks/)
@@ -364,7 +393,7 @@ describe('CredentialRequester', () => {
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
       { credentialTypeKey },
-      PRE_AUTHORIZED_GRANT_TYPE
+      GrantType.PRE_AUTHORIZED_CODE
     );
 
     await expect(promise).rejects.toThrow(
