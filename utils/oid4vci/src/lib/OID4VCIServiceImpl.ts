@@ -1,6 +1,6 @@
+import { EventEmitter } from 'eventemitter3';
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
-import { EventEmitter } from 'eventemitter3';
 import { ServiceResponse, ServiceResponseStatus } from './types';
 
 /**
@@ -27,7 +27,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
       .catch((error) => {
         const response: ServiceResponse = {
           status: ServiceResponseStatus.Error,
-          payload: error,
+          payload: String(error),
         };
 
         this.eventBus.emit(channel, response);
