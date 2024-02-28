@@ -1,17 +1,13 @@
 import { Box, CircularProgress, Dialog, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import DialogTransition from '../layout/DialogTransition';
-import wallet from '../../assets/illu-wallet.png';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import wallet from '../../assets/illu-wallet.png';
+import DialogTransition from '../layout/DialogTransition';
 
 export default function LoadingScanDetails({
   isDialogOpen,
-  closeDialog,
-  connectionLink,
 }: {
   isDialogOpen: boolean;
-  closeDialog: () => void;
-  connectionLink: string;
 }) {
   const push = useNavigate();
 
