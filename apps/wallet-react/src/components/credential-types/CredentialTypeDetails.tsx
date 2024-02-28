@@ -79,7 +79,7 @@ export default function CredentialTypeDetails({
             sx={{
               padding: '16px',
               display: 'grid',
-              gridTemplateRows: '1fr auto',
+              gridTemplateRows: '1fr auto auto',
               rowGap: '8px',
             }}
           >
@@ -109,6 +109,15 @@ export default function CredentialTypeDetails({
               onClick={issueVC}
             >
               Issue VC
+            </Button>
+            <Button
+              variant="contained"
+              color="inherit"
+              size="small"
+              fullWidth
+              onClick={close}
+            >
+              Cancel
             </Button>
           </Box>
         </Box>
