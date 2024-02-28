@@ -1,6 +1,6 @@
 import * as jose from 'jose';
 
-import { CLIENT_ID } from '../../config';
+import { Config } from '../../Config';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
 import { StoreIdentityManager } from '../IdentityManager';
@@ -67,7 +67,7 @@ describe('IdentityProofGenerator', () => {
       const pubKey = await jose.importJWK(jwk);
       expect(
         jose.jwtVerify(jws, pubKey, {
-          issuer: CLIENT_ID,
+          issuer: Config.getClientId(aud) ?? '',
           audience: aud,
         })
       ).resolves.not.toThrow();

@@ -1,10 +1,10 @@
-import { fetch } from 'cross-fetch';
 import * as jose from 'jose';
+import { fetch } from 'cross-fetch';
 
+import { Config } from '../Config';
 import { OID4VCIServiceError } from '../lib/errors';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
-import { CLIENT_ID } from '../config';
 import { fetchIntoDataUrl } from '../utils';
 import { CredentialDBSchema, IdentityDBSchema } from '../lib/schemas';
 import { StorageFactory } from '@datev/storage';
@@ -176,8 +176,10 @@ export class CredentialRequester {
 
     // Prepare data for access token request
 
+    const clientId = Config.getClientId(credentialOffer.credential_issuer);
+
     const accessTokenRequest: AccessTokenRequest = {
-      client_id: CLIENT_ID,
+      client_id: clientId,
       grant_type: grantType,
       'pre-authorized_code': preAuthorizedCode,
       tx_code: txCode,

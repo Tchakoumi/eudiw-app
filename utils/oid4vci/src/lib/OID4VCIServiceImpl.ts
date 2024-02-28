@@ -2,11 +2,15 @@ import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
 import { EventEmitter } from 'eventemitter3';
-import { ServiceResponse, ServiceResponseStatus } from './types';
 import { StorageFactory } from '@datev/storage';
 import { CredentialDBSchema, IdentityDBSchema } from './schemas';
 
-import { GrantType, ResolvedCredentialOffer } from '../lib/types';
+import {
+  ServiceResponse,
+  ServiceResponseStatus,
+  GrantType,
+  ResolvedCredentialOffer,
+} from './types';
 
 /**
  * Concrete implementation of the OID4VCI service.

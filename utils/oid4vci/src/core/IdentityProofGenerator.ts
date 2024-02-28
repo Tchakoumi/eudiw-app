@@ -1,7 +1,7 @@
 import * as jose from 'jose';
 
+import { Config } from '../Config';
 import { OID4VCIServiceError } from '../lib/errors';
-import { CLIENT_ID } from '../config';
 import { OID4VCI_PROOF_TYP } from '../constants';
 import { currentTimestampInSecs } from '../utils';
 import { CredentialSupported, JwtKeyProof, KeyProof } from '../lib/types';
@@ -70,20 +70,24 @@ export class IdentityProofGenerator {
   ): Promise<JwtKeyProof> {
     const priv = await jose.importJWK(key);
 
-    const jws = await new jose.SignJWT({ nonce })
+    const jws = new jose.SignJWT({ nonce })
       .setProtectedHeader({
         alg: key.alg ?? 'ES256',
         typ: OID4VCI_PROOF_TYP,
         jwk: this.toPublicJwk(key),
       })
       .setIssuedAt(currentTimestampInSecs())
-      .setIssuer(CLIENT_ID)
-      .setAudience(aud)
-      .sign(priv);
+      .setIssuer(Config.getClientId(aud) ?? '')
+      .setAudience(aud);
+
+    const clientId = Config.getClientId(aud);
+    if (clientId) {
+      jws.setIssuer(clientId);
+    }
 
     return {
       proof_type: 'jwt',
-      jwt: jws,
+      jwt: await jws.sign(priv),
     };
   }
 
