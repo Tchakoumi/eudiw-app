@@ -3,23 +3,25 @@ import nock from 'nock';
 import { eventBus } from '@datev/event-bus';
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
-import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
+import { InvalidCredentialOffer } from '../errors';
 import { ServiceResponse, ServiceResponseStatus } from '../types';
-import { credentialStoreName } from '../schemas';
 
 import {
   credentialOfferObjectRef1,
   encodeCredentialOffer,
   nockReplyWithMetadataRef1,
-  storage,
   discoveryMetadataRef1,
   credentialResponseRef1,
   jwksRef1,
   tokenResponseRef1,
 } from '../../core/__tests__/fixtures';
 
+// Mocking indexdedDB functionality
+import 'core-js/stable/structured-clone';
+import 'fake-indexeddb/auto';
+
 describe('OID4VCIServiceImpl', () => {
-  const service: OID4VCIService = new OID4VCIServiceImpl(eventBus, storage);
+  const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);
 
   beforeAll(async () => {
     nock.disableNetConnect();
@@ -77,9 +79,7 @@ describe('OID4VCIServiceImpl', () => {
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith({
       status: ServiceResponseStatus.Error,
-      payload: new OID4VCIServiceError(
-        InvalidCredentialOffer.MissingQueryString
-      ),
+      payload: `Error: OID4VCIServiceError: ${InvalidCredentialOffer.MissingQueryString}`,
     });
   });
 
@@ -113,14 +113,11 @@ describe('OID4VCIServiceImpl', () => {
       eventBus.once('complete', resolve);
     });
 
-    // Retrieve entry from storage
-    const stored = await storage.findOne(credentialStoreName, 1 as IDBValidKey);
-
     expect(callback).toHaveBeenCalledTimes(1);
     expect(response).toBeDefined();
     response = response as unknown as ServiceResponse;
     expect(response.status).toEqual(ServiceResponseStatus.Success);
-    expect(response.payload).toEqual(stored?.value.display);
+    expect(response.payload.id).toEqual(1);
   });
 
   it('should channel back errors (credential issuance request)', async () => {
@@ -148,7 +145,7 @@ describe('OID4VCIServiceImpl', () => {
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith({
       status: ServiceResponseStatus.Error,
-      payload: new OID4VCIServiceError('Could not obtain an access token.'),
+      payload: 'Error: OID4VCIServiceError: Could not obtain an access token.',
     });
   });
 });

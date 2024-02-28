@@ -3,7 +3,13 @@ import { CredentialRequester } from '../core/CredentialRequester';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
 import { EventEmitter } from 'eventemitter3';
 import { StorageFactory } from '@datev/storage';
-import { CredentialDBSchema, IdentityDBSchema } from './schemas';
+
+import {
+  CredentialDBSchema,
+  IdentityDBSchema,
+  credentialStoreName,
+  identityStoreName,
+} from './schemas';
 
 import {
   ServiceResponse,
@@ -16,15 +22,39 @@ import {
  * Concrete implementation of the OID4VCI service.
  */
 export class OID4VCIServiceImpl implements OID4VCIService {
+  private readonly storage: StorageFactory<
+    CredentialDBSchema & IdentityDBSchema
+  >;
+
   private readonly credentialOfferResolver: CredentialOfferResolver;
   private readonly credentialRequester: CredentialRequester;
 
-  public constructor(
-    private eventBus: EventEmitter,
-    private storage: StorageFactory<CredentialDBSchema & IdentityDBSchema>
-  ) {
+  public constructor(private eventBus: EventEmitter) {
+    this.storage = this.initializeStorage();
     this.credentialOfferResolver = new CredentialOfferResolver();
-    this.credentialRequester = new CredentialRequester(storage);
+    this.credentialRequester = new CredentialRequester(this.storage);
+  }
+
+  private initializeStorage() {
+    const dbName = 'OID4VCIServiceStorage';
+    const dbVersion = 1;
+
+    const storage = new StorageFactory<CredentialDBSchema & IdentityDBSchema>(
+      dbName,
+      dbVersion,
+      {
+        upgrade(db) {
+          db.createObjectStore(credentialStoreName, {
+            keyPath: 'display.id',
+            autoIncrement: true,
+          });
+
+          db.createObjectStore(identityStoreName);
+        },
+      }
+    );
+
+    return storage;
   }
 
   public resolveCredentialOffer(opts: { credentialOffer: string }): void {
@@ -43,7 +73,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
       .catch((error) => {
         const response: ServiceResponse = {
           status: ServiceResponseStatus.Error,
-          payload: error,
+          payload: error.toString(),
         };
 
         this.eventBus.emit(channel, response);
@@ -70,7 +100,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
       .catch((error) => {
         const response: ServiceResponse = {
           status: ServiceResponseStatus.Error,
-          payload: error,
+          payload: error.toString(),
         };
 
         this.eventBus.emit(channel, response);

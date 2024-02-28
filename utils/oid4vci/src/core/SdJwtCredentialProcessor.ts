@@ -3,7 +3,7 @@ import sdjwt from '@hopae/sd-jwt';
 
 import { OID4VCIServiceError } from '../lib/errors';
 import { DisplayCredential, SdJwtProcessedCredential } from '../lib/types';
-import { StorageFactory } from '@datev/storage';
+import { StorageFactory, StoreRecord } from '@datev/storage';
 import { CredentialDBSchema, credentialStoreName } from '../lib/schemas';
 
 /**
@@ -121,12 +121,12 @@ export class SdJwtCredentialProcessor {
   private async storeCredential(
     credential: SdJwtProcessedCredential
   ): Promise<SdJwtProcessedCredential> {
-    // Persist the payload, expecting an autoincremented ID to be returned
-    const key = await this.storage.insert(credentialStoreName, {
+    const payload: StoreRecord<CredentialDBSchema> = {
       value: credential,
-    });
+    };
 
-    // Update ID
+    // Persist the payload, expecting an autoincremented ID to be returned
+    const key = await this.storage.insert(credentialStoreName, payload);
     credential.display.id = key;
 
     return credential;
