@@ -117,12 +117,11 @@ export class StorageFactory<T extends DBSchema> {
     try {
       if (!this.db) this.db = await this.#dbPromise;
 
-      const allKeys = await this.db.getAllKeys(storeName);
-
       const txn = tx ?? this.db.transaction(storeName, 'readonly');
-      const result = await Promise.all(
-        allKeys.map((key) => txn.objectStore(storeName).get(key))
-      );
+      const store = txn.objectStore(storeName);
+      
+      const allKeys = await store.getAllKeys();
+      const result = await Promise.all(allKeys.map((key) => store.get(key)));
 
       if (!tx) await txn.done;
       return result.map(
@@ -323,7 +322,7 @@ export class StorageFactory<T extends DBSchema> {
 
       await callback(this.db.transaction(storeNames, mode));
     } catch (error) {
-      throw new StorageError((error as Error).message, '$transaction');
+      throw new StorageError((error as Error).message);
     }
   }
 

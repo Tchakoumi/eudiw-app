@@ -265,6 +265,7 @@ describe('StorageFactory', () => {
           transaction
         );
         await storageFactory.findOne('testStore', 'tx_key_1', transaction);
+        await storageFactory.findAll('testStore', transaction);
         await storageFactory.update(
           'testStore',
           'tx_key_1',
