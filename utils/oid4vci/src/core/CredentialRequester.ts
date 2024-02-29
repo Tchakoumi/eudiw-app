@@ -1,12 +1,12 @@
-import { fetch } from 'cross-fetch';
 import * as jose from 'jose';
+import { fetch } from 'cross-fetch';
 
+import { Config } from '../Config';
 import { OID4VCIServiceError } from '../lib/errors';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
-import { CLIENT_ID } from '../config';
 import { fetchIntoDataUrl } from '../utils';
-import { CredentialDBSchema, IdentityDBSchema } from '../lib/schemas';
+import { OID4VCIServiceDBSchema } from '../schema';
 import { StorageFactory } from '@datev/storage';
 import { StoreIdentityManager } from './IdentityManager';
 import { AccessTokenClient } from './AccessTokenClient';
@@ -43,22 +43,14 @@ export class CredentialRequester {
    * Constructor.
    * @param storage a storage to persist requested issued credentials
    */
-  public constructor(
-    private storage: StorageFactory<CredentialDBSchema & IdentityDBSchema>
-  ) {
+  public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {
     this.accessTokenClient = new AccessTokenClient();
 
     this.identityProofGenerator = new IdentityProofGenerator(
-      new StoreIdentityManager(
-        // This surprisingly does not work automatically
-        storage as unknown as StorageFactory<IdentityDBSchema>
-      )
+      new StoreIdentityManager(storage)
     );
 
-    this.sdJwtCredentialProcessor = new SdJwtCredentialProcessor(
-      // This surprisingly does not work automatically
-      storage as unknown as StorageFactory<CredentialDBSchema>
-    );
+    this.sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
   }
 
   /**
@@ -176,8 +168,10 @@ export class CredentialRequester {
 
     // Prepare data for access token request
 
+    const clientId = Config.getClientId(credentialOffer.credential_issuer);
+
     const accessTokenRequest: AccessTokenRequest = {
-      client_id: CLIENT_ID,
+      client_id: clientId,
       grant_type: grantType,
       'pre-authorized_code': preAuthorizedCode,
       tx_code: txCode,

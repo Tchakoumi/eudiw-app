@@ -1,7 +1,7 @@
 import * as jose from 'jose';
 
+import { Config } from '../Config';
 import { OID4VCIServiceError } from '../lib/errors';
-import { CLIENT_ID } from '../config';
 import { OID4VCI_PROOF_TYP } from '../constants';
 import { currentTimestampInSecs } from '../utils';
 import { CredentialSupported, JwtKeyProof, KeyProof } from '../lib/types';
@@ -68,22 +68,32 @@ export class IdentityProofGenerator {
     aud: string,
     nonce?: string
   ): Promise<JwtKeyProof> {
-    const priv = await jose.importJWK(key);
+    if (!key.alg) {
+      throw new OID4VCIServiceError(
+        `The key must specify an algorithm for signature.`
+      );
+    }
 
-    const jws = await new jose.SignJWT({ nonce })
+    const jws = new jose.SignJWT({ nonce })
       .setProtectedHeader({
-        alg: key.alg ?? 'ES256',
+        alg: key.alg,
         typ: OID4VCI_PROOF_TYP,
         jwk: this.toPublicJwk(key),
       })
       .setIssuedAt(currentTimestampInSecs())
-      .setIssuer(CLIENT_ID)
-      .setAudience(aud)
-      .sign(priv);
+      .setAudience(aud);
+
+    const clientId = Config.getClientId(aud);
+    if (clientId) {
+      jws.setIssuer(clientId);
+    }
+
+    const priv = await jose.importJWK(key);
+    const signed = await jws.sign(priv);
 
     return {
       proof_type: 'jwt',
-      jwt: jws,
+      jwt: signed,
     };
   }
 

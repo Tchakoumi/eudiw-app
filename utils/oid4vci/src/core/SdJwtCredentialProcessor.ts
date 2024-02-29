@@ -3,8 +3,8 @@ import sdjwt from '@hopae/sd-jwt';
 
 import { OID4VCIServiceError } from '../lib/errors';
 import { DisplayCredential, SdJwtProcessedCredential } from '../lib/types';
-import { StorageFactory } from '@datev/storage';
-import { CredentialDBSchema, credentialStoreName } from '../lib/schemas';
+import { StorageFactory, StoreRecord } from '@datev/storage';
+import { OID4VCIServiceDBSchema, credentialStoreName } from '../schema';
 
 /**
  * This class is responsible for processing, ie validating, decoding, and
@@ -16,7 +16,7 @@ export class SdJwtCredentialProcessor {
    * Constructor.
    * @param storage a storage to persist requested issued credentials
    */
-  public constructor(private storage: StorageFactory<CredentialDBSchema>) {}
+  public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {}
 
   /**
    * Validates, decodes, and stores credential.
@@ -89,12 +89,9 @@ export class SdJwtCredentialProcessor {
     displayCredentialStarter?: DisplayCredential
   ): Promise<SdJwtProcessedCredential> {
     const decoded = sdjwt.decode(credential);
+    const claims: Record<string, unknown> = await decoded.getClaims();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const claims: Record<string, any> = await decoded.getClaims();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const disclosed: Record<string, any> = {};
+    const disclosed: Record<string, unknown> = {};
     for (const disclosure of decoded.disclosures ?? []) {
       if (disclosure.key) {
         disclosed[disclosure.key] = disclosure.value;
@@ -107,7 +104,7 @@ export class SdJwtCredentialProcessor {
       encoded: credential,
       display: {
         ...displayCredentialStarter,
-        issued_at: claims['iat'],
+        issued_at: claims['iat'] as number,
         claims: disclosed,
       },
     };
@@ -121,13 +118,13 @@ export class SdJwtCredentialProcessor {
   private async storeCredential(
     credential: SdJwtProcessedCredential
   ): Promise<SdJwtProcessedCredential> {
-    // Persist the payload, expecting an autoincremented ID to be returned
-    const key = await this.storage.insert(credentialStoreName, {
+    const payload: StoreRecord<OID4VCIServiceDBSchema> = {
       value: credential,
-    });
+    };
 
-    // Update ID
-    credential.display.id = key;
+    // Persist the payload, expecting an autoincremented ID to be returned
+    const key = await this.storage.insert(credentialStoreName, payload);
+    credential.display.id = key as number;
 
     return credential;
   }
