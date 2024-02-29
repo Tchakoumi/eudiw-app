@@ -1,17 +1,17 @@
-import nock from 'nock';
 import { eventBus } from '@datev/event-bus';
+import nock from 'nock';
 
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
-import { ServiceResponseStatus } from '../types';
 import { InvalidCredentialOffer, OID4VCIServiceError } from '../errors';
+import { ServiceResponseStatus } from '../types';
 
 import {
   authorizationServerMetadataRef1,
   credentialIssuerMetadataRef1,
   credentialOfferObjectRef1,
-  jwtIssuerMetadataRef1,
   encodeCredentialOffer,
+  jwtIssuerMetadataRef1,
   nockReplyWithMetadataRef1,
 } from '../../core/__tests__/fixtures';
 
