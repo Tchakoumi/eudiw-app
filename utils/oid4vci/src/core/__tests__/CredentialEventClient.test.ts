@@ -1,7 +1,11 @@
 import { CredentialEventClient } from '../CredentialEventClient';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
 
-import { SdJwtProcessedCredentialObjRef1, credentialStorage } from './fixtures';
+import {
+  SdJwtProcessedCredentialObjRef1,
+  SdJwtProcessedCredentialObjRef2,
+  credentialStorage,
+} from './fixtures';
 
 describe('CredentialEventClient', () => {
   const client = new CredentialEventClient(credentialStorage);
@@ -15,8 +19,12 @@ describe('CredentialEventClient', () => {
       SdJwtProcessedCredentialObjRef1,
     );
 
-    const storedCredential = await client.retrieveCredentialHeaders(
-      SdJwtProcessedCredentialObjRef1,
+    await sdJwtCredentialProcessor.storeCredential(
+      SdJwtProcessedCredentialObjRef2,
     );
+
+    const credentialHeaders = await client.retrieveCredentialHeaders();
+
+    console.log(credentialHeaders);
   });
 });
