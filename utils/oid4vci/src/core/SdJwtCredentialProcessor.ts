@@ -28,13 +28,13 @@ export class SdJwtCredentialProcessor {
   public async processCredential(
     credential: string,
     verifyingKeys: jose.JWK[],
-    displayCredentialStarter?: DisplayCredential,
+    displayCredentialStarter?: DisplayCredential
   ): Promise<SdJwtProcessedCredential> {
     await this.validateCredential(credential, verifyingKeys);
 
     const decoded = await this.decodeCredential(
       credential,
-      displayCredentialStarter,
+      displayCredentialStarter
     );
 
     const stored = await this.storeCredential(decoded);
@@ -50,7 +50,7 @@ export class SdJwtCredentialProcessor {
    */
   private async validateCredential(
     credential: string,
-    verifyingKeys: jose.JWK[],
+    verifyingKeys: jose.JWK[]
   ): Promise<jose.JWK> {
     const { kid } = jose.decodeProtectedHeader(credential);
 
@@ -86,7 +86,7 @@ export class SdJwtCredentialProcessor {
    */
   private async decodeCredential(
     credential: string,
-    displayCredentialStarter?: DisplayCredential,
+    displayCredentialStarter?: DisplayCredential
   ): Promise<SdJwtProcessedCredential> {
     const decoded = sdjwt.decode(credential);
     const claims: Record<string, unknown> = await decoded.getClaims();
@@ -116,7 +116,7 @@ export class SdJwtCredentialProcessor {
    * @returns the stored credential with a populated identifier
    */
   public async storeCredential(
-    credential: SdJwtProcessedCredential,
+    credential: SdJwtProcessedCredential
   ): Promise<SdJwtProcessedCredential> {
     const payload: StoreRecord<OID4VCIServiceDBSchema> = {
       value: credential,

@@ -13,7 +13,7 @@ export class CredentialEventClient {
   public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {}
 
   /**
-   * Retreives a processed SD-JWT credential.
+   * Retrieves a processed SD-JWT credential.
    * @param
    * @returns the stored credential with a populated identifier
    */
