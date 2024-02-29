@@ -1,3 +1,5 @@
+import { eventBus } from '@datev/event-bus';
+import { OID4VCIServiceEventChannel } from '@datev/oid4vci';
 import { Box, CircularProgress, Dialog, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,11 +15,9 @@ export default function LoadingScanDetails({
 
   useEffect(() => {
     if (isDialogOpen) {
-      //TODO: CALL API HERE TO PROCESS SCANNED DATA connectionLink
-      setTimeout(() => {
-        //TODO: listen to event result and move to credential offer if good
+      eventBus.once(OID4VCIServiceEventChannel.ProcessCredentialOffer, () => {
         push('/credential-types');
-      }, 3000);
+      });
     }
   }, [isDialogOpen, push]);
 
