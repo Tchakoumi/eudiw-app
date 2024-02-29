@@ -1,3 +1,5 @@
+import { eventBus } from '@datev/event-bus';
+import { OID4VCIService, OID4VCIServiceImpl } from '@datev/oid4vci';
 import { QrScanner } from '@datev/qr-scanner';
 import back from '@iconify/icons-fluent/arrow-left-48-filled';
 import swapCamera from '@iconify/icons-fluent/arrow-sync-24-regular';
@@ -18,6 +20,8 @@ export default function Scan() {
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>(
     'environment'
   );
+
+  const OIDVCI: OID4VCIService = new OID4VCIServiceImpl(eventBus);
 
   const [permissionStatus, setPermissionStatus] =
     useState<PermissionState>('prompt');
@@ -50,6 +54,13 @@ export default function Scan() {
         setPermissionStatus('denied');
       });
   };
+
+  function resolveCredentialOffer(result: string) {
+    setIsDetailsDialogOpen(true);
+    setConnectionString(result);
+    // TODO: Resolve the credentialOffer name to credentialURI
+    OIDVCI.resolveCredentialOffer({ credentialOffer: result });
+  }
 
   return (
     <>
@@ -91,10 +102,7 @@ export default function Scan() {
             </Tooltip>
           </Box>
           <QrScanner
-            onResult={(result: string) => {
-              setIsDetailsDialogOpen(true);
-              setConnectionString(result);
-            }}
+            onResult={resolveCredentialOffer}
             validate={(result) => {
               return String(result);
             }}
