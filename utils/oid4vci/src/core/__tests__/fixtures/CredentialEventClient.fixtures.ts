@@ -1,4 +1,7 @@
-import { SdJwtProcessedCredential } from '../../../lib/types';
+import {
+  DisplayCredential,
+  SdJwtProcessedCredential,
+} from '../../../lib/types';
 
 export const SdJwtProcessedCredentialObjRef1: SdJwtProcessedCredential = {
   encoded:
@@ -27,3 +30,29 @@ export const SdJwtProcessedCredentialObjRef2: SdJwtProcessedCredential = {
     },
   },
 };
+
+export const CredentialHeaderObjRef1: DisplayCredential[] = [
+  {
+    title: 'Identity Credential',
+    issuer: 'trial.authlete.net',
+    logo: undefined,
+    issued_at: 1708613098,
+    id: 1,
+  },
+  {
+    title: 'Identity Credential',
+    issuer: 'trial.authlete.net',
+    issued_at: 1708613098,
+    id: 2,
+  },
+];
+
+export const CredentialHeaderObjRef2: DisplayCredential[] = [
+  {
+    title: 'Identity Credential',
+    issuer: 'trial.authlete.net',
+    logo: undefined,
+    issued_at: 1708613098,
+    id: 1,
+  },
+];

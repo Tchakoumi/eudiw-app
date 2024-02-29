@@ -1,30 +1,57 @@
+import { credentialStoreName } from '../../schema';
 import { CredentialEventClient } from '../CredentialEventClient';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
 
 import {
+  CredentialHeaderObjRef1,
+  CredentialHeaderObjRef2,
   SdJwtProcessedCredentialObjRef1,
   SdJwtProcessedCredentialObjRef2,
-  credentialStorage,
+  storage,
 } from './fixtures';
 
 describe('CredentialEventClient', () => {
-  const client = new CredentialEventClient(credentialStorage);
+  const client = new CredentialEventClient(storage);
 
-  it('should retrieve successfully a credential', async () => {
-    const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(
-      credentialStorage,
-    );
+  afterEach(async () => {
+    storage.clear(credentialStoreName);
+  });
 
-    await sdJwtCredentialProcessor.storeCredential(
-      SdJwtProcessedCredentialObjRef1,
-    );
+  it('should retrieve successfully one credential headers', async () => {
+    const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
 
     await sdJwtCredentialProcessor.storeCredential(
-      SdJwtProcessedCredentialObjRef2,
+      SdJwtProcessedCredentialObjRef1
     );
 
     const credentialHeaders = await client.retrieveCredentialHeaders();
 
-    console.log(credentialHeaders);
+    expect(credentialHeaders).toEqual(CredentialHeaderObjRef2);
+    expect(credentialHeaders).toHaveLength(1);
+    expect(credentialHeaders).not.toHaveProperty('claims');
+  });
+
+  it('should retrieve successfully two credential headers', async () => {
+    const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
+
+    await sdJwtCredentialProcessor.storeCredential(
+      SdJwtProcessedCredentialObjRef1
+    );
+
+    await sdJwtCredentialProcessor.storeCredential(
+      SdJwtProcessedCredentialObjRef2
+    );
+
+    const credentialHeaders = await client.retrieveCredentialHeaders();
+
+    expect(credentialHeaders).toEqual(CredentialHeaderObjRef1);
+    expect(credentialHeaders).toHaveLength(2);
+  });
+
+  it('should retrieve successfully an empty object', async () => {
+    const credentialHeaders = await client.retrieveCredentialHeaders();
+
+    expect(credentialHeaders).toEqual([]);
+    expect(credentialHeaders).toHaveLength(0);
   });
 });

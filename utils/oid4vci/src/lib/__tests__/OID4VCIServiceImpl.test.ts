@@ -18,14 +18,19 @@ import {
   credentialResponseRef1,
   jwksRef1,
   tokenResponseRef1,
+  storage,
+  SdJwtProcessedCredentialObjRef1,
+  CredentialHeaderObjRef2,
 } from '../../core/__tests__/fixtures';
 
 // Mocking indexdedDB functionality
 import 'core-js/stable/structured-clone';
 import 'fake-indexeddb/auto';
+import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
 
 describe('OID4VCIServiceImpl', () => {
   const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);
+  const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
 
   beforeAll(async () => {
     nock.disableNetConnect();
@@ -150,6 +155,30 @@ describe('OID4VCIServiceImpl', () => {
     expect(callback).toHaveBeenCalledWith({
       status: ServiceResponseStatus.Error,
       payload: 'Error: OID4VCIServiceError: Could not obtain an access token.',
+    });
+  });
+
+  it('should retrieve successfully one credential header ', async () => {
+    await sdJwtCredentialProcessor.storeCredential(
+      SdJwtProcessedCredentialObjRef1
+    );
+
+    const callback = jest.fn(() => {
+      eventBus.emit('complete');
+    });
+
+    eventBus.on(OID4VCIServiceEventChannel.RetrieveCredentialHeaders, callback);
+    service.retrieveCredentialHeaders();
+
+    // Wait for callback completion
+    await new Promise((resolve) => {
+      eventBus.once('complete', resolve);
+    });
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith({
+      status: ServiceResponseStatus.Success,
+      payload: CredentialHeaderObjRef2,
     });
   });
 });
