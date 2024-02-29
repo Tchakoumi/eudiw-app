@@ -55,9 +55,7 @@ export class AccessTokenClient {
 
   private assertPreAuthorizedGrantType(grantType: GrantType): void {
     if (GrantType.PRE_AUTHORIZED_CODE !== grantType) {
-      throw new Error(
-        "grant type must be 'urn:ietf:params:oauth:grant-type:pre-authorized_code'"
-      );
+      throw new Error(`grant type must be ${GrantType.PRE_AUTHORIZED_CODE}`);
     }
   }
 

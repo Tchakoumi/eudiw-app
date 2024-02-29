@@ -4,7 +4,11 @@ import { eventBus } from '@datev/event-bus';
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
 import { InvalidCredentialOffer } from '../errors';
-import { ServiceResponse, ServiceResponseStatus } from '../types';
+import {
+  DisplayCredential,
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '../types';
 
 import {
   credentialOfferObjectRef1,
@@ -117,7 +121,7 @@ describe('OID4VCIServiceImpl', () => {
     expect(response).toBeDefined();
     response = response as unknown as ServiceResponse;
     expect(response.status).toEqual(ServiceResponseStatus.Success);
-    expect(response.payload.id).toEqual(1);
+    expect((response.payload as DisplayCredential).id).toEqual(1);
   });
 
   it('should channel back errors (credential issuance request)', async () => {

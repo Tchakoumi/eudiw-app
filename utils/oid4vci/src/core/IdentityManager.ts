@@ -1,5 +1,5 @@
 import * as jose from 'jose';
-import { IdentityDBSchema, identityStoreName } from '../lib/schemas';
+import { OID4VCIServiceDBSchema, identityStoreName } from '../schema';
 import { StorageFactory } from '@datev/storage';
 
 /**
@@ -32,7 +32,7 @@ export class StoreIdentityManager implements IdentityManager {
    * Constructor.
    * @param storage a storage solution to keep cryptographic keys
    */
-  public constructor(private storage: StorageFactory<IdentityDBSchema>) {}
+  public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {}
 
   public async initializeJwkIdentity(): Promise<jose.JWK> {
     // Retrieve current identity
@@ -52,8 +52,7 @@ export class StoreIdentityManager implements IdentityManager {
       this.SINGLE_KEY as IDBValidKey
     );
 
-    const jwk = record?.value;
-    return jwk;
+    return record?.value as jose.JWK | undefined;
   }
 
   public async generateJwkIdentity(): Promise<jose.JWK> {

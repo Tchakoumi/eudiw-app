@@ -4,19 +4,14 @@ import { Config } from '../../Config';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
 import { StoreIdentityManager } from '../IdentityManager';
-import { identityStoreName } from '../../lib/schemas';
+import { identityStoreName } from '../../schema';
 import { CredentialSupported } from '../../lib/types';
 
-import {
-  credentialIssuerMetadataRef1,
-  identityStorage,
-  keyRef1,
-  storage,
-} from './fixtures';
+import { credentialIssuerMetadataRef1, keyRef1, storage } from './fixtures';
 
 describe('IdentityProofGenerator', () => {
   const identityProofGenerator = new IdentityProofGenerator(
-    new StoreIdentityManager(identityStorage)
+    new StoreIdentityManager(storage)
   );
 
   beforeAll(async () => {
@@ -41,41 +36,46 @@ describe('IdentityProofGenerator', () => {
   });
 
   it('should generate a valid JWS key proof', async () => {
+    const key = keyRef1;
     const now = currentTimestampInSecs();
     const aud = 'https://trial.authlete.net';
     const nonce = '8ef0d890-c1e2-4339-a245-9b53f6c16632';
 
-    const keys = [keyRef1, { ...keyRef1, alg: undefined }];
+    const { proof_type: proofType, jwt: jws } =
+      await identityProofGenerator.generateJwtKeyProof(key, aud, nonce);
 
-    for (const key of keys) {
-      const { proof_type: proofType, jwt: jws } =
-        await identityProofGenerator.generateJwtKeyProof(key, aud, nonce);
+    expect(proofType).toEqual('jwt');
 
-      expect(proofType).toEqual('jwt');
+    const { header, payload } = decodeJws(jws);
+    expect(header.alg).toEqual(key.alg);
 
-      const { header, payload } = decodeJws(jws);
-      expect(header.alg).toEqual('ES256');
+    // Assert private fields are not disclosed
+    const jwk = header.jwk as jose.JWK;
+    const keys = Object.keys(jwk).filter((key) => jwk[key] !== undefined);
+    expect(keys.every((e) => ['kty', 'crv', 'x', 'y'].includes(e))).toBe(true);
 
-      // Assert private fields are not disclosed
-      const jwk = header.jwk as jose.JWK;
-      const keys = Object.keys(jwk).filter((key) => jwk[key] !== undefined);
-      expect(keys.every((e) => ['kty', 'crv', 'x', 'y'].includes(e))).toBe(
-        true
-      );
+    // Assert that the proof is valid
+    const pubKey = await jose.importJWK(jwk);
+    expect(
+      jose.jwtVerify(jws, pubKey, {
+        issuer: Config.getClientId(aud) ?? '',
+        audience: aud,
+      })
+    ).resolves.not.toThrow();
 
-      // Assert that the proof is valid
-      const pubKey = await jose.importJWK(jwk);
-      expect(
-        jose.jwtVerify(jws, pubKey, {
-          issuer: Config.getClientId(aud) ?? '',
-          audience: aud,
-        })
-      ).resolves.not.toThrow();
+    // Assert other claims
+    expect(payload['nonce']).toEqual(nonce);
+    expect(payload['iat']).toBeGreaterThanOrEqual(now);
+  });
 
-      // Assert other claims
-      expect(payload['nonce']).toEqual(nonce);
-      expect(payload['iat']).toBeGreaterThanOrEqual(now);
-    }
+  it('should throw on signing algorithm unspecified', async () => {
+    const key = { ...keyRef1, alg: undefined };
+    const aud = 'https://trial.authlete.net';
+
+    const promise = identityProofGenerator.generateJwtKeyProof(key, aud);
+    await expect(promise).rejects.toThrow(
+      'The key must specify an algorithm for signature.'
+    );
   });
 
   it('should throw when a non-JWT key proof is required', async () => {

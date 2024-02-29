@@ -5,11 +5,10 @@ import { EventEmitter } from 'eventemitter3';
 import { StorageFactory } from '@datev/storage';
 
 import {
-  CredentialDBSchema,
-  IdentityDBSchema,
+  OID4VCIServiceDBSchema,
   credentialStoreName,
   identityStoreName,
-} from './schemas';
+} from '../schema';
 
 import {
   ServiceResponse,
@@ -22,26 +21,20 @@ import {
  * Concrete implementation of the OID4VCI service.
  */
 export class OID4VCIServiceImpl implements OID4VCIService {
-  private readonly storage: StorageFactory<
-    CredentialDBSchema & IdentityDBSchema
-  >;
-
   private readonly credentialOfferResolver: CredentialOfferResolver;
   private readonly credentialRequester: CredentialRequester;
 
   public constructor(private eventBus: EventEmitter) {
-    this.storage = this.initializeStorage();
+    const storage = this.initializeStorage();
     this.credentialOfferResolver = new CredentialOfferResolver();
-    this.credentialRequester = new CredentialRequester(this.storage);
+    this.credentialRequester = new CredentialRequester(storage);
   }
 
-  private initializeStorage(): StorageFactory<
-    CredentialDBSchema & IdentityDBSchema
-  > {
+  private initializeStorage(): StorageFactory<OID4VCIServiceDBSchema> {
     const dbName = 'OID4VCIServiceStorage';
     const dbVersion = 1;
 
-    const storage = new StorageFactory<CredentialDBSchema & IdentityDBSchema>(
+    const storage = new StorageFactory<OID4VCIServiceDBSchema>(
       dbName,
       dbVersion,
       {

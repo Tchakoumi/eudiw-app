@@ -1,14 +1,12 @@
-import { identityStoreName } from '../../lib/schemas';
+import { identityStoreName } from '../../schema';
 import { IdentityManager, StoreIdentityManager } from '../IdentityManager';
-import { identityStorage, storage } from './fixtures';
+import { storage } from './fixtures';
 
 describe('IdentityManager', () => {
-  const identityManager: IdentityManager = new StoreIdentityManager(
-    identityStorage
-  );
+  const identityManager: IdentityManager = new StoreIdentityManager(storage);
 
   afterEach(async () => {
-    identityStorage.clear(identityStoreName);
+    storage.clear(identityStoreName);
   });
 
   it('should successfully initialize identity', async () => {
