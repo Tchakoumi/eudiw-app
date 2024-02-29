@@ -35,7 +35,9 @@ export class OID4VCIServiceImpl implements OID4VCIService {
     this.credentialRequester = new CredentialRequester(this.storage);
   }
 
-  private initializeStorage() {
+  private initializeStorage(): StorageFactory<
+    CredentialDBSchema & IdentityDBSchema
+  > {
     const dbName = 'OID4VCIServiceStorage';
     const dbVersion = 1;
 
