@@ -5,6 +5,7 @@ import type {
   StoreNames,
   StoreValue,
 } from 'idb';
+import type { StorageFactory } from '../../core/StorageFactory';
 
 type StoreRecordKey<T> = StoreKey<T, StoreNames<T>>;
 type StoreRecordValue<T> = StoreValue<T, StoreNames<T>>;
@@ -33,5 +34,5 @@ interface TransactionCallback<T, M extends IDBTransactionMode> {
   (tx: StorageTransaction<T, M>): void | Promise<void>;
 }
 
-type MethodNames<T extends DBSchema> = keyof StorageFactory<T>;
+type MethodNames = keyof StorageFactory<T>;
 type StorageMethodType<T extends DBSchema> = StorageFactory<T>[MethodNames<T>];
