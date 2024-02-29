@@ -119,7 +119,7 @@ export class StorageFactory<T extends DBSchema> {
 
       const txn = tx ?? this.db.transaction(storeName, 'readonly');
       const store = txn.objectStore(storeName);
-      
+
       const allKeys = await store.getAllKeys();
       const result = await Promise.all(allKeys.map((key) => store.get(key)));
 
