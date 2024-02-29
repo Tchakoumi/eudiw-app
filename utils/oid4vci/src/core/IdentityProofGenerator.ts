@@ -81,7 +81,6 @@ export class IdentityProofGenerator {
         jwk: this.toPublicJwk(key),
       })
       .setIssuedAt(currentTimestampInSecs())
-      .setIssuer(Config.getClientId(aud) ?? '')
       .setAudience(aud);
 
     const clientId = Config.getClientId(aud);
