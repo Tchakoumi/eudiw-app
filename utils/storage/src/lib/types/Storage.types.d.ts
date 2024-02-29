@@ -1,4 +1,4 @@
-import {
+import type {
   IDBPTransaction,
   IndexNames,
   StoreKey,
@@ -6,11 +6,10 @@ import {
   StoreValue,
 } from 'idb';
 
-export type StoreRecordKey<T> = StoreKey<T, StoreNames<T>>;
-export type StoreRecordValue<T> = StoreValue<T, StoreNames<T>>;
-export type StoreIndexNames<T, S extends StoreNames<T>> = IndexNames<T, S>;
-
-export type StoreRecord<T> = {
+type StoreRecordKey<T> = StoreKey<T, StoreNames<T>>;
+type StoreRecordValue<T> = StoreValue<T, StoreNames<T>>;
+type StoreIndexNames<T, S extends StoreNames<T>> = IndexNames<T, S>;
+type StoreRecord<T> = {
   /**
    * Should not be provided for object stores using in-line keys.
    *
@@ -19,17 +18,18 @@ export type StoreRecord<T> = {
   key?: StoreRecordKey<T>;
   value: StoreRecordValue<T>;
 };
-export type QueryStore<T, S> = {
+type QueryStore<T, S> = {
   key?: IDBKeyRange;
   count?: number;
   indexName: StoreIndexNames<T, S>;
 };
 
-export type StorageTransaction<
+type StorageTransaction<T, M extends IDBTransactionMode> = IDBPTransaction<
   T,
-  M extends IDBTransactionMode
-> = IDBPTransaction<T, StoreNames<T>[], M>;
-export interface TransactionCallback<T, M extends IDBTransactionMode> {
+  StoreNames<T>[],
+  M
+>;
+interface TransactionCallback<T, M extends IDBTransactionMode> {
   (tx: StorageTransaction<T, M>): void | Promise<void>;
 }
 
