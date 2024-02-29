@@ -13,14 +13,12 @@ export function storageErrorHandler<T extends DBSchema>(
     ...agrs: Parameters<StorageMethodType<T>>
   ) => ReturnType<StorageMethodType<T>>
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return async function (this: any, ...args: Parameters<StorageMethodType<T>>) {
+  return async function (this: unknown, ...args: Parameters<StorageMethodType<T>>) {
     try {
       return await originalMethod.apply(this, args);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(`Error occurred in method <${methodName}>`);
-      throw new StorageError(error.message);
+      throw new StorageError((error as { message: string }).message);
     }
   };
 }

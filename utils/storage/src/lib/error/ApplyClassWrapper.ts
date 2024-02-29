@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Define the decorator factory for applying wrapper method to all methods of a class
  *
@@ -6,11 +5,11 @@
  * @returns Targeted class
  */
 
-export function ApplyClassWrapper<T extends { new (...args: any[]): object }>(
+export function ApplyClassWrapper<T extends { new (...args: unknown[]): object }>(
   wrapperMethod: (
     methodName: keyof InstanceType<T>,
-    originalMethod: (...args: any[]) => any
-  ) => any
+    originalMethod: (...args: unknown[]) => unknown
+  ) => unknown
 ) {
   return function (TargetClass: T) {
     const targetMethods = Object.getOwnPropertyNames(
