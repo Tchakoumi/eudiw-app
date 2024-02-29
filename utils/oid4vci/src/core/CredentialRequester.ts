@@ -6,7 +6,7 @@ import { OID4VCIServiceError } from '../lib/errors';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
 import { fetchIntoDataUrl } from '../utils';
-import { CredentialDBSchema, IdentityDBSchema } from '../lib/schemas';
+import { OID4VCIServiceDBSchema } from '../schema';
 import { StorageFactory } from '@datev/storage';
 import { StoreIdentityManager } from './IdentityManager';
 import { AccessTokenClient } from './AccessTokenClient';
@@ -43,22 +43,14 @@ export class CredentialRequester {
    * Constructor.
    * @param storage a storage to persist requested issued credentials
    */
-  public constructor(
-    private storage: StorageFactory<CredentialDBSchema & IdentityDBSchema>
-  ) {
+  public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {
     this.accessTokenClient = new AccessTokenClient();
 
     this.identityProofGenerator = new IdentityProofGenerator(
-      new StoreIdentityManager(
-        // This surprisingly does not work automatically
-        storage as unknown as StorageFactory<IdentityDBSchema>
-      )
+      new StoreIdentityManager(storage)
     );
 
-    this.sdJwtCredentialProcessor = new SdJwtCredentialProcessor(
-      // This surprisingly does not work automatically
-      storage as unknown as StorageFactory<CredentialDBSchema>
-    );
+    this.sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
   }
 
   /**

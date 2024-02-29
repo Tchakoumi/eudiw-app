@@ -68,16 +68,19 @@ export class IdentityProofGenerator {
     aud: string,
     nonce?: string
   ): Promise<JwtKeyProof> {
-    const priv = await jose.importJWK(key);
+    if (!key.alg) {
+      throw new OID4VCIServiceError(
+        `The key must specify an algorithm for signature.`
+      );
+    }
 
     const jws = new jose.SignJWT({ nonce })
       .setProtectedHeader({
-        alg: key.alg ?? 'ES256',
+        alg: key.alg,
         typ: OID4VCI_PROOF_TYP,
         jwk: this.toPublicJwk(key),
       })
       .setIssuedAt(currentTimestampInSecs())
-      .setIssuer(Config.getClientId(aud) ?? '')
       .setAudience(aud);
 
     const clientId = Config.getClientId(aud);
@@ -85,9 +88,12 @@ export class IdentityProofGenerator {
       jws.setIssuer(clientId);
     }
 
+    const priv = await jose.importJWK(key);
+    const signed = await jws.sign(priv);
+
     return {
       proof_type: 'jwt',
-      jwt: await jws.sign(priv),
+      jwt: signed,
     };
   }
 

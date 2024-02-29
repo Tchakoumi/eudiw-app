@@ -7,8 +7,7 @@ export enum ServiceResponseStatus {
 
 export interface ServiceResponse {
   status: ServiceResponseStatus;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload: any;
+  payload: unknown;
 }
 
 export interface CredentialRequestParams {
@@ -33,7 +32,6 @@ export interface DisplayCredential {
 
   // Specific claims
   claims?: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [x: string]: any;
+    [x: string]: unknown;
   };
 }

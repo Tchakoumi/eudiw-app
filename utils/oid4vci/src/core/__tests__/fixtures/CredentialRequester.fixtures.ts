@@ -7,18 +7,17 @@ import {
 } from '../../../lib/types';
 
 import {
-  CredentialDBSchema,
-  IdentityDBSchema,
+  OID4VCIServiceDBSchema,
   credentialStoreName,
   identityStoreName,
-} from '../../../lib/schemas';
+} from '../../../schema';
 
 // Mocking indexdedDB functionality
 import 'core-js/stable/structured-clone';
 import 'fake-indexeddb/auto';
 
-export const storage: StorageFactory<CredentialDBSchema & IdentityDBSchema> =
-  new StorageFactory<CredentialDBSchema & IdentityDBSchema>('testDB', 1, {
+export const storage: StorageFactory<OID4VCIServiceDBSchema> =
+  new StorageFactory<OID4VCIServiceDBSchema>('testDB', 1, {
     upgrade(db) {
       db.createObjectStore(credentialStoreName, {
         keyPath: 'display.id',
@@ -28,12 +27,6 @@ export const storage: StorageFactory<CredentialDBSchema & IdentityDBSchema> =
       db.createObjectStore(identityStoreName);
     },
   });
-
-export const credentialStorage =
-  storage as unknown as StorageFactory<CredentialDBSchema>;
-
-export const identityStorage =
-  storage as unknown as StorageFactory<IdentityDBSchema>;
 
 export const tokenResponseRef1: AccessTokenResponse = {
   access_token: 'ZoR1S8Its2dfbhdCMf5uGkUbB0TBWpctOUv-chU1-6M',
