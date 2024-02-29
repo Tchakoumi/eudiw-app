@@ -5,7 +5,8 @@
  * @returns Targeted class
  */
 
-export function ApplyClassWrapper<T extends { new (...args: unknown[]): object }>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function ApplyClassWrapper<T extends { new (...args: any[]): object }>(
   wrapperMethod: (
     methodName: keyof InstanceType<T>,
     originalMethod: (...args: unknown[]) => unknown

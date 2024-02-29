@@ -13,9 +13,9 @@ import {
   QueryStore,
   StorageTransaction,
   TransactionCallback,
-} from './Storage.types';
-import { ApplyClassWrapper } from './error/ApplyClassWrapper';
-import { storageErrorHandler } from './error/StorageErrorHandler';
+} from '../lib/types/Storage.types';
+import { ApplyClassWrapper } from '../lib/errors/ApplyClassWrapper';
+import { storageErrorHandler } from '../lib/errors/StorageErrorHandler';
 
 /**
  * A factory class for indexedDB's common CRUD operations

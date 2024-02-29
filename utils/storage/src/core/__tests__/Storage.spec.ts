@@ -3,8 +3,8 @@ import {
   StoreRecord,
   StoreRecordValue,
   TransactionCallback,
-} from './Storage.types';
-import { StorageFactory } from './StorageFactory';
+} from '../../lib/types/Storage.types';
+import { StorageFactory } from '../StorageFactory';
 
 // Mocking indexdedDB functionality
 import 'core-js/stable/structured-clone';

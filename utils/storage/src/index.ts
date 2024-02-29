@@ -1,13 +1,3 @@
-export {
-  MethodNames,
-  QueryStore,
-  StorageMethodType,
-  StorageTransaction,
-  StoreIndexNames,
-  StoreRecord,
-  StoreRecordKey,
-  StoreRecordValue,
-  TransactionCallback,
-} from './lib/Storage.types';
-export { StorageFactory } from './lib/StorageFactory';
-export { ApplyClassWrapper } from './lib/error/ApplyClassWrapper';
+export * from './lib/types';
+export { StorageFactory } from './core/StorageFactory';
+export { ApplyClassWrapper } from './lib/errors/ApplyClassWrapper';

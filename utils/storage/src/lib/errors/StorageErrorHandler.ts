@@ -1,4 +1,4 @@
-import { StorageMethodType } from '../Storage.types';
+import { StorageMethodType } from '../types/Storage.types';
 import { DBSchema } from 'idb';
 
 /**
