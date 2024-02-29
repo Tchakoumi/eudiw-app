@@ -1,6 +1,8 @@
+import { eventBus } from '@datev/event-bus';
+import { OID4VCIServiceEventChannel } from '@datev/oid4vci';
 import { Box } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CredentialTypeCard from '../../components/credential-types/CredentialTypeCard';
 import CredentialTypeDetails from '../../components/credential-types/CredentialTypeDetails';
@@ -14,6 +16,11 @@ import { removeUnderscoresFromWord } from '../../utils/common';
 
 export default function CredentialTypes() {
   const push = useNavigate();
+  useEffect(() => {
+    eventBus.once(OID4VCIServiceEventChannel.ProcessCredentialOffer, (data) => {
+      console.log(JSON.stringify(data));
+    });
+  }, []);
   /*TODO: the CREDENTIAL_ISSUER_METADATA is to be removed during the integration
   at this point, we'll listen to the event that'll be emitted from the /scan route
   and use the data found in there as the credential offer.
