@@ -129,12 +129,12 @@ export default function Scan() {
             </IconButton>
           </Tooltip>
         </Box>
-        <Box
+        {/* <Box
           sx={{
             backgroundColor: 'black',
             height: '22px',
           }}
-        />
+        /> */}
       </Box>
     </>
   );
