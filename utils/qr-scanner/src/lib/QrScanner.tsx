@@ -77,6 +77,8 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
         borderColor: 'rgb(147 197 253)',
         borderWidth: '4px',
         width: '100%',
+        display: 'grid',
+        gridTemplateRows: 'auto 1fr',
       }}
     >
       {error && (
