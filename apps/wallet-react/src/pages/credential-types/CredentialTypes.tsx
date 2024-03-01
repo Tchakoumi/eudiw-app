@@ -13,302 +13,28 @@ import {
 import BackTitleBar from '../../components/layout/BackTitleBar';
 import Footer from '../../components/layout/Footer';
 import { removeUnderscoresFromWord } from '../../utils/common';
+import { serviceResult } from './test data';
 
 export default function CredentialTypes() {
   const push = useNavigate();
+
+  const [credentialIssuerMetadas, setCredentialIssuerMetadatas] = useState<
+    typeof serviceResult.payload.discoveryMetadata.credentialIssuerMetadata
+  >(serviceResult.payload.discoveryMetadata.credentialIssuerMetadata);
+
   useEffect(() => {
-    eventBus.once(OID4VCIServiceEventChannel.ProcessCredentialOffer, (data) => {
-      console.log(JSON.stringify(data));
-    });
+    eventBus.once(
+      OID4VCIServiceEventChannel.ProcessCredentialOffer,
+      (data: typeof serviceResult) => {
+        setCredentialIssuerMetadatas(
+          data.payload.discoveryMetadata.credentialIssuerMetadata
+        );
+      }
+    );
   }, []);
-  /*TODO: the CREDENTIAL_ISSUER_METADATA is to be removed during the integration
-  at this point, we'll listen to the event that'll be emitted from the /scan route
-  and use the data found in there as the credential offer.
-   */
-  const CREDENTIAL_ISSUER_METADATA = {
-    credential_issuer: 'https://trial.authlete.net',
-    credential_endpoint: 'https://trial.authlete.net/api/credential',
-    batch_credential_endpoint:
-      'https://trial.authlete.net/api/batch_credential',
-    deferred_credential_endpoint:
-      'https://trial.authlete.net/api/deferred_credential',
-    credential_response_encryption: {
-      alg_values_supported: [
-        'RSA1_5',
-        'RSA-OAEP',
-        'RSA-OAEP-256',
-        'ECDH-ES',
-        'ECDH-ES+A128KW',
-        'ECDH-ES+A192KW',
-        'ECDH-ES+A256KW',
-      ],
-      enc_values_supported: [
-        'A128CBC-HS256',
-        'A192CBC-HS384',
-        'A256CBC-HS512',
-        'A128GCM',
-        'A192GCM',
-        'A256GCM',
-      ],
-      encryption_required: false,
-    },
-    credential_configurations_supported: {
-      'org.iso.18013.5.1.mDL': {
-        format: 'mso_mdoc',
-        doctype: 'org.iso.18013.5.1.mDL',
-        claims: {
-          'org.iso.18013.5.1': {
-            family_name: {},
-            given_name: {},
-            birth_date: {},
-            issue_date: {},
-            expiry_date: {},
-            issuing_country: {},
-            issuing_authority: {},
-            document_number: {},
-            portrait: {},
-            driving_privileges: {},
-            un_distinguishing_sign: {},
-            administrative_number: {},
-            sex: {},
-            height: {},
-            weight: {},
-            eye_colour: {},
-            hair_colour: {},
-            birth_place: {},
-            resident_address: {},
-            portrait_capture_date: {},
-            age_in_years: {},
-            age_birth_year: {},
-            issuing_jurisdiction: {},
-            nationality: {},
-            resident_city: {},
-            resident_state: {},
-            resident_postal_code: {},
-            resident_country: {},
-            family_name_national_character: {},
-            given_name_national_character: {},
-            signature_usual_mark: {},
-          },
-        },
-        scope: 'org.iso.18013.5.1.mDL',
-      },
-      IdentityCredential: {
-        format: 'vc+sd-jwt',
-        vct: 'https://credentials.example.com/identity_credential',
-        claims: {
-          given_name: {
-            display: [
-              {
-                name: 'الاسم الشخصي',
-                locale: 'ar',
-              },
-              {
-                name: 'Vorname',
-                locale: 'de',
-              },
-              {
-                name: 'Given Name',
-                locale: 'en',
-              },
-              {
-                name: 'Nombre',
-                locale: 'es',
-              },
-              {
-                name: 'نام',
-                locale: 'fa',
-              },
-              {
-                name: 'Etunimi',
-                locale: 'fi',
-              },
-              {
-                name: 'Prénom',
-                locale: 'fr',
-              },
-              {
-                name: 'पहचानी गई नाम',
-                locale: 'hi',
-              },
-              {
-                name: 'Nome',
-                locale: 'it',
-              },
-              {
-                name: '名',
-                locale: 'ja',
-              },
-              {
-                name: 'Овог нэр',
-                locale: 'mn',
-              },
-              {
-                name: 'Voornaam',
-                locale: 'nl',
-              },
-              {
-                name: 'Nome Próprio',
-                locale: 'pt',
-              },
-              {
-                name: 'Förnamn',
-                locale: 'sv',
-              },
-              {
-                name: 'مسلمان نام',
-                locale: 'ur',
-              },
-            ],
-          },
-          family_name: {
-            display: [
-              {
-                name: 'اسم العائلة',
-                locale: 'ar',
-              },
-              {
-                name: 'Nachname',
-                locale: 'de',
-              },
-              {
-                name: 'Family Name',
-                locale: 'en',
-              },
-              {
-                name: 'Apellido',
-                locale: 'es',
-              },
-              {
-                name: 'نام خانوادگی',
-                locale: 'fa',
-              },
-              {
-                name: 'Sukunimi',
-                locale: 'fi',
-              },
-              {
-                name: 'Nom de famille',
-                locale: 'fr',
-              },
-              {
-                name: 'परिवार का नाम',
-                locale: 'hi',
-              },
-              {
-                name: 'Cognome',
-                locale: 'it',
-              },
-              {
-                name: '姓',
-                locale: 'ja',
-              },
-              {
-                name: 'өөрийн нэр',
-                locale: 'mn',
-              },
-              {
-                name: 'Achternaam',
-                locale: 'nl',
-              },
-              {
-                name: 'Sobrenome',
-                locale: 'pt',
-              },
-              {
-                name: 'Efternamn',
-                locale: 'sv',
-              },
-              {
-                name: 'خاندانی نام',
-                locale: 'ur',
-              },
-            ],
-          },
-          birthdate: {
-            display: [
-              {
-                name: 'تاريخ الميلاد',
-                locale: 'ar',
-              },
-              {
-                name: 'Geburtsdatum',
-                locale: 'de',
-              },
-              {
-                name: 'Date of Birth',
-                locale: 'en',
-              },
-              {
-                name: 'Fecha de Nacimiento',
-                locale: 'es',
-              },
-              {
-                name: 'تاریخ تولد',
-                locale: 'fa',
-              },
-              {
-                name: 'Syntymäaika',
-                locale: 'fi',
-              },
-              {
-                name: 'Date de naissance',
-                locale: 'fr',
-              },
-              {
-                name: 'जन्म की तारीख',
-                locale: 'hi',
-              },
-              {
-                name: 'Data di nascita',
-                locale: 'it',
-              },
-              {
-                name: '生年月日',
-                locale: 'ja',
-              },
-              {
-                name: 'төрсөн өдөр',
-                locale: 'mn',
-              },
-              {
-                name: 'Geboortedatum',
-                locale: 'nl',
-              },
-              {
-                name: 'Data de Nascimento',
-                locale: 'pt',
-              },
-              {
-                name: 'Födelsedatum',
-                locale: 'sv',
-              },
-              {
-                name: 'تاریخ پیدائش',
-                locale: 'ur',
-              },
-            ],
-          },
-        },
-        scope: 'identity_credential',
-        cryptographic_binding_methods_supported: ['jwk', 'x5c'],
-        credential_signing_alg_values_supported: [
-          'ES256',
-          'ES384',
-          'ES512',
-          'ES256K',
-        ],
-        display: [
-          {
-            name: 'Identity Credential',
-          },
-        ],
-      },
-    },
-  };
 
   type ISupportedCredential =
-    keyof typeof CREDENTIAL_ISSUER_METADATA.credential_configurations_supported;
+    keyof typeof credentialIssuerMetadas.credential_configurations_supported;
 
   /**
    * This function helps to get the selected credential type's
@@ -348,11 +74,11 @@ export default function CredentialTypes() {
   /**
    * Gets all credential types of vc+sd-jwt format, adding to it the issuer and it's credential type
    *
-   * @param {typeof CREDENTIAL_ISSUER_METADATA} issuer_metadata - the provided metadata from issuer
+   * @param {typeof credentialIssuerMetadas} issuer_metadata - the provided metadata from issuer
    * @returns {ICredentialCard} - the metadata credential configurations supported, type and issuer of every supported type
    */
   function getVCSDJWTOffers(
-    issuer_metadata: typeof CREDENTIAL_ISSUER_METADATA
+    issuer_metadata: typeof credentialIssuerMetadas
   ): ICredentialCard[] {
     const credentialOfferTypeKeys = Object.keys(
       issuer_metadata.credential_configurations_supported
@@ -380,13 +106,13 @@ export default function CredentialTypes() {
    * if it doesn't exist, it returns and empty array
    *
    * @param {ISupportedCredential} selectedCredential - the credential type's key who's claims we want
-   * @param {typeof CREDENTIAL_ISSUER_METADATA} credentialIssuerMetadata - the provided metadata from issuer
+   * @param {typeof credentialIssuerMetadas} credentialIssuerMetadata - the provided metadata from issuer
    * @param {string} preferredLocale - the desired language in which we want the claims to be presented
    * @returns {string[]} - the list of claims to display
    */
   function getVCClaims(
     selectedCredential: ISupportedCredential,
-    credentialIssuerMetadata: typeof CREDENTIAL_ISSUER_METADATA,
+    credentialIssuerMetadata: typeof credentialIssuerMetadas,
     preferredLocale: string
   ): string[] {
     const offeredCredentialTypeKeys = Object.keys(
@@ -424,7 +150,7 @@ export default function CredentialTypes() {
         selectedCredentialType={selectedCredentialType}
         credntialTypeClaims={getVCClaims(
           selectedCredentialType?.type as ISupportedCredential,
-          CREDENTIAL_ISSUER_METADATA,
+          credentialIssuerMetadas,
           'en'
         )}
       />
@@ -444,7 +170,7 @@ export default function CredentialTypes() {
               padding: '12px',
             }}
           >
-            {getVCSDJWTOffers(CREDENTIAL_ISSUER_METADATA).map((card, index) => {
+            {getVCSDJWTOffers(credentialIssuerMetadas).map((card, index) => {
               const {
                 type,
                 issuer,
