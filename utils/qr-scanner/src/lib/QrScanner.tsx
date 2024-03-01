@@ -90,7 +90,8 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
             width: '100%',
           }}
         >
-          {error.name === 'NotFoundException' ? (
+          {/* TODO: in production notFoundException is t */}
+          {error.name === 'NotFoundException' || error.name === 't' ? (
             <Loading message="🌀 Searching for Qr code" />
           ) : (
             error.name
