@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 export interface InstallPWAContextProviderProps {
   children: ReactNode;
   component?: 'banner' | 'popup' | 'tooltip' | JSX.Element;
+  installPromptTimeout?: number;
 }
 
 /**

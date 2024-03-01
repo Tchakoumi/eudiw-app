@@ -22,7 +22,7 @@ export default function Credentials() {
       setCredentials([
         {
           id: '123123',
-          issuer: 'DATEV eG',
+          issuer: 'Trial Authlete',
           logo: AuthleteLogo,
           subtitle: 'Hello world',
           title: 'E-ID Hans Schreiner',
