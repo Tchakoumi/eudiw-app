@@ -77,67 +77,59 @@ export default function Scan() {
         requestPermission={requestCameraPermission}
       />
 
-      <Box sx={{ display: 'grid', gridTemplateRows: '1fr auto' }}>
+      <Box
+        sx={{
+          display: 'grid',
+          rowGap: 1,
+          gridTemplateRows: 'auto 1fr',
+          position: 'relative',
+        }}
+      >
         <Box
           sx={{
             display: 'grid',
-            rowGap: 1,
-            gridTemplateRows: 'auto 1fr',
-            position: 'relative',
+            alignContent: 'center',
+            justifyContent: 'start',
+            padding: '8px',
+            backgroundColor: theme.palette.secondary.light,
           }}
         >
-          <Box
-            sx={{
-              display: 'grid',
-              alignContent: 'center',
-              justifyContent: 'start',
-              padding: '8px',
-              backgroundColor: theme.palette.secondary.light,
-            }}
-          >
-            <Tooltip arrow title="Back">
-              <IconButton size="small" onClick={() => push('/')}>
-                <Icon icon={back} color="black" />
-              </IconButton>
-            </Tooltip>
-          </Box>
-          <QrScanner
-            onResult={resolveCredentialOffer}
-            validate={(result) => {
-              return String(result);
-            }}
-            onError={(error) => console.log(error.message)}
-            facingMode={facingMode}
-          />
-          <Tooltip arrow title={'Swap Camera'}>
-            <IconButton
-              color="secondary"
-              sx={{
-                backgroundColor: 'white',
-                position: 'absolute',
-                bottom: 0,
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                '&:hover': {
-                  backgroundColor: 'white',
-                },
-              }}
-              onClick={() =>
-                setFacingMode((prev) =>
-                  prev === 'environment' ? 'user' : 'environment'
-                )
-              }
-            >
-              <Icon icon={swapCamera} style={{ color: 'black' }} />
+          <Tooltip arrow title="Back">
+            <IconButton size="small" onClick={() => push('/')}>
+              <Icon icon={back} color="black" />
             </IconButton>
           </Tooltip>
         </Box>
-        <Box
-          sx={{
-            backgroundColor: 'black',
-            height: '22px',
+        <QrScanner
+          onResult={resolveCredentialOffer}
+          validate={(result) => {
+            return String(result);
           }}
+          onError={(error) => console.log(error.message)}
+          facingMode={facingMode}
         />
+        <Tooltip arrow title={'Swap Camera'}>
+          <IconButton
+            color="secondary"
+            sx={{
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              '&:hover': {
+                backgroundColor: 'white',
+              },
+            }}
+            onClick={() =>
+              setFacingMode((prev) =>
+                prev === 'environment' ? 'user' : 'environment'
+              )
+            }
+          >
+            <Icon icon={swapCamera} style={{ color: 'black' }} />
+          </IconButton>
+        </Tooltip>
       </Box>
     </>
   );

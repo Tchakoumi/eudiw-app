@@ -44,7 +44,9 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
       sx={{
         position: 'relative',
         display: 'grid',
-        gridAutoFlow: 'column',
+        gridTemplateColumns: new Array(NAV_ELEMENTS.length)
+          .fill('1fr')
+          .join(' '),
         columnGap: 2,
         padding: '12.5px 21px',
       }}
@@ -68,6 +70,7 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
             display: 'grid',
             rowGap: 0.5,
             justifyItems: 'center',
+            position: 'relative',
           }}
         >
           <Tooltip arrow title={title}>
@@ -77,7 +80,8 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
               sx={{
                 width: 'fit-content',
                 position: isMain ? 'absolute' : 'relative',
-                top: isMain ? '-20px' : 0,
+                left: isMain ? '50%' : 'none',
+                transform: isMain ? 'translate(-50%, -50%)' : 'none',
                 backgroundColor: isMain
                   ? theme.palette.primary.main
                   : 'initial',

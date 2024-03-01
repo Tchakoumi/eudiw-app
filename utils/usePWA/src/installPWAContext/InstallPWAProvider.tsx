@@ -33,6 +33,7 @@ const installPWAReducer: Reducer<InstallPWA, Action> = (
 export function InstallPWAContextProvider({
   children,
   component = 'banner',
+  installPromptTimeout = 3000,
 }: InstallPWAContextProviderProps): JSX.Element {
   const [installPWAState, installPWADispatch] = useReducer(
     installPWAReducer,
@@ -102,9 +103,9 @@ export function InstallPWAContextProvider({
     if (!isIosInstallOpen && isAppleInstallable) {
       setTimeout(() => {
         setIsIosInstallOpen(true);
-      }, 3000);
+      }, installPromptTimeout);
     }
-  }, [isAppleInstallable, isIosInstallOpen]);
+  }, [installPromptTimeout, isAppleInstallable, isIosInstallOpen]);
 
   const showInstall = (isInstallable || isAppleInstallable) && isIosInstallOpen;
 
