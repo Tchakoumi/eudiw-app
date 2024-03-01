@@ -1,7 +1,7 @@
 name: Build and Deploy
 on:
   push:
-    branches: [fix/#40-hotfix-layout-issues-on-demo]
+    branches: [develop]
 permissions:
   pages: write
   id-token: write
