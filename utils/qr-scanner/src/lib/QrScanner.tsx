@@ -71,6 +71,9 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
     };
   }, [getQrData, handleDecodeError, props, videoRef]);
   if (props.children) return <>{props.children(videoRef)}</>;
+
+  const scanImageNotfoundErrors = ['NotFoundException', 't'];
+
   return (
     <div
       style={{
@@ -84,17 +87,19 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
       {error && (
         <div
           style={{
-            color: error.name === 'NotFoundException' ? 'inherit' : 'red',
+            color: scanImageNotfoundErrors.includes(error.name)
+              ? 'inherit'
+              : 'red',
             textAlign: 'center',
             fontWeight: 500,
             width: '100%',
           }}
         >
           {/* TODO: in production notFoundException is t */}
-          {error.name === 'NotFoundException' || error.name === 't' ? (
+          {scanImageNotfoundErrors.includes(error.name) ? (
             <Loading message="🌀 Searching for Qr code" />
           ) : (
-            typeof error.name
+            error.message
           )}
         </div>
       )}
