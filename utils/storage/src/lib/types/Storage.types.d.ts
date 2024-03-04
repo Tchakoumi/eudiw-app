@@ -39,7 +39,7 @@ type StorageTransaction<
 interface TransactionCallback<
   T,
   M extends IDBTransactionMode,
-  S extends StoreNames<T> = StoreNames<T>,
+  S extends StoreNames<T> = StoreNames<T>
 > {
   (tx: StorageTransaction<T, S, M>): void | Promise<void>;
 }
