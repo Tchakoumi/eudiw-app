@@ -105,7 +105,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
       });
   }
 
-  public async retrieveCredentialHeaders(): Promise<void> {
+  public retrieveCredentialHeaders(): void {
     const channel = OID4VCIServiceEventChannel.RetrieveCredentialHeaders;
 
     this.credentialEventClient

@@ -1,5 +1,4 @@
 import { CredentialRequest } from './v1_0_13';
-import * as jose from 'jose';
 
 export enum ServiceResponseStatus {
   Success = 'success',
@@ -35,9 +34,4 @@ export interface DisplayCredential {
   claims?: {
     [x: string]: unknown;
   };
-}
-
-export interface Record {
-  key: string | number;
-  value: SdJwtProcessedCredential | jose.JWK;
 }

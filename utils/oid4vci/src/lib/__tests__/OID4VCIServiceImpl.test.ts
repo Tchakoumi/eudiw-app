@@ -19,8 +19,8 @@ import {
   jwksRef1,
   tokenResponseRef1,
   storage,
-  SdJwtProcessedCredentialObjRef1,
-  CredentialHeaderObjRef2,
+  sdJwtProcessedCredentialObjRef1,
+  credentialHeaderObjRef2,
 } from '../../core/__tests__/fixtures';
 
 // Mocking indexdedDB functionality
@@ -160,7 +160,7 @@ describe('OID4VCIServiceImpl', () => {
 
   it('should retrieve successfully one credential header ', async () => {
     await sdJwtCredentialProcessor.storeCredential(
-      SdJwtProcessedCredentialObjRef1
+      sdJwtProcessedCredentialObjRef1
     );
 
     const callback = jest.fn(() => {
@@ -178,7 +178,7 @@ describe('OID4VCIServiceImpl', () => {
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith({
       status: ServiceResponseStatus.Success,
-      payload: CredentialHeaderObjRef2,
+      payload: credentialHeaderObjRef2,
     });
   });
 });

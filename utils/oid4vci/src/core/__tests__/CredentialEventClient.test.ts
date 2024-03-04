@@ -3,10 +3,10 @@ import { CredentialEventClient } from '../CredentialEventClient';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
 
 import {
-  CredentialHeaderObjRef1,
-  CredentialHeaderObjRef2,
-  SdJwtProcessedCredentialObjRef1,
-  SdJwtProcessedCredentialObjRef2,
+  credentialHeaderObjRef1,
+  credentialHeaderObjRef2,
+  sdJwtProcessedCredentialObjRef1,
+  sdJwtProcessedCredentialObjRef2,
   storage,
 } from './fixtures';
 
@@ -21,12 +21,12 @@ describe('CredentialEventClient', () => {
     const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
 
     await sdJwtCredentialProcessor.storeCredential(
-      SdJwtProcessedCredentialObjRef1
+      sdJwtProcessedCredentialObjRef1
     );
 
     const credentialHeaders = await client.retrieveCredentialHeaders();
 
-    expect(credentialHeaders).toEqual(CredentialHeaderObjRef2);
+    expect(credentialHeaders).toEqual(credentialHeaderObjRef2);
     expect(credentialHeaders).toHaveLength(1);
     expect(credentialHeaders).not.toHaveProperty('claims');
   });
@@ -35,16 +35,16 @@ describe('CredentialEventClient', () => {
     const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
 
     await sdJwtCredentialProcessor.storeCredential(
-      SdJwtProcessedCredentialObjRef1
+      sdJwtProcessedCredentialObjRef1
     );
 
     await sdJwtCredentialProcessor.storeCredential(
-      SdJwtProcessedCredentialObjRef2
+      sdJwtProcessedCredentialObjRef2
     );
 
     const credentialHeaders = await client.retrieveCredentialHeaders();
 
-    expect(credentialHeaders).toEqual(CredentialHeaderObjRef1);
+    expect(credentialHeaders).toEqual(credentialHeaderObjRef1);
     expect(credentialHeaders).toHaveLength(2);
   });
 

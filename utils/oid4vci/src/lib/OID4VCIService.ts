@@ -58,5 +58,5 @@ export interface OID4VCIService {
    * - or an error message indicative of what went wrong.
    *
    */
-  retrieveCredentialHeaders(): Promise<void>;
+  retrieveCredentialHeaders(): void;
 }
