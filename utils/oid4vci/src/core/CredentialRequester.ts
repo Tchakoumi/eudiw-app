@@ -43,7 +43,7 @@ export class CredentialRequester {
    * Constructor.
    * @param storage a storage to persist requested issued credentials
    */
-  public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {
+  public constructor(storage: StorageFactory<OID4VCIServiceDBSchema>) {
     this.accessTokenClient = new AccessTokenClient();
 
     this.identityProofGenerator = new IdentityProofGenerator(
