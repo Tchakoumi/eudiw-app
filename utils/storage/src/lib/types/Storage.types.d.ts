@@ -31,13 +31,17 @@ type QueryStore<T, S> = {
   indexName: StoreIndexNames<T, S>;
 };
 
-type StorageTransaction<T, M extends IDBTransactionMode> = IDBPTransaction<
+type StorageTransaction<
   T,
-  StoreNames<T>[],
-  M
->;
-interface TransactionCallback<T, M extends IDBTransactionMode> {
-  (tx: StorageTransaction<T, M>): void | Promise<void>;
+  S extends StoreNames<T>,
+  M extends IDBTransactionMode
+> = IDBPTransaction<T, S[], M>;
+interface TransactionCallback<
+  T,
+  M extends IDBTransactionMode,
+  S extends StoreNames<T> = StoreNames<T>,
+> {
+  (tx: StorageTransaction<T, S, M>): void | Promise<void>;
 }
 
 type MethodNames = keyof StorageFactory<T>;
