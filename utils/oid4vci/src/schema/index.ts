@@ -1,5 +1,5 @@
 import * as jose from 'jose';
-import { DBSchema, StoreNames } from 'idb';
+import { DBSchema } from 'idb';
 import { ProcessedCredential } from '../lib/types';
 
 export interface OID4VCIServiceDBSchema extends DBSchema {
@@ -13,8 +13,5 @@ export interface OID4VCIServiceDBSchema extends DBSchema {
   };
 }
 
-export const credentialStoreName: StoreNames<OID4VCIServiceDBSchema> =
-  'credentialStore';
-
-export const identityStoreName: StoreNames<OID4VCIServiceDBSchema> =
-  'identityStore';
+export const credentialStoreName = 'credentialStore';
+export const identityStoreName = 'identityStore';

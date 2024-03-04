@@ -52,7 +52,7 @@ export class StoreIdentityManager implements IdentityManager {
       this.SINGLE_KEY as IDBValidKey
     );
 
-    return record?.value as jose.JWK | undefined;
+    return record?.value;
   }
 
   public async generateJwkIdentity(): Promise<jose.JWK> {
