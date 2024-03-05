@@ -78,11 +78,11 @@ export class OID4VCIServiceImpl implements OID4VCIService {
       });
   }
 
-  public async requestCredentialIssuance(
+  public requestCredentialIssuance(
     resolvedCredentialOffer: ResolvedCredentialOffer,
     userOpts: { credentialTypeKey: string; txCode?: string },
     grantType: GrantType = GrantType.PRE_AUTHORIZED_CODE
-  ): Promise<void> {
+  ): void {
     const channel = OID4VCIServiceEventChannel.CredentialProposition;
 
     this.credentialRequester

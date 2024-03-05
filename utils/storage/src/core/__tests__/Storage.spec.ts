@@ -248,9 +248,9 @@ describe('StorageFactory', () => {
     );
     expect(records.length).toEqual(1);
 
-    expect(records).toStrictEqual<StoreRecordValue<TestDBSchema>[]>([
-      testData.inlineKeyStore.value,
-    ]);
+    expect(records).toStrictEqual<
+      StoreRecordValue<TestDBSchema, 'inlineKeyStore'>[]
+    >([testData.inlineKeyStore.value]);
   });
 
   it('should start and close a new transaction', async () => {

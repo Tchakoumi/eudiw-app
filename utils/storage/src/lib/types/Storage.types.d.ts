@@ -7,17 +7,23 @@ import type {
 } from 'idb';
 import type { StorageFactory } from '../../core/StorageFactory';
 
-type StoreRecordKey<T> = StoreKey<T, StoreNames<T>>;
-type StoreRecordValue<T> = StoreValue<T, StoreNames<T>>;
+type StoreRecordKey<T, S extends StoreNames<T> = StoreNames<T>> = StoreKey<
+  T,
+  S
+>;
+type StoreRecordValue<T, S extends StoreNames<T> = StoreNames<T>> = StoreValue<
+  T,
+  S
+>;
 type StoreIndexNames<T, S extends StoreNames<T>> = IndexNames<T, S>;
-type StoreRecord<T> = {
+type StoreRecord<T, S extends StoreNames<T> = StoreNames<T>> = {
   /**
    * Should not be provided for object stores using in-line keys.
    *
    * for example a profile object store using `profileId` as keyPath
    */
-  key?: StoreRecordKey<T>;
-  value: StoreRecordValue<T>;
+  key?: StoreRecordKey<T, S>;
+  value: StoreRecordValue<T, S>;
 };
 type QueryStore<T, S> = {
   key?: IDBKeyRange;
@@ -25,13 +31,17 @@ type QueryStore<T, S> = {
   indexName: StoreIndexNames<T, S>;
 };
 
-type StorageTransaction<T, M extends IDBTransactionMode> = IDBPTransaction<
+type StorageTransaction<
   T,
-  StoreNames<T>[],
-  M
->;
-interface TransactionCallback<T, M extends IDBTransactionMode> {
-  (tx: StorageTransaction<T, M>): void | Promise<void>;
+  S extends StoreNames<T>,
+  M extends IDBTransactionMode
+> = IDBPTransaction<T, S[], M>;
+interface TransactionCallback<
+  T,
+  M extends IDBTransactionMode,
+  S extends StoreNames<T> = StoreNames<T>
+> {
+  (tx: StorageTransaction<T, S, M>): void | Promise<void>;
 }
 
 type MethodNames = keyof StorageFactory<T>;
