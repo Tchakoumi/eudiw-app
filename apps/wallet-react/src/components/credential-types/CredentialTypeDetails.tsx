@@ -1,3 +1,10 @@
+import { eventBus } from '@datev/event-bus';
+import {
+  OID4VCIService,
+  OID4VCIServiceEventChannel,
+  OID4VCIServiceImpl,
+  ServiceResponse,
+} from '@datev/oid4vci';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
@@ -7,29 +14,46 @@ import DialogTransition from '../layout/DialogTransition';
 import CredentialIssued from './CredentialIssued';
 import CredentialTypeCard from './CredentialTypeCard';
 import WaitingCredential from './WaitingCredential';
-import { ICredentialCard } from './credentials.types';
+import {
+  CredentialOfferResponsePayload,
+  ICredentialCard,
+} from './credentials.types';
 
 export default function CredentialTypeDetails({
   isDialogOpen,
   closeDialog,
   credntialTypeClaims,
   selectedCredentialType,
+  resolvedCredentialOfferPayload,
 }: {
   isDialogOpen: boolean;
   closeDialog: () => void;
   credntialTypeClaims: string[];
   selectedCredentialType?: ICredentialCard;
+  resolvedCredentialOfferPayload: CredentialOfferResponsePayload;
 }) {
   const push = useNavigate();
+  const OIDVCI: OID4VCIService = new OID4VCIServiceImpl(eventBus);
   const [isIssuing, setIsIssuing] = useState<boolean>(false);
   const [isDoneIssuing, setIsDoneIssuing] = useState<boolean>(false);
-  function issueVC() {
+
+  function issueVC(
+    credentialOfferResponsePayload: CredentialOfferResponsePayload,
+    credentialTypeKey: string
+  ) {
     setIsIssuing(true);
-    setTimeout(() => {
-      setIsIssuing(false);
-      setIsDoneIssuing(true);
-      //TODO: CALL API HERE TO ISSUE VC
-    }, 3000);
+    OIDVCI.requestCredentialIssuance(credentialOfferResponsePayload, {
+      credentialTypeKey,
+    });
+
+    eventBus.once(
+      OID4VCIServiceEventChannel.CredentialProposition,
+      (data: ServiceResponse) => {
+        console.log(data);
+        setIsIssuing(false);
+        setIsDoneIssuing(true);
+      }
+    );
   }
 
   function close() {
@@ -110,7 +134,14 @@ export default function CredentialTypeDetails({
               color="primary"
               size="small"
               fullWidth
-              onClick={issueVC}
+              onClick={() => {
+                if (selectedCredentialType)
+                  issueVC(
+                    resolvedCredentialOfferPayload,
+                    selectedCredentialType.type
+                  );
+                else alert('Missing credential type');
+              }}
             >
               Issue VC
             </Button>
