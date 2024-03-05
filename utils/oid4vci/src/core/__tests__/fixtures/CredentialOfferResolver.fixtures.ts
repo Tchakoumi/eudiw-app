@@ -5,6 +5,7 @@ import {
   AuthorizationServerMetadata,
   CredentialIssuerMetadata,
   CredentialOffer,
+  DiscoveryMetadata,
   JwtIssuerMetadata,
 } from '../../../lib/types';
 
@@ -577,6 +578,12 @@ export const authorizationServerMetadataRef1: AuthorizationServerMetadata = {
 export const jwtIssuerMetadataRef1: JwtIssuerMetadata = {
   issuer: 'https://trial.authlete.net',
   jwks_uri: 'https://trial.authlete.net/api/vci/jwks',
+};
+
+export const discoveryMetadataRef1: DiscoveryMetadata = {
+  credentialIssuerMetadata: credentialIssuerMetadataRef1,
+  authorizationServerMetadata: authorizationServerMetadataRef1,
+  jwtIssuerMetadata: jwtIssuerMetadataRef1,
 };
 
 export const encodeCredentialOffer = (credentialOffer: CredentialOffer) => {

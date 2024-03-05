@@ -2,9 +2,13 @@
   "name": "@datev/oid4vci",
   "version": "0.0.1",
   "dependencies": {
+    "@datev/storage": "*",
+    "@hopae/sd-jwt": "^2.0.1",
     "tslib": "^2.3.0",
     "cross-fetch": "^4.0.0",
-    "eventemitter3": "^5.0.1"
+    "eventemitter3": "^5.0.1",
+    "idb": "^8.0.0",
+    "jose": "^5.2.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",

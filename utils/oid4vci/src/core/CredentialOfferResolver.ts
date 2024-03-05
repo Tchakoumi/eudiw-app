@@ -9,7 +9,7 @@ import {
   CredentialIssuerMetadata,
   CredentialOffer,
   DiscoveryMetadata,
-  Grant,
+  GrantType,
   JwtIssuerMetadata,
   ResolvedCredentialOffer,
 } from '../lib/types';
@@ -168,7 +168,7 @@ export class CredentialOfferResolver {
   private async fetchSuitableAuthorizationServerMetadata(
     credentialOffer: CredentialOffer,
     credentialIssuerMetadata: CredentialIssuerMetadata,
-    grantType: keyof Grant = 'urn:ietf:params:oauth:grant-type:pre-authorized_code'
+    grantType: GrantType = GrantType.PRE_AUTHORIZED_CODE
   ): Promise<AuthorizationServerMetadata> {
     const authorizationServers =
       credentialIssuerMetadata.authorization_servers ?? [];

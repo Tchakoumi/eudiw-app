@@ -16,7 +16,10 @@
     },
     {
       "files": ["*.json"],
-      "parser": "jsonc-eslint-parser"
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": "error"
+      }
     }
   ]
 }
