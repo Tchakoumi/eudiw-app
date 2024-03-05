@@ -46,8 +46,8 @@ export interface OID4VCIService {
   requestCredentialIssuance(
     resolvedCredentialOffer: ResolvedCredentialOffer,
     userOpts: { credentialTypeKey: string; txCode?: string },
-    grantType?: GrantType,
-  ): Promise<void>;
+    grantType?: GrantType
+  ): void;
 
   /**
    * Retrieves stored credential headers to show them on the landing page
