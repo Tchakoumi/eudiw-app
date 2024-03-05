@@ -7,25 +7,25 @@ import { useNavigate } from 'react-router-dom';
 import CredentialTypeCard from '../../components/credential-types/CredentialTypeCard';
 import CredentialTypeDetails from '../../components/credential-types/CredentialTypeDetails';
 import {
-  Claims,
+  CredentialIssuerMetadata,
+  CredentialOfferResponse,
   ICredentialCard,
+  VCSDJWTClaim,
 } from '../../components/credential-types/credentials.types';
 import BackTitleBar from '../../components/layout/BackTitleBar';
 import Footer from '../../components/layout/Footer';
 import { removeUnderscoresFromWord } from '../../utils/common';
-import { serviceResult } from './test data';
 
 export default function CredentialTypes() {
   const push = useNavigate();
 
-  const [credentialIssuerMetadas, setCredentialIssuerMetadatas] = useState<
-    typeof serviceResult.payload.discoveryMetadata.credentialIssuerMetadata
-  >(serviceResult.payload.discoveryMetadata.credentialIssuerMetadata);
+  const [credentialIssuerMetadas, setCredentialIssuerMetadatas] =
+    useState<CredentialIssuerMetadata>();
 
   useEffect(() => {
     eventBus.once(
       OID4VCIServiceEventChannel.ProcessCredentialOffer,
-      (data: typeof serviceResult) => {
+      (data: CredentialOfferResponse) => {
         setCredentialIssuerMetadatas(
           data.payload.discoveryMetadata.credentialIssuerMetadata
         );
@@ -34,7 +34,7 @@ export default function CredentialTypes() {
   }, []);
 
   type ISupportedCredential =
-    keyof typeof credentialIssuerMetadas.credential_configurations_supported;
+    keyof CredentialIssuerMetadata['credential_configurations_supported'];
 
   /**
    * This function helps to get the selected credential type's
@@ -45,12 +45,12 @@ export default function CredentialTypes() {
    * if the claim has no display, then it'll remove underscores from
    * the claim and return as value for display
    *
-   * @param {Claims} claims - the different claims present in the credential type
+   * @param {VCSDJWTClaim} claims - the different claims present in the credential type
    * @param {string} preferredLocale - the desired language in which we want the claims to be presented
    * @returns {string[]} - a list of all claims in preferred locale
    */
   function getVCClaimsInPreferredLocale(
-    claims: Claims,
+    claims: VCSDJWTClaim,
     preferredLocale: string
   ): string[] {
     const claimKeys = Object.keys(claims) as (keyof typeof claims)[];
@@ -74,11 +74,11 @@ export default function CredentialTypes() {
   /**
    * Gets all credential types of vc+sd-jwt format, adding to it the issuer and it's credential type
    *
-   * @param {typeof credentialIssuerMetadas} issuer_metadata - the provided metadata from issuer
+   * @param {CredentialIssuerMetadata} issuer_metadata - the provided metadata from issuer
    * @returns {ICredentialCard} - the metadata credential configurations supported, type and issuer of every supported type
    */
   function getVCSDJWTOffers(
-    issuer_metadata: typeof credentialIssuerMetadas
+    issuer_metadata: CredentialIssuerMetadata
   ): ICredentialCard[] {
     const credentialOfferTypeKeys = Object.keys(
       issuer_metadata.credential_configurations_supported
@@ -112,7 +112,7 @@ export default function CredentialTypes() {
    */
   function getVCClaims(
     selectedCredential: ISupportedCredential,
-    credentialIssuerMetadata: typeof credentialIssuerMetadas,
+    credentialIssuerMetadata: CredentialIssuerMetadata,
     preferredLocale: string
   ): string[] {
     const offeredCredentialTypeKeys = Object.keys(
@@ -126,7 +126,7 @@ export default function CredentialTypes() {
         ].claims;
 
       return getVCClaimsInPreferredLocale(
-        selectedOfferClaims as Claims,
+        selectedOfferClaims as VCSDJWTClaim,
         preferredLocale
       );
     }
@@ -144,16 +144,18 @@ export default function CredentialTypes() {
         height: '100%',
       }}
     >
-      <CredentialTypeDetails
-        closeDialog={() => setSelectedCredentialType(undefined)}
-        isDialogOpen={!!selectedCredentialType}
-        selectedCredentialType={selectedCredentialType}
-        credntialTypeClaims={getVCClaims(
-          selectedCredentialType?.type as ISupportedCredential,
-          credentialIssuerMetadas,
-          'en'
-        )}
-      />
+      {credentialIssuerMetadas && (
+        <CredentialTypeDetails
+          closeDialog={() => setSelectedCredentialType(undefined)}
+          isDialogOpen={!!selectedCredentialType}
+          selectedCredentialType={selectedCredentialType}
+          credntialTypeClaims={getVCClaims(
+            selectedCredentialType?.type as ISupportedCredential,
+            credentialIssuerMetadas,
+            'en'
+          )}
+        />
+      )}
       <BackTitleBar pageTitle="Credential Types" onBack={() => push('/scan')} />
       <Box
         sx={{
@@ -170,26 +172,29 @@ export default function CredentialTypes() {
               padding: '12px',
             }}
           >
-            {getVCSDJWTOffers(credentialIssuerMetadas).map((card, index) => {
-              const {
-                type,
-                issuer,
-                data: { display },
-              } = card;
-              return (
-                <CredentialTypeCard
-                  key={index}
-                  displayName={display[0].name}
-                  issuer={issuer}
-                  type={type}
-                  selectCredentialType={() =>
-                    setSelectedCredentialType((prevCard) =>
-                      prevCard && prevCard.type === card.type ? undefined : card
-                    )
-                  }
-                />
-              );
-            })}
+            {credentialIssuerMetadas &&
+              getVCSDJWTOffers(credentialIssuerMetadas).map((card, index) => {
+                const {
+                  type,
+                  issuer,
+                  data: { display },
+                } = card;
+                return (
+                  <CredentialTypeCard
+                    key={index}
+                    displayName={display ? display[0].name : ''}
+                    issuer={issuer}
+                    type={type}
+                    selectCredentialType={() =>
+                      setSelectedCredentialType((prevCard) =>
+                        prevCard && prevCard.type === card.type
+                          ? undefined
+                          : card
+                      )
+                    }
+                  />
+                );
+              })}
           </Box>
         </Scrollbars>
       </Box>
