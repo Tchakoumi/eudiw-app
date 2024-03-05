@@ -31,10 +31,10 @@ export interface IVerifiableCredential {
 
 export interface CredentialOfferResponse {
   status: string;
-  payload: Payload;
+  payload: CredentialOfferResponsePayload;
 }
 
-interface Payload {
+export interface CredentialOfferResponsePayload {
   credentialOffer: CredentialOffer;
   discoveryMetadata: DiscoveryMetadata;
 }
