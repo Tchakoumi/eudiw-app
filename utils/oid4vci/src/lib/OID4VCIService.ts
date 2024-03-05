@@ -46,5 +46,5 @@ export interface OID4VCIService {
     resolvedCredentialOffer: ResolvedCredentialOffer,
     userOpts: { credentialTypeKey: string; txCode?: string },
     grantType?: GrantType
-  ): Promise<void>;
+  ): void;
 }
