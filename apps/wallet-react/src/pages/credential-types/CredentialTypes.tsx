@@ -9,6 +9,7 @@ import CredentialTypeDetails from '../../components/credential-types/CredentialT
 import {
   CredentialIssuerMetadata,
   CredentialOfferResponse,
+  CredentialOfferResponsePayload,
   ICredentialCard,
   VCSDJWTClaim,
 } from '../../components/credential-types/credentials.types';
@@ -19,16 +20,14 @@ import { removeUnderscoresFromWord } from '../../utils/common';
 export default function CredentialTypes() {
   const push = useNavigate();
 
-  const [credentialIssuerMetadas, setCredentialIssuerMetadatas] =
-    useState<CredentialIssuerMetadata>();
+  const [resolvedCredentialOffer, setResolvedCredentialOffer] =
+    useState<CredentialOfferResponsePayload>();
 
   useEffect(() => {
     eventBus.once(
       OID4VCIServiceEventChannel.ProcessCredentialOffer,
       (data: CredentialOfferResponse) => {
-        setCredentialIssuerMetadatas(
-          data.payload.discoveryMetadata.credentialIssuerMetadata
-        );
+        setResolvedCredentialOffer(data.payload);
       }
     );
   }, []);
@@ -106,7 +105,7 @@ export default function CredentialTypes() {
    * if it doesn't exist, it returns and empty array
    *
    * @param {ISupportedCredential} selectedCredential - the credential type's key who's claims we want
-   * @param {typeof credentialIssuerMetadas} credentialIssuerMetadata - the provided metadata from issuer
+   * @param {typeof ResolvedCredentialOffer} credentialIssuerMetadata - the provided metadata from issuer
    * @param {string} preferredLocale - the desired language in which we want the claims to be presented
    * @returns {string[]} - the list of claims to display
    */
@@ -144,16 +143,17 @@ export default function CredentialTypes() {
         height: '100%',
       }}
     >
-      {credentialIssuerMetadas && (
+      {resolvedCredentialOffer && (
         <CredentialTypeDetails
           closeDialog={() => setSelectedCredentialType(undefined)}
           isDialogOpen={!!selectedCredentialType}
           selectedCredentialType={selectedCredentialType}
           credntialTypeClaims={getVCClaims(
             selectedCredentialType?.type as ISupportedCredential,
-            credentialIssuerMetadas,
+            resolvedCredentialOffer.discoveryMetadata.credentialIssuerMetadata,
             'en'
           )}
+          resolvedCredentialOfferPayload={resolvedCredentialOffer}
         />
       )}
       <BackTitleBar pageTitle="Credential Types" onBack={() => push('/scan')} />
@@ -172,8 +172,11 @@ export default function CredentialTypes() {
               padding: '12px',
             }}
           >
-            {credentialIssuerMetadas &&
-              getVCSDJWTOffers(credentialIssuerMetadas).map((card, index) => {
+            {resolvedCredentialOffer &&
+              getVCSDJWTOffers(
+                resolvedCredentialOffer.discoveryMetadata
+                  .credentialIssuerMetadata
+              ).map((card, index) => {
                 const {
                   type,
                   issuer,
