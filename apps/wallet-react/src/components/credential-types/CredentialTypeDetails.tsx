@@ -2,8 +2,7 @@ import { eventBus } from '@datev/event-bus';
 import {
   OID4VCIService,
   OID4VCIServiceEventChannel,
-  OID4VCIServiceImpl,
-  ServiceResponse,
+  OID4VCIServiceImpl
 } from '@datev/oid4vci';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
@@ -46,14 +45,10 @@ export default function CredentialTypeDetails({
       credentialTypeKey,
     });
 
-    eventBus.once(
-      OID4VCIServiceEventChannel.CredentialProposition,
-      (data: ServiceResponse) => {
-        console.log(data);
-        setIsIssuing(false);
-        setIsDoneIssuing(true);
-      }
-    );
+    eventBus.once(OID4VCIServiceEventChannel.CredentialProposition, () => {
+      setIsIssuing(false);
+      setIsDoneIssuing(true);
+    });
   }
 
   function close() {
