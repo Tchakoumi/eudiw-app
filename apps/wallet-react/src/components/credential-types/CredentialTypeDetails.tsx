@@ -69,7 +69,11 @@ export default function CredentialTypeDetails({
           <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
             {selectedCredentialType && (
               <CredentialTypeCard
-                displayName={selectedCredentialType.data.display[0].name}
+                displayName={
+                  selectedCredentialType.data.display
+                    ? selectedCredentialType.data.display[0].name
+                    : ''
+                }
                 issuer={selectedCredentialType.issuer}
                 type={selectedCredentialType.type}
               />
