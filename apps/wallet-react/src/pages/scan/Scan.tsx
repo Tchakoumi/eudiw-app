@@ -25,24 +25,26 @@ export default function Scan() {
 
   const [permissionStatus, setPermissionStatus] =
     useState<PermissionState>('prompt');
-
-  useEffect(() => {
-    const checkCameraPermission = async () => {
-      try {
-        const cameraPermission = await navigator.permissions.query({
-          name: 'camera' as PermissionName,
-        });
-        setPermissionStatus(cameraPermission.state);
-      } catch (error) {
-        console.error('Error checking camera permission:', error);
-      }
-    };
-
-    checkCameraPermission();
-  }, [permissionStatus]);
-
   const [isRequestCameraDialogOpen, setIsRequestCameraDialogOpen] =
     useState<boolean>(true);
+
+  const checkCameraPermission = async () => {
+    try {
+      const cameraPermission = await navigator.permissions.query({
+        name: 'camera' as PermissionName,
+      });
+      setPermissionStatus(cameraPermission.state);
+      return cameraPermission.state;
+    } catch (error) {
+      console.error('Error checking camera permission:', error);
+    }
+  };
+
+  const cameraStatus = checkCameraPermission();
+  useEffect(() => {
+    checkCameraPermission();
+  }, [permissionStatus, cameraStatus]);
+
   const requestCameraPermission = () => {
     setIsRequestCameraDialogOpen(false);
     navigator.mediaDevices
