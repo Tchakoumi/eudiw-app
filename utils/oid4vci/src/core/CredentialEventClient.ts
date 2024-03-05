@@ -13,11 +13,12 @@ export class CredentialEventClient {
   public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {}
 
   /**
-   * Retrieves a the content of a credential needed to populate the UI card.
-   * @param
-   * @returns the stored credential without the claims details.
+   * Retrieves the content of credentials needed to populate the UI card.
+   * @returns A Promise that resolves with an array of stored credentials without the claims details.
    */
-  public async retrieveCredentialHeaders(): Promise<DisplayCredential> {
+  public async retrieveCredentialHeaders(): Promise<
+    Array<Omit<DisplayCredential, 'claims'>>
+  > {
     const records = await this.storage.findAll(credentialStoreName);
 
     const modifiedRecords = records.map(
@@ -25,9 +26,9 @@ export class CredentialEventClient {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { claims, ...rest } = record.value.display as DisplayCredential;
         return rest;
-      }
+      },
     );
 
-    return modifiedRecords as DisplayCredential;
+    return modifiedRecords;
   }
 }
