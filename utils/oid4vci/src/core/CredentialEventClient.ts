@@ -26,7 +26,7 @@ export class CredentialEventClient {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { claims, ...rest } = record.value.display as DisplayCredential;
         return rest;
-      },
+      }
     );
 
     return modifiedRecords;
