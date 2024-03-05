@@ -3,6 +3,8 @@ import { CredentialEventClient } from '../CredentialEventClient';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
 
 import {
+  credentialContentObjRef1,
+  credentialContentObjRef2,
   credentialHeaderObjRef1,
   credentialHeaderObjRef2,
   sdJwtProcessedCredentialObjRef1,
@@ -50,6 +52,43 @@ describe('CredentialEventClient', () => {
 
   it('should retrieve successfully an empty object', async () => {
     const credentialHeaders = await client.retrieveCredentialHeaders();
+
+    expect(credentialHeaders).toEqual([]);
+    expect(credentialHeaders).toHaveLength(0);
+  });
+
+  it('should retrieve successfully one credential content', async () => {
+    const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
+
+    await sdJwtCredentialProcessor.storeCredential(
+      sdJwtProcessedCredentialObjRef1
+    );
+
+    const credentialContent = await client.retrieveCredentialContent();
+
+    expect(credentialContent).toEqual(credentialContentObjRef2);
+    expect(credentialContent).toHaveLength(1);
+  });
+
+  it('should retrieve successfully two credential content', async () => {
+    const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
+
+    await sdJwtCredentialProcessor.storeCredential(
+      sdJwtProcessedCredentialObjRef1
+    );
+
+    await sdJwtCredentialProcessor.storeCredential(
+      sdJwtProcessedCredentialObjRef2
+    );
+
+    const credentialHeaders = await client.retrieveCredentialContent();
+
+    expect(credentialHeaders).toEqual(credentialContentObjRef1);
+    expect(credentialHeaders).toHaveLength(2);
+  });
+
+  it('should retrieve successfully empty credential details', async () => {
+    const credentialHeaders = await client.retrieveCredentialContent();
 
     expect(credentialHeaders).toEqual([]);
     expect(credentialHeaders).toHaveLength(0);

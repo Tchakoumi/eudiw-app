@@ -56,3 +56,37 @@ export const credentialHeaderObjRef2: DisplayCredential[] = [
     id: 1,
   },
 ];
+
+export const credentialContentObjRef2: DisplayCredential[] = [
+  {
+    title: 'Identity Credential',
+    issuer: 'trial.authlete.net',
+    logo: undefined,
+    issued_at: 1708613098,
+    id: 1,
+    claims: {},
+  },
+];
+
+export const credentialContentObjRef1: DisplayCredential[] = [
+  {
+    title: 'Identity Credential',
+    issuer: 'trial.authlete.net',
+    logo: undefined,
+    issued_at: 1708613098,
+    id: 1,
+    claims: {},
+  },
+  {
+    title: 'Identity Credential',
+    issuer: 'trial.authlete.net',
+    issued_at: 1708613098,
+    id: 2,
+    claims: {
+      sub: '1004',
+      given_name: 'Henry',
+      family_name: 'Silverstone',
+      birthdate: '1991-11-06',
+    },
+  },
+];
