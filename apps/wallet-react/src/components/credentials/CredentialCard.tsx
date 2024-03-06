@@ -3,8 +3,14 @@ import AuthleteLogo from '../../assets/authlete-logo.png';
 import { capitalize } from '../../utils/common';
 import { IVerifiableCredential } from '../credential-types/credentials.types';
 
+function presentDate(date: Date) {
+  return `${date.toDateString().split(' ').slice(1).join(' ')} ${
+    date.toTimeString().split(' ')[0]
+  }`;
+}
+
 export default function CredentialCard({
-  credential: { issuer, logo, title },
+  credential: { issuer, logo, title, issued_at },
   openDetails,
 }: {
   credential: IVerifiableCredential;
@@ -29,7 +35,20 @@ export default function CredentialCard({
         },
       }}
     >
-      <img src={logo ?? AuthleteLogo} height={35} alt="authlete logo" />
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          columnGap: 1,
+          alignItems: 'start',
+          justifyItems: 'end',
+        }}
+      >
+        <img src={logo ?? AuthleteLogo} height={35} alt="authlete logo" />
+        <Typography sx={{ fontSize: '14px', lineHeight: '21px', color: 'grey' }}>
+          {presentDate(new Date(issued_at))}
+        </Typography>
+      </Box>
       <Box sx={{ display: 'grid', rowGap: '3px' }}>
         <Typography
           sx={{
