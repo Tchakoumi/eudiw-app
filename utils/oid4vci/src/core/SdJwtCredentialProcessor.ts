@@ -115,7 +115,7 @@ export class SdJwtCredentialProcessor {
    * @param credential the processed credential to store
    * @returns the stored credential with a populated identifier
    */
-  private async storeCredential(
+  public async storeCredential(
     credential: SdJwtProcessedCredential
   ): Promise<SdJwtProcessedCredential> {
     const payload: StoreRecord<OID4VCIServiceDBSchema> = {
