@@ -9,6 +9,7 @@ export enum OID4VCIServiceEventChannel {
   // Listen for credential propositions
   CredentialProposition = 'credential-proposition',
   RetrieveCredentialHeaders = 'retrieve-credential-headers',
+  RetrieveCredentialDetails = 'retrieve-credential-details',
 }
 
 /**
@@ -59,4 +60,15 @@ export interface OID4VCIService {
    *
    */
   retrieveCredentialHeaders(): void;
+
+  /**
+   * Retrieves stored credential details
+   *
+   * The service replies on `OID4VCIServiceEventChannel.RetrieveCredentialDetails`
+   * with either:
+   * - one or many credential details,
+   * - or an error message indicative of what went wrong.
+   *
+   */
+  retrieveCredentialDetails(): void;
 }

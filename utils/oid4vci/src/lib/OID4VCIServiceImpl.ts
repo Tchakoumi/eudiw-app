@@ -126,4 +126,26 @@ export class OID4VCIServiceImpl implements OID4VCIService {
         this.eventBus.emit(channel, response);
       });
   }
+
+  public retrieveCredentialDetails(): void {
+    const channel = OID4VCIServiceEventChannel.RetrieveCredentialDetails;
+
+    this.credentialEventClient
+      .retrieveCredentialDetails()
+      .then((result) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Success,
+          payload: result,
+        };
+        this.eventBus.emit(channel, response);
+      })
+      .catch((error) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Error,
+          payload: error.toString(),
+        };
+
+        this.eventBus.emit(channel, response);
+      });
+  }
 }

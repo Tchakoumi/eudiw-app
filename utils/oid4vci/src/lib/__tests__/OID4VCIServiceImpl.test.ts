@@ -181,4 +181,32 @@ describe('OID4VCIServiceImpl', () => {
       payload: credentialHeaderObjRef2,
     });
   });
+
+  // it('should retrieve successfully one credential details ', async () => {
+  //   // await sdJwtCredentialProcessor.storeCredential(
+  //   //   sdJwtProcessedCredentialObjRef3,
+  //   // );
+
+  //   await storage.deleteMany(credentialStoreName);
+  //   await storage.deleteMany(identityStoreName);
+
+  //   const callback = jest.fn(() => {
+  //     eventBus.emit('complete');
+  //   });
+
+  //   eventBus.on(OID4VCIServiceEventChannel.RetrieveCredentialDetails, callback);
+  //   service.retrieveCredentialDetails();
+
+  //   // Wait for callback completion
+  //   await new Promise((resolve) => {
+  //     eventBus.once('complete', resolve);
+  //   });
+  //   console.log('sdJwtProcessedCredentialObjRef3', credentialContentObjRef3);
+  //   console.log('credentialContentObjRef3', credentialContentObjRef3);
+  //   expect(callback).toHaveBeenCalledTimes(1);
+  //   expect(callback).toHaveBeenCalledWith({
+  //     status: ServiceResponseStatus.Success,
+  //     payload: credentialContentObjRef3,
+  //   });
+  // });
 });

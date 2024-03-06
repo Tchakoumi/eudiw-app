@@ -36,9 +36,11 @@ export class CredentialEventClient {
    * Retrieves the content of credentials needed to populate the details view.
    * @returns A Promise that resolves with an array of stored credentials details.
    */
-  public async retrieveCredentialContent(): Promise<Array<DisplayCredential>> {
+  public async retrieveCredentialDetails(): Promise<Array<DisplayCredential>> {
     const records: Array<StoreRecord<OID4VCIServiceDBSchema>> =
       await this.storage.findAll(credentialStoreName);
+
+    console.log('records', JSON.stringify(records));
 
     // Map each record to its `DisplayCredential` format including all properties.
     const modifiedRecords = records.map(
@@ -46,7 +48,7 @@ export class CredentialEventClient {
         return record.value.display as DisplayCredential;
       }
     );
-
+    console.log('modifiedRecords', modifiedRecords);
     return modifiedRecords;
   }
 }
