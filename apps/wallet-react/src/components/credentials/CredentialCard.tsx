@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import AuthleteLogo from '../../assets/authlete-logo.png';
+import { capitalize } from '../../utils/common';
 import { IVerifiableCredential } from '../credential-types/credentials.types';
 
 export default function CredentialCard({
@@ -38,7 +39,11 @@ export default function CredentialCard({
           }}
         >{`${title}`}</Typography>
         <Typography sx={{ fontSize: '14px', lineHeight: '21px' }}>
-          {issuer}
+          {issuer
+            .split('.')
+            .slice(0, 2)
+            .map((_) => capitalize(_))
+            .join(' ')}
         </Typography>
       </Box>
     </Box>
