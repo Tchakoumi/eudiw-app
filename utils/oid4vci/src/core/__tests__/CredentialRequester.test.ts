@@ -21,14 +21,17 @@ describe('CredentialRequester', () => {
 
   beforeAll(async () => {
     nock.disableNetConnect();
-    await storage.clear(credentialStoreName);
-    await storage.clear(identityStoreName);
   });
 
   beforeEach(async () => {
     nock.cleanAll();
-    await storage.clear(credentialStoreName);
-    await storage.clear(identityStoreName);
+  });
+
+  afterAll(async () => {
+    await Promise.all([
+      storage.clear(credentialStoreName),
+      storage.clear(identityStoreName),
+    ]);
   });
 
   it('should successfully request a credential (fetching verifying keys)', async () => {
