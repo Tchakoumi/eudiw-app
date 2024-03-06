@@ -1,16 +1,21 @@
 import * as jose from 'jose';
 
-import { Config } from '../../Config';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
 import { StoreIdentityManager } from '../IdentityManager';
 import { identityStoreName } from '../../schema';
 import { CredentialSupported } from '../../lib/types';
 
-import { credentialIssuerMetadataRef1, keyRef1, storage } from './fixtures';
+import {
+  configClient,
+  credentialIssuerMetadataRef1,
+  keyRef1,
+  storage,
+} from './fixtures';
 
 describe('IdentityProofGenerator', () => {
   const identityProofGenerator = new IdentityProofGenerator(
+    configClient,
     new StoreIdentityManager(storage)
   );
 
@@ -58,7 +63,7 @@ describe('IdentityProofGenerator', () => {
     const pubKey = await jose.importJWK(jwk);
     expect(
       jose.jwtVerify(jws, pubKey, {
-        issuer: Config.getClientId(aud) ?? '',
+        issuer: configClient.getClientId(aud) ?? '',
         audience: aud,
       })
     ).resolves.not.toThrow();

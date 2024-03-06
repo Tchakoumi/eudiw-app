@@ -1,8 +1,11 @@
+import serviceConfig from '../config.json';
+
+import { StorageFactory } from '@datev/storage';
+import { EventEmitter } from 'eventemitter3';
+import { ConfigClient } from '../core/ConfigClient';
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
-import { EventEmitter } from 'eventemitter3';
-import { StorageFactory } from '@datev/storage';
 
 import {
   OID4VCIServiceDBSchema,
@@ -11,10 +14,10 @@ import {
 } from '../schema';
 
 import {
-  ServiceResponse,
-  ServiceResponseStatus,
   GrantType,
   ResolvedCredentialOffer,
+  ServiceResponse,
+  ServiceResponseStatus,
 } from './types';
 import { CredentialEventClient } from '../core/CredentialEventClient';
 
@@ -27,10 +30,12 @@ export class OID4VCIServiceImpl implements OID4VCIService {
   private readonly credentialEventClient: CredentialEventClient;
 
   public constructor(private eventBus: EventEmitter) {
+    const configClient = new ConfigClient(serviceConfig);
     const storage = this.initializeStorage();
+
     this.credentialOfferResolver = new CredentialOfferResolver();
-    this.credentialRequester = new CredentialRequester(storage);
     this.credentialEventClient = new CredentialEventClient(storage);
+    this.credentialRequester = new CredentialRequester(configClient, storage);
   }
 
   private initializeStorage(): StorageFactory<OID4VCIServiceDBSchema> {

@@ -56,7 +56,10 @@ export class StoreIdentityManager implements IdentityManager {
   }
 
   public async generateJwkIdentity(): Promise<jose.JWK> {
-    const { privateKey } = await jose.generateKeyPair('ES256');
+    const { privateKey } = await jose.generateKeyPair('ES256', {
+      extractable: true,
+    });
+
     const jwk = {
       alg: 'ES256',
       ...(await jose.exportJWK(privateKey)),
