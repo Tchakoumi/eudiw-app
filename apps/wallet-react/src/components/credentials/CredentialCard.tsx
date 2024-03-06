@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material';
+import AuthleteLogo from '../../assets/authlete-logo.png';
 import { IVerifiableCredential } from '../credential-types/credentials.types';
 
 export default function CredentialCard({
@@ -27,7 +28,7 @@ export default function CredentialCard({
         },
       }}
     >
-      <img src={logo} height={35} alt="authlete logo" />
+      <img src={logo ?? AuthleteLogo} height={35} alt="authlete logo" />
       <Box sx={{ display: 'grid', rowGap: '3px' }}>
         <Typography
           sx={{
