@@ -19,6 +19,7 @@ import {
   ServiceResponse,
   ServiceResponseStatus,
 } from './types';
+import { CredentialEventClient } from '../core/CredentialEventClient';
 
 /**
  * Concrete implementation of the OID4VCI service.
@@ -26,12 +27,14 @@ import {
 export class OID4VCIServiceImpl implements OID4VCIService {
   private readonly credentialOfferResolver: CredentialOfferResolver;
   private readonly credentialRequester: CredentialRequester;
+  private readonly credentialEventClient: CredentialEventClient;
 
   public constructor(private eventBus: EventEmitter) {
     const configClient = new ConfigClient(serviceConfig);
     const storage = this.initializeStorage();
 
     this.credentialOfferResolver = new CredentialOfferResolver();
+    this.credentialEventClient = new CredentialEventClient(storage);
     this.credentialRequester = new CredentialRequester(configClient, storage);
   }
 
@@ -95,6 +98,28 @@ export class OID4VCIServiceImpl implements OID4VCIService {
           payload: result,
         };
 
+        this.eventBus.emit(channel, response);
+      })
+      .catch((error) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Error,
+          payload: error.toString(),
+        };
+
+        this.eventBus.emit(channel, response);
+      });
+  }
+
+  public retrieveCredentialHeaders(): void {
+    const channel = OID4VCIServiceEventChannel.RetrieveCredentialHeaders;
+
+    this.credentialEventClient
+      .retrieveCredentialHeaders()
+      .then((result) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Success,
+          payload: result,
+        };
         this.eventBus.emit(channel, response);
       })
       .catch((error) => {

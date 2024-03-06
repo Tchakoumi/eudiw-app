@@ -8,6 +8,7 @@ export enum OID4VCIServiceEventChannel {
   ProcessCredentialOffer = 'process-credential-offer',
   // Listen for credential propositions
   CredentialProposition = 'credential-proposition',
+  RetrieveCredentialHeaders = 'retrieve-credential-headers',
 }
 
 /**
@@ -47,4 +48,15 @@ export interface OID4VCIService {
     userOpts: { credentialTypeKey: string; txCode?: string },
     grantType?: GrantType
   ): void;
+
+  /**
+   * Retrieves stored credential headers to show them on the landing page
+   *
+   * The service replies on `OID4VCIServiceEventChannel.RetrieveCredentialHeaders`
+   * with either:
+   * - one or many credential headers,
+   * - or an error message indicative of what went wrong.
+   *
+   */
+  retrieveCredentialHeaders(): void;
 }
