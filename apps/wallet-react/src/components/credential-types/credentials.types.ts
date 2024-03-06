@@ -24,9 +24,9 @@ export interface ICredentialCard {
 export interface IVerifiableCredential {
   id: string;
   title: string;
-  subtitle: string;
   issuer: string;
   logo: string;
+  issued_at: number;
 }
 
 export interface CredentialOfferResponse {
