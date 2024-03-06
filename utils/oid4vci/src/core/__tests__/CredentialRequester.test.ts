@@ -1,10 +1,11 @@
 import nock from 'nock';
 
-import { credentialStoreName } from '../../schema';
+import { credentialStoreName, identityStoreName } from '../../schema';
 import { DiscoveryMetadata, GrantType } from '../../lib/types';
 import { CredentialRequester } from '../CredentialRequester';
 
 import {
+  configClient,
   storage,
   jwksRef1,
   jwksRef2,
@@ -16,14 +17,18 @@ import {
 } from './fixtures';
 
 describe('CredentialRequester', () => {
-  const credentialRequester = new CredentialRequester(storage);
+  const credentialRequester = new CredentialRequester(configClient, storage);
 
   beforeAll(async () => {
     nock.disableNetConnect();
+    await storage.clear(credentialStoreName);
+    await storage.clear(identityStoreName);
   });
 
   beforeEach(async () => {
     nock.cleanAll();
+    await storage.clear(credentialStoreName);
+    await storage.clear(identityStoreName);
   });
 
   it('should successfully request a credential (fetching verifying keys)', async () => {

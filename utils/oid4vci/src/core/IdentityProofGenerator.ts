@@ -1,6 +1,6 @@
 import * as jose from 'jose';
 
-import { Config } from '../Config';
+import { ConfigClient } from './ConfigClient';
 import { OID4VCIServiceError } from '../lib/errors';
 import { OID4VCI_PROOF_TYP } from '../constants';
 import { currentTimestampInSecs } from '../utils';
@@ -15,9 +15,13 @@ import { IdentityManager } from './IdentityManager';
 export class IdentityProofGenerator {
   /**
    * Constructor.
+   * @param configClient a gate to retrieve configuration data through
    * @param identityManager a source to retrieve the wallet identity from
    */
-  public constructor(private identityManager: IdentityManager) {}
+  public constructor(
+    private configClient: ConfigClient,
+    private identityManager: IdentityManager
+  ) {}
 
   /**
    * Computes key proof of wallet's identity.
@@ -83,7 +87,7 @@ export class IdentityProofGenerator {
       .setIssuedAt(currentTimestampInSecs())
       .setAudience(aud);
 
-    const clientId = Config.getClientId(aud);
+    const clientId = this.configClient.getClientId(aud);
     if (clientId) {
       jws.setIssuer(clientId);
     }
