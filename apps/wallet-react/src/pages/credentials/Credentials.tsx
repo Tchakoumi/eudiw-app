@@ -1,36 +1,49 @@
+import { eventBus } from '@datev/event-bus';
+import {
+  OID4VCIService,
+  OID4VCIServiceEventChannel,
+  OID4VCIServiceImpl,
+  ServiceResponse,
+} from '@datev/oid4vci';
 import { Alert, Box, Snackbar } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
-import { useEffect, useState } from 'react';
-import AuthleteLogo from '../../assets/authlete-logo.png';
+import { useEffect, useMemo, useState } from 'react';
 import { IVerifiableCredential } from '../../components/credential-types/credentials.types';
 import ConfirmDeleteVCDialog from '../../components/credentials/ConfirmDeleteVCDialog';
 import CredentialCard from '../../components/credentials/CredentialCard';
-import CredentialCardSkeleton from '../../components/credentials/CredentialCardSkeleton';
 import CredentialDetails from '../../components/credentials/CredentialDetails';
 import NoCredentials from '../../components/credentials/NoCredentials';
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
 
 export default function Credentials() {
-  const [credentials, setCredentials] = useState<IVerifiableCredential[]>([]);
-  const [isLoadingCredentials, setIsLoadingCredentials] =
-    useState<boolean>(false);
+  const OIDVCI: OID4VCIService = useMemo(
+    () => new OID4VCIServiceImpl(eventBus),
+    []
+  );
 
+  const [credentials, setCredentials] = useState<IVerifiableCredential[]>([]);
+
+  OIDVCI.retrieveCredentialHeaders();
   useEffect(() => {
-    setIsLoadingCredentials(true);
-    setTimeout(() => {
-      setCredentials([
-        {
-          id: '123123',
-          issuer: 'Trial Authlete',
-          logo: AuthleteLogo,
-          subtitle: 'Hello world',
-          title: 'E-ID Hans Schreiner',
-        },
-      ]);
-      setIsLoadingCredentials(false);
-    }, 3000);
-  }, []);
+    eventBus.once(
+      OID4VCIServiceEventChannel.RetrieveCredentialHeaders,
+      (data: ServiceResponse) => {
+        console.log(data.payload);
+        setCredentials(data.payload as IVerifiableCredential[]);
+      }
+    );
+
+    return () => {
+      // Clean up event listener
+      eventBus.off(
+        OID4VCIServiceEventChannel.RetrieveCredentialHeaders,
+        (data: ServiceResponse) => {
+          setCredentials(data.payload as IVerifiableCredential[]);
+        }
+      );
+    };
+  }, [OIDVCI]);
 
   const [selectedCredential, setSelectedCredential] =
     useState<IVerifiableCredential>();
@@ -90,11 +103,7 @@ export default function Credentials() {
                 alignContent: 'start',
               }}
             >
-              {isLoadingCredentials ? (
-                [...new Array(4)].map((_, index) => (
-                  <CredentialCardSkeleton key={index} />
-                ))
-              ) : credentials.length === 0 ? (
+              {credentials.length === 0 ? (
                 <NoCredentials />
               ) : (
                 <Box>
