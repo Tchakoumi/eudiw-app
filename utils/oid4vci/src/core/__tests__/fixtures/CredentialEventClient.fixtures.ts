@@ -10,7 +10,7 @@ export const sdJwtProcessedCredentialObjRef1: SdJwtProcessedCredential = {
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
     logo: undefined,
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     claims: {},
   },
 };
@@ -21,7 +21,7 @@ export const sdJwtProcessedCredentialObjRef2: SdJwtProcessedCredential = {
   display: {
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     claims: {
       sub: '1004',
       given_name: 'Henry',
@@ -36,13 +36,13 @@ export const credentialHeaderObjRef1: DisplayCredential[] = [
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
     logo: undefined,
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 1,
   },
   {
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 2,
   },
 ];
@@ -52,7 +52,7 @@ export const credentialHeaderObjRef2: DisplayCredential[] = [
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
     logo: undefined,
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 1,
   },
 ];
