@@ -29,7 +29,6 @@ export default function Credentials() {
     eventBus.once(
       OID4VCIServiceEventChannel.RetrieveCredentialHeaders,
       (data: ServiceResponse) => {
-        console.log(data.payload);
         setCredentials(data.payload as IVerifiableCredential[]);
       }
     );
