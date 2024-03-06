@@ -45,7 +45,9 @@ export default function CredentialCard({
         }}
       >
         <img src={logo ?? AuthleteLogo} height={35} alt="authlete logo" />
-        <Typography sx={{ fontSize: '14px', lineHeight: '21px', color: 'grey' }}>
+        <Typography
+          sx={{ fontSize: '14px', lineHeight: '21px', color: 'grey' }}
+        >
           {presentDate(new Date(issued_at))}
         </Typography>
       </Box>
