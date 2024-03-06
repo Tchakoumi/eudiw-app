@@ -2,7 +2,7 @@ import { eventBus } from '@datev/event-bus';
 import {
   OID4VCIService,
   OID4VCIServiceEventChannel,
-  OID4VCIServiceImpl
+  OID4VCIServiceImpl,
 } from '@datev/oid4vci';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
