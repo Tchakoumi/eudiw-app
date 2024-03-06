@@ -106,7 +106,7 @@ export default function Credentials() {
               {credentials.length === 0 ? (
                 <NoCredentials />
               ) : (
-                <Box>
+                <Box sx={{ display: 'grid', rowGap: 1 }}>
                   {credentials.map((credential, index) => (
                     <CredentialCard
                       credential={credential}
