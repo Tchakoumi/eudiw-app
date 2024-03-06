@@ -4,7 +4,7 @@ import { InvalidCredentialOffer } from '../../lib/errors';
 import {
   AccessTokenRequest,
   AccessTokenResponse,
-  GrantTypes,
+  GrantType,
   OpenIDResponse,
 } from '../../lib/types';
 import nock from 'nock';
@@ -27,7 +27,7 @@ describe('AccessTokenResolver', () => {
       const accessTokenClient: AccessTokenClient = new AccessTokenClient();
 
       const accessTokenRequest: AccessTokenRequest = {
-        grant_type: GrantTypes.PRE_AUTHORIZED_CODE,
+        grant_type: GrantType.PRE_AUTHORIZED_CODE,
         'pre-authorized_code': '20221013',
         client_id: 'test',
       } as AccessTokenRequest;
@@ -69,7 +69,7 @@ describe('AccessTokenResolver', () => {
       const accessTokenClient: AccessTokenClient = new AccessTokenClient();
 
       const accessTokenRequest: AccessTokenRequest = {
-        grant_type: GrantTypes.PRE_AUTHORIZED_CODE,
+        grant_type: GrantType.PRE_AUTHORIZED_CODE,
         'pre-authorized_code': '',
       } as AccessTokenRequest;
 
@@ -94,7 +94,7 @@ describe('AccessTokenResolver', () => {
       const accessTokenClient: AccessTokenClient = new AccessTokenClient();
 
       const accessTokenRequest: AccessTokenRequest = {
-        grant_type: GrantTypes.PRE_AUTHORIZED_CODE,
+        grant_type: GrantType.PRE_AUTHORIZED_CODE,
         'pre-authorized_code': '20221013',
         tx_code: '',
       } as AccessTokenRequest;
@@ -131,7 +131,7 @@ describe('AccessTokenResolver', () => {
       const accessTokenClient: AccessTokenClient = new AccessTokenClient();
 
       const accessTokenRequest: AccessTokenRequest = {
-        grant_type: GrantTypes.PRE_AUTHORIZED_CODE,
+        grant_type: GrantType.PRE_AUTHORIZED_CODE,
         'pre-authorized_code': '20221013',
         client_id: '218232426',
       } as AccessTokenRequest;

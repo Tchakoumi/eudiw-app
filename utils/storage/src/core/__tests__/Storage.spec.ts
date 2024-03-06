@@ -3,8 +3,8 @@ import {
   StoreRecord,
   StoreRecordValue,
   TransactionCallback,
-} from './Storage.types';
-import { StorageFactory } from './StorageFactory';
+} from '../../lib/types/Storage.types';
+import { StorageFactory } from '../StorageFactory';
 
 // Mocking indexdedDB functionality
 import 'core-js/stable/structured-clone';
@@ -248,9 +248,9 @@ describe('StorageFactory', () => {
     );
     expect(records.length).toEqual(1);
 
-    expect(records).toStrictEqual<StoreRecordValue<TestDBSchema>[]>([
-      testData.inlineKeyStore.value,
-    ]);
+    expect(records).toStrictEqual<
+      StoreRecordValue<TestDBSchema, 'inlineKeyStore'>[]
+    >([testData.inlineKeyStore.value]);
   });
 
   it('should start and close a new transaction', async () => {
@@ -265,6 +265,7 @@ describe('StorageFactory', () => {
           transaction
         );
         await storageFactory.findOne('testStore', 'tx_key_1', transaction);
+        await storageFactory.findAll('testStore', transaction);
         await storageFactory.update(
           'testStore',
           'tx_key_1',
