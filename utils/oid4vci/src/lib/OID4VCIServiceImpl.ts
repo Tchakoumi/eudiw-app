@@ -1,5 +1,7 @@
 import { StorageFactory } from '@datev/storage';
 import { EventEmitter } from 'eventemitter3';
+import serviceConfig from '../config.json';
+import { ConfigClient } from '../core/ConfigClient';
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
@@ -10,6 +12,7 @@ import {
   identityStoreName,
 } from '../schema';
 
+import { CredentialEventClient } from '../core/CredentialEventClient';
 import {
   GrantType,
   ResolvedCredentialOffer,
@@ -23,11 +26,15 @@ import {
 export class OID4VCIServiceImpl implements OID4VCIService {
   private readonly credentialOfferResolver: CredentialOfferResolver;
   private readonly credentialRequester: CredentialRequester;
+  private readonly credentialEventClient: CredentialEventClient;
 
   public constructor(private eventBus: EventEmitter) {
+    const configClient = new ConfigClient(serviceConfig);
     const storage = this.initializeStorage();
+
     this.credentialOfferResolver = new CredentialOfferResolver();
-    this.credentialRequester = new CredentialRequester(storage);
+    this.credentialEventClient = new CredentialEventClient(storage);
+    this.credentialRequester = new CredentialRequester(configClient, storage);
   }
 
   private initializeStorage(): StorageFactory<OID4VCIServiceDBSchema> {
@@ -90,6 +97,28 @@ export class OID4VCIServiceImpl implements OID4VCIService {
           payload: result,
         };
 
+        this.eventBus.emit(channel, response);
+      })
+      .catch((error) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Error,
+          payload: error.toString(),
+        };
+
+        this.eventBus.emit(channel, response);
+      });
+  }
+
+  public retrieveCredentialHeaders(): void {
+    const channel = OID4VCIServiceEventChannel.RetrieveCredentialHeaders;
+
+    this.credentialEventClient
+      .retrieveCredentialHeaders()
+      .then((result) => {
+        const response: ServiceResponse = {
+          status: ServiceResponseStatus.Success,
+          payload: result,
+        };
         this.eventBus.emit(channel, response);
       })
       .catch((error) => {
