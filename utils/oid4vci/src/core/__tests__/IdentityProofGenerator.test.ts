@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
 import { StoreIdentityManager } from '../IdentityManager';
-import { identityStoreName } from '../../schema';
+import { identityStoreName } from '../../database/schema';
 import { CredentialSupported } from '../../lib/types';
 
 import {

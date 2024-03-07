@@ -1,5 +1,5 @@
 import { StorageFactory, StoreRecord } from '@datev/storage';
-import { OID4VCIServiceDBSchema, credentialStoreName } from '../../src/schema';
+import { OID4VCIServiceDBSchema, credentialStoreName } from '../database/schema';
 import { DisplayCredential } from '../lib/types';
 
 /**

@@ -10,7 +10,7 @@ import {
   OID4VCIServiceDBSchema,
   credentialStoreName,
   identityStoreName,
-} from '../../../schema';
+} from '../../../database/schema';
 
 // Mocking indexdedDB functionality
 import 'core-js/stable/structured-clone';

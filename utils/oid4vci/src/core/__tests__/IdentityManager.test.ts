@@ -1,4 +1,4 @@
-import { identityStoreName } from '../../schema';
+import { identityStoreName } from '../../database/schema';
 import { IdentityManager, StoreIdentityManager } from '../IdentityManager';
 import { storage } from './fixtures';
 

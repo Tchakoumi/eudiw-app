@@ -1,6 +1,6 @@
 import nock from 'nock';
 
-import { credentialStoreName, identityStoreName } from '../../schema';
+import { credentialStoreName, identityStoreName } from '../../database/schema';
 import { DiscoveryMetadata, GrantType } from '../../lib/types';
 import { CredentialRequester } from '../CredentialRequester';
 
