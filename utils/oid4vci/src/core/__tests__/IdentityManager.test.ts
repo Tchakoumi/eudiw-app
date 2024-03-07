@@ -1,4 +1,4 @@
-import { identityStoreName } from '../../schema';
+import { identityStoreName } from '../../database/schema';
 import { IdentityManager, StoreIdentityManager } from '../IdentityManager';
 import { storage } from './fixtures';
 
@@ -6,7 +6,7 @@ describe('IdentityManager', () => {
   const identityManager: IdentityManager = new StoreIdentityManager(storage);
 
   afterEach(async () => {
-    storage.clear(identityStoreName);
+    await storage.clear(identityStoreName);
   });
 
   it('should successfully initialize identity', async () => {

@@ -1,12 +1,12 @@
 import * as jose from 'jose';
 import { fetch } from 'cross-fetch';
 
-import { Config } from '../Config';
+import { ConfigClient } from './ConfigClient';
 import { OID4VCIServiceError } from '../lib/errors';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
 import { fetchIntoDataUrl } from '../utils';
-import { OID4VCIServiceDBSchema } from '../schema';
+import { OID4VCIServiceDBSchema } from '../database/schema';
 import { StorageFactory } from '@datev/storage';
 import { StoreIdentityManager } from './IdentityManager';
 import { AccessTokenClient } from './AccessTokenClient';
@@ -35,18 +35,26 @@ import {
  * and handling all post-issuance operations.
  */
 export class CredentialRequester {
+  private readonly configClient: ConfigClient;
   private readonly accessTokenClient: AccessTokenClient;
   private readonly identityProofGenerator: IdentityProofGenerator;
   private readonly sdJwtCredentialProcessor: SdJwtCredentialProcessor;
 
   /**
    * Constructor.
+   * @param configClient a gate to retrieve configuration data through
    * @param storage a storage to persist requested issued credentials
    */
-  public constructor(storage: StorageFactory<OID4VCIServiceDBSchema>) {
+  public constructor(
+    configClient: ConfigClient,
+    storage: StorageFactory<OID4VCIServiceDBSchema>
+  ) {
+    this.configClient = configClient;
+
     this.accessTokenClient = new AccessTokenClient();
 
     this.identityProofGenerator = new IdentityProofGenerator(
+      configClient,
       new StoreIdentityManager(storage)
     );
 
@@ -168,7 +176,9 @@ export class CredentialRequester {
 
     // Prepare data for access token request
 
-    const clientId = Config.getClientId(credentialOffer.credential_issuer);
+    const clientId = this.configClient.getClientId(
+      credentialOffer.credential_issuer
+    );
 
     const accessTokenRequest: AccessTokenRequest = {
       client_id: clientId,

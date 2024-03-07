@@ -1,22 +1,19 @@
+import serviceConfig from '../config.json';
+
+import { EventEmitter } from 'eventemitter3';
+import { ConfigClient } from '../core/ConfigClient';
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
-import { EventEmitter } from 'eventemitter3';
-import { StorageFactory } from '@datev/storage';
 
 import {
-  OID4VCIServiceDBSchema,
-  credentialStoreName,
-  identityStoreName,
-} from '../schema';
-
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
   GrantType,
   ResolvedCredentialOffer,
+  ServiceResponse,
+  ServiceResponseStatus,
 } from './types';
 import { CredentialEventClient } from '../core/CredentialEventClient';
+import { DBConnection } from '../database/DBConnection';
 
 /**
  * Concrete implementation of the OID4VCI service.
@@ -27,32 +24,12 @@ export class OID4VCIServiceImpl implements OID4VCIService {
   private readonly credentialEventClient: CredentialEventClient;
 
   public constructor(private eventBus: EventEmitter) {
-    const storage = this.initializeStorage();
+    const configClient = new ConfigClient(serviceConfig);
+    const storage = DBConnection.getStorage();
+
     this.credentialOfferResolver = new CredentialOfferResolver();
-    this.credentialRequester = new CredentialRequester(storage);
     this.credentialEventClient = new CredentialEventClient(storage);
-  }
-
-  private initializeStorage(): StorageFactory<OID4VCIServiceDBSchema> {
-    const dbName = 'OID4VCIServiceStorage';
-    const dbVersion = 1;
-
-    const storage = new StorageFactory<OID4VCIServiceDBSchema>(
-      dbName,
-      dbVersion,
-      {
-        upgrade(db) {
-          db.createObjectStore(credentialStoreName, {
-            keyPath: 'display.id',
-            autoIncrement: true,
-          });
-
-          db.createObjectStore(identityStoreName);
-        },
-      }
-    );
-
-    return storage;
+    this.credentialRequester = new CredentialRequester(configClient, storage);
   }
 
   public resolveCredentialOffer(opts: { credentialOffer: string }): void {

@@ -1,4 +1,4 @@
-import { credentialStoreName } from '../../schema';
+import { credentialStoreName } from '../../database/schema';
 import { CredentialEventClient } from '../CredentialEventClient';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
 
