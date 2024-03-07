@@ -6,7 +6,6 @@ import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
 
-
 import {
   GrantType,
   ResolvedCredentialOffer,
