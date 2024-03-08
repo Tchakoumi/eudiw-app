@@ -167,3 +167,6 @@ interface JwtIssuerMetadata {
   issuer: string;
   jwks_uri: string;
 }
+
+export type ISupportedCredential =
+  keyof CredentialIssuerMetadata['credential_configurations_supported'];

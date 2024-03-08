@@ -11,6 +11,7 @@ import {
   CredentialOfferResponse,
   CredentialOfferResponsePayload,
   ICredentialCard,
+  ISupportedCredential,
   VCSDJWTClaim,
 } from '../../components/credential-types/credentials.types';
 import BackTitleBar from '../../components/layout/BackTitleBar';
@@ -31,9 +32,6 @@ export default function CredentialTypes() {
       }
     );
   }, []);
-
-  type ISupportedCredential =
-    keyof CredentialIssuerMetadata['credential_configurations_supported'];
 
   /**
    * This function helps to get the selected credential type's
