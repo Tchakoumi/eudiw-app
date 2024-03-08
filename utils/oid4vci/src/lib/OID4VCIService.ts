@@ -10,6 +10,7 @@ export enum OID4VCIServiceEventChannel {
   CredentialProposition = 'credential-proposition',
   RetrieveCredentialHeaders = 'retrieve-credential-headers',
   RetrieveCredentialDetails = 'retrieve-credential-details',
+  DeleteCredential = 'remove-credential',
 }
 
 /**
@@ -70,5 +71,5 @@ export interface OID4VCIService {
    * - or an error message indicative of what went wrong.
    *
    */
-  retrieveCredentialDetails(): void;
+  retrieveCredentialDetails(id: number): void;
 }

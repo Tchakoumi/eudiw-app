@@ -36,22 +36,36 @@ export class CredentialEventClient {
   }
 
   /**
-   * Retrieves the content of credentials needed to populate the details view.
-   * @returns A Promise that resolves with an array of stored credentials details.
+   * Retrieves the content of a single credential needed to populate the details view.
+   * @param id The unique identifier of the credential to retrieve.
+   * @returns A Promise that resolves with the details of the specified credential, or null if not found.
    */
-  public async retrieveCredentialDetails(): Promise<Array<DisplayCredential>> {
-    const records: Array<StoreRecord<OID4VCIServiceDBSchema>> =
-      await this.storage.findAll(credentialStoreName);
+  public async retrieveCredentialDetails(
+    id: number
+  ): Promise<DisplayCredential | null> {
+    const record: StoreRecord<OID4VCIServiceDBSchema> | null =
+      await this.storage.findOne(credentialStoreName, id);
 
-    console.log('records', JSON.stringify(records));
+    if (!record) {
+      return null;
+    }
 
-    // Map each record to its `DisplayCredential` format including all properties.
-    const modifiedRecords = records.map(
-      (record: StoreRecord<OID4VCIServiceDBSchema>) => {
-        return record.value.display as DisplayCredential;
-      }
-    );
-    console.log('modifiedRecords', modifiedRecords);
-    return modifiedRecords;
+    // Return the `DisplayCredential` format including all properties.
+    return record.value.display as DisplayCredential;
+  }
+
+  /**
+   * Deletes a credential by key.
+   * @param key The key of the credential to delete.
+   * @returns A Promise that resolves when the deletion is complete.
+   */
+  public async deleteCredentialByKey(key: IDBValidKey): Promise<void> {
+    try {
+      await this.storage.delete(credentialStoreName, key);
+    } catch (error) {
+      console.log('error2');
+
+      throw new Error(`Failed to delete credential: ${error}`);
+    }
   }
 }

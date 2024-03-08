@@ -18,9 +18,10 @@ import {
   credentialResponseRef1,
   jwksRef1,
   tokenResponseRef1,
-  // storage,
   sdJwtProcessedCredentialObjRef1,
   credentialHeaderObjRef2,
+  sdJwtProcessedCredentialObjRef3,
+  credentialContentObjRef3,
 } from '../../core/__tests__/fixtures';
 
 // Mocking indexdedDB functionality
@@ -190,31 +191,33 @@ describe('OID4VCIServiceImpl', () => {
     });
   });
 
-  // it('should retrieve successfully one credential details ', async () => {
-  //   // await sdJwtCredentialProcessor.storeCredential(
-  //   //   sdJwtProcessedCredentialObjRef3,
-  //   // );
+  it('should retrieve successfully one credential details ', async () => {
+    const storedCredential = await sdJwtCredentialProcessor.storeCredential(
+      sdJwtProcessedCredentialObjRef3
+    );
 
-  //   await storage.deleteMany(credentialStoreName);
-  //   await storage.deleteMany(identityStoreName);
+    const callback = jest.fn(() => {
+      eventBus.emit('complete');
+    });
 
-  //   const callback = jest.fn(() => {
-  //     eventBus.emit('complete');
-  //   });
+    eventBus.on(OID4VCIServiceEventChannel.RetrieveCredentialDetails, callback);
+    service.retrieveCredentialDetails(storedCredential.display.id as number);
 
-  //   eventBus.on(OID4VCIServiceEventChannel.RetrieveCredentialDetails, callback);
-  //   service.retrieveCredentialDetails();
+    // Wait for callback completion
+    await new Promise((resolve) => {
+      eventBus.once('complete', resolve);
+    });
 
-  //   // Wait for callback completion
-  //   await new Promise((resolve) => {
-  //     eventBus.once('complete', resolve);
-  //   });
-  //   console.log('sdJwtProcessedCredentialObjRef3', credentialContentObjRef3);
-  //   console.log('credentialContentObjRef3', credentialContentObjRef3);
-  //   expect(callback).toHaveBeenCalledTimes(1);
-  //   expect(callback).toHaveBeenCalledWith({
-  //     status: ServiceResponseStatus.Success,
-  //     payload: credentialContentObjRef3,
-  //   });
-  // });
+    // Dynamically adjust the expected payload with the correct id
+    const expectedPayload = {
+      ...credentialContentObjRef3, // Assuming credentialContentObjRef3 is an array with the expected object
+      id: storedCredential.display.id, // Set the dynamic id correctly
+    };
+    expect(callback).toHaveBeenCalledTimes(1);
+    // Use the captured `expectedId` in your assertion to match against the dynamically assigned ID
+    expect(callback).toHaveBeenCalledWith({
+      status: ServiceResponseStatus.Success,
+      payload: expectedPayload, // Use the dynamically adjusted expected object
+    });
+  });
 });

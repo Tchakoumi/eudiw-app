@@ -190,6 +190,7 @@ export class StorageFactory<T extends DBSchema> {
       if (tx) await tx.objectStore(storeName).delete(storedKey);
       else await this.db.delete(storeName, storedKey);
     } catch (error) {
+      console.log('error');
       throw new StorageError((error as Error).message, 'delete');
     }
   }
