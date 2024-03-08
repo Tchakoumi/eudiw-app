@@ -1,10 +1,14 @@
 import {
-  CredentialIssuerMetadata,
-  ICredentialCard,
-  ISupportedCredential,
-  VCSDJWTClaim,
+    CredentialIssuerMetadata,
+    ICredentialCard,
+    ISupportedCredential,
+    VCSDJWTClaim,
 } from '../../components/credential-types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
+
+export enum SupportedCredentialTypeFormat {
+  VC_SD_JWT = 'vc+sd-jwt',
+}
 
 /**
  * This function helps to get the selected credential type's
@@ -57,7 +61,7 @@ export function getVCSDJWTOffers(
   const vcSdJwtTypeKeys = credentialOfferTypeKeys.filter(
     (credentialType) =>
       issuer_metadata.credential_configurations_supported[credentialType]
-        .format === 'vc+sd-jwt'
+        .format === SupportedCredentialTypeFormat.VC_SD_JWT
   );
   return vcSdJwtTypeKeys.map((credentialOfferTypeKey) => {
     return {
