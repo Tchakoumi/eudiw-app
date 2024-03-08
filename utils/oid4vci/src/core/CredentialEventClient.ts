@@ -63,8 +63,6 @@ export class CredentialEventClient {
     try {
       await this.storage.delete(credentialStoreName, key);
     } catch (error) {
-      console.log('error2');
-
       throw new Error(`Failed to delete credential: ${error}`);
     }
   }

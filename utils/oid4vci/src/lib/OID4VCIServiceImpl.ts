@@ -130,7 +130,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
    * Attempts to delete a credential and emits the result to an event channel.
    * @param key The key of the credential to delete.
    */
-  public deleteCredentialAndEmitResult(key: IDBValidKey): void {
+  public deleteCredential(key: IDBValidKey): void {
     const channel = OID4VCIServiceEventChannel.DeleteCredential;
 
     this.credentialEventClient

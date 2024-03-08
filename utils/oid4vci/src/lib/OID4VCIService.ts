@@ -72,4 +72,15 @@ export interface OID4VCIService {
    *
    */
   retrieveCredentialDetails(id: number): void;
+
+  /**
+   * Deletes a credential
+   *
+   * The service replies on `OID4VCIServiceEventChannel.DeleteCredential`
+   * with either:
+   * - Success
+   * - Error
+   *
+   */
+  deleteCredential(key: IDBValidKey): void;
 }

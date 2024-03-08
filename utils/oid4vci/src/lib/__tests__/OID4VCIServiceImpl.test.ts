@@ -220,4 +220,28 @@ describe('OID4VCIServiceImpl', () => {
       payload: expectedPayload, // Use the dynamically adjusted expected object
     });
   });
+
+  it('should successfully delete a credential and emit an event', async () => {
+    const storedCredential = await sdJwtCredentialProcessor.storeCredential(
+      sdJwtProcessedCredentialObjRef3
+    );
+
+    const deleteCallback = jest.fn(() => {
+      eventBus.emit('complete');
+    });
+
+    eventBus.on(OID4VCIServiceEventChannel.DeleteCredential, deleteCallback);
+
+    service.deleteCredential(storedCredential.display.id as IDBValidKey);
+
+    await new Promise((resolve) => {
+      eventBus.once('complete', resolve);
+    });
+
+    expect(deleteCallback).toHaveBeenCalledTimes(1);
+    expect(deleteCallback).toHaveBeenCalledWith({
+      status: ServiceResponseStatus.Success,
+      payload: `Credential with key ${storedCredential.display.id} successfully deleted.`,
+    });
+  });
 });
