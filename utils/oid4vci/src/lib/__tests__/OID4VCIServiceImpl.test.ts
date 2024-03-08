@@ -18,7 +18,6 @@ import {
   credentialResponseRef1,
   jwksRef1,
   tokenResponseRef1,
-  // storage,
   sdJwtProcessedCredentialObjRef1,
   credentialHeaderObjRef2,
 } from '../../core/__tests__/fixtures';
