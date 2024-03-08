@@ -1,8 +1,8 @@
 import {
-  CredentialIssuerMetadata,
-  ICredentialCard,
-  ISupportedCredential,
-  VCSDJWTClaim,
+    CredentialIssuerMetadata,
+    ICredentialCard,
+    ISupportedCredential,
+    VCSDJWTClaim,
 } from '../../components/credential-types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
 
