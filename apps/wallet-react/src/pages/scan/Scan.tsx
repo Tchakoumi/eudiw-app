@@ -40,10 +40,9 @@ export default function Scan() {
     }
   };
 
-  const cameraStatus = checkCameraPermission();
   useEffect(() => {
     checkCameraPermission();
-  }, [permissionStatus, cameraStatus]);
+  }, [permissionStatus]);
 
   const requestCameraPermission = () => {
     setIsRequestCameraDialogOpen(false);
