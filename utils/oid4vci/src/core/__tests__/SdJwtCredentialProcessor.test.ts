@@ -1,7 +1,9 @@
+import { DBConnection } from '../../database/DBConnection';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
-import { credentialResponseRef1, storage, jwksRef1 } from './fixtures';
+import { credentialResponseRef1, jwksRef1 } from './fixtures';
 
 describe('SdJwtCredentialProcessor', () => {
+  const storage = DBConnection.getStorage();
   const processor = new SdJwtCredentialProcessor(storage);
 
   it('should process credentials even with no claims', async () => {

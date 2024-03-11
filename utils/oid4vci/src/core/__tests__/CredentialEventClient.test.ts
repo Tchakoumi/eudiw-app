@@ -1,3 +1,4 @@
+import { DBConnection } from '../../database/DBConnection';
 import { credentialStoreName } from '../../database/schema';
 import { CredentialEventClient } from '../CredentialEventClient';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
@@ -7,10 +8,10 @@ import {
   credentialHeaderObjRef2,
   sdJwtProcessedCredentialObjRef1,
   sdJwtProcessedCredentialObjRef2,
-  storage,
 } from './fixtures';
 
 describe('CredentialEventClient', () => {
+  const storage = DBConnection.getStorage();
   const client = new CredentialEventClient(storage);
 
   afterEach(async () => {

@@ -10,10 +10,11 @@ import {
   configClient,
   credentialIssuerMetadataRef1,
   keyRef1,
-  storage,
 } from './fixtures';
+import { DBConnection } from '../../database/DBConnection';
 
 describe('IdentityProofGenerator', () => {
+  const storage = DBConnection.getStorage();
   const identityProofGenerator = new IdentityProofGenerator(
     configClient,
     new StoreIdentityManager(storage)

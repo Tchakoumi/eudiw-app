@@ -6,7 +6,6 @@ import { CredentialRequester } from '../CredentialRequester';
 
 import {
   configClient,
-  storage,
   jwksRef1,
   jwksRef2,
   tokenResponseRef1,
@@ -15,8 +14,10 @@ import {
   credentialResponseRef2,
   credentialOfferObjectRef1,
 } from './fixtures';
+import { DBConnection } from '../../database/DBConnection';
 
 describe('CredentialRequester', () => {
+  const storage = DBConnection.getStorage();
   const credentialRequester = new CredentialRequester(configClient, storage);
 
   beforeAll(async () => {

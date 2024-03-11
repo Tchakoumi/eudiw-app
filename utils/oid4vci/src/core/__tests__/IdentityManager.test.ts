@@ -1,8 +1,9 @@
+import { DBConnection } from '../../database/DBConnection';
 import { identityStoreName } from '../../database/schema';
 import { IdentityManager, StoreIdentityManager } from '../IdentityManager';
-import { storage } from './fixtures';
 
 describe('IdentityManager', () => {
+  const storage = DBConnection.getStorage();
   const identityManager: IdentityManager = new StoreIdentityManager(storage);
 
   afterEach(async () => {
