@@ -8,4 +8,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/utils/oid4vci',
+  setupFilesAfterEnv: ['./jest.setup.ts'],
 };
