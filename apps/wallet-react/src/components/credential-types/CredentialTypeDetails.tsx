@@ -3,6 +3,8 @@ import {
   OID4VCIServiceEventChannel,
   OID4VCIServiceImpl,
   ResolvedCredentialOffer,
+  ServiceResponse,
+  ServiceResponseStatus,
 } from '@datev/oid4vci';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
@@ -42,10 +44,15 @@ export default function CredentialTypeDetails({
       credentialTypeKey,
     });
 
-    eventBus.once(OID4VCIServiceEventChannel.CredentialProposition, () => {
-      setIsIssuing(false);
-      setIsDoneIssuing(true);
-    });
+    eventBus.once(
+      OID4VCIServiceEventChannel.CredentialProposition,
+      (data: ServiceResponse) => {
+        if (data.status === ServiceResponseStatus.Success) {
+          setIsIssuing(false);
+          setIsDoneIssuing(true);
+        } else alert(data.payload);
+      }
+    );
   }
 
   function close() {

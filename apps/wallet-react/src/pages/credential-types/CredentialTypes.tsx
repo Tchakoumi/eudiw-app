@@ -5,6 +5,7 @@ import {
   OID4VCIServiceEventChannel,
   ResolvedCredentialOffer,
   ServiceResponse,
+  ServiceResponseStatus,
 } from '@datev/oid4vci';
 import { Box } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
@@ -30,7 +31,9 @@ export default function CredentialTypes() {
     eventBus.once(
       OID4VCIServiceEventChannel.ProcessCredentialOffer,
       (data: ServiceResponse) => {
-        setResolvedCredentialOffer(data.payload as ResolvedCredentialOffer);
+        if (data.status === ServiceResponseStatus.Success)
+          setResolvedCredentialOffer(data.payload as ResolvedCredentialOffer);
+        else alert(data.payload);
       }
     );
   }, []);
