@@ -1,5 +1,9 @@
 import { eventBus } from '@datev/event-bus';
-import { OID4VCIServiceEventChannel } from '@datev/oid4vci';
+import {
+  OID4VCIServiceEventChannel,
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@datev/oid4vci';
 import { Box, CircularProgress, Dialog, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,9 +19,14 @@ export default function LoadingScanDetails({
 
   useEffect(() => {
     if (isDialogOpen) {
-      eventBus.once(OID4VCIServiceEventChannel.ProcessCredentialOffer, () => {
-        push('/credential-types');
-      });
+      eventBus.once(
+        OID4VCIServiceEventChannel.ProcessCredentialOffer,
+        (data: ServiceResponse) => {
+          if (data.status === ServiceResponseStatus.Success)
+            push('/credential-types');
+          else alert(data.payload);
+        }
+      );
     }
   }, [isDialogOpen, push]);
 
