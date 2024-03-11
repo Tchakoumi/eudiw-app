@@ -1,0 +1,63 @@
+{
+  "name": "proxy-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/proxy-server/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/proxy-server",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/proxy-server/src/main.ts",
+        "tsConfig": "apps/proxy-server/tsconfig.app.json",
+        "assets": ["apps/proxy-server/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "proxy-server:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "proxy-server:build:development"
+        },
+        "production": {
+          "buildTarget": "proxy-server:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/proxy-server/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
