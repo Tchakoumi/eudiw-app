@@ -45,11 +45,13 @@ export default function CredentialCard({
         }}
       >
         <img src={logo ?? AuthleteLogo} height={35} alt="authlete logo" />
-        <Typography
-          sx={{ fontSize: '14px', lineHeight: '21px', color: 'grey' }}
-        >
-          {presentDate(new Date(issued_at))}
-        </Typography>
+        {
+          <Typography
+            sx={{ fontSize: '14px', lineHeight: '21px', color: 'grey' }}
+          >
+            {issued_at ? presentDate(new Date(issued_at)) : 'N/A'}
+          </Typography>
+        }
       </Box>
       <Box sx={{ display: 'grid', rowGap: '3px' }}>
         <Typography
@@ -58,13 +60,17 @@ export default function CredentialCard({
             fontSize: '16px',
             lineHeight: '24px',
           }}
-        >{`${title}`}</Typography>
+        >
+          {title ?? 'N/A'}
+        </Typography>
         <Typography sx={{ fontSize: '14px', lineHeight: '21px' }}>
           {issuer
-            .split('.')
-            .slice(0, 2)
-            .map((_) => capitalize(_))
-            .join(' ')}
+            ? issuer
+                .split('.')
+                .slice(0, 2)
+                .map((_) => capitalize(_))
+                .join(' ')
+            : 'N/A'}
         </Typography>
       </Box>
     </Box>

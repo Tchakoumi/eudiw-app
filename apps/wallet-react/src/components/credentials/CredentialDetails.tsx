@@ -26,7 +26,7 @@ export default function CredentialDetails({
   deleteVC: () => void;
 }) {
   // TODO: FUNCTION WILL GET THE DETAILS OF A CREDENTIAL WHEN GIVEN A credential_id
-  function getCredentialDetails(credential_id: string): IVcData {
+  function getCredentialDetails(credential_id: number | null): IVcData {
     return {
       'Phone number': 'Hans Schreiner',
       'email address': 'hans.schreiner@datev.com',
@@ -39,7 +39,7 @@ export default function CredentialDetails({
   >({});
   useEffect(() => {
     const vcData = getCredentialDetails(
-      selectedCredential ? selectedCredential.id : ''
+      selectedCredential ? selectedCredential.id ?? null : null
     );
     setVcData(vcData);
     const claimValuesDisplayStatus: IDisplayClaimValues = {};
