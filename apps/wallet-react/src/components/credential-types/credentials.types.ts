@@ -1,6 +1,7 @@
 import {
   CredentialIssuerMetadata,
   CredentialSupportedSdJwtVc,
+  DisplayCredential,
 } from '@datev/oid4vci';
 
 export interface ICredentialCard {
@@ -9,13 +10,7 @@ export interface ICredentialCard {
   data: CredentialSupportedSdJwtVc;
 }
 
-export interface IVerifiableCredential {
-  id: string;
-  title: string;
-  issuer: string;
-  logo: string;
-  issued_at: number;
-}
+export type IVerifiableCredential = Omit<DisplayCredential, 'claims'>;
 
 export type ISupportedCredential =
   keyof CredentialIssuerMetadata<CredentialSupportedSdJwtVc>['credential_configurations_supported'];
