@@ -1,7 +1,6 @@
 import { StorageFactory } from '@datev/storage';
 import { EventEmitter } from 'eventemitter3';
 import serviceConfig from '../config.json';
-
 import { ConfigClient } from '../core/ConfigClient';
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
