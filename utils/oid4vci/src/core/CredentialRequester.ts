@@ -6,7 +6,7 @@ import { OID4VCIServiceError } from '../lib/errors';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
 import { fetchIntoDataUrl } from '../utils';
-import { OID4VCIServiceDBSchema } from '../schema';
+import { OID4VCIServiceDBSchema } from '../database/schema';
 import { StorageFactory } from '@datev/storage';
 import { StoreIdentityManager } from './IdentityManager';
 import { AccessTokenClient } from './AccessTokenClient';
