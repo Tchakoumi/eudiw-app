@@ -7,12 +7,6 @@ import {
   identityStoreName,
 } from './schema';
 
-if (process.env['NODE_ENV'] === 'test') {
-  // Mocking indexdedDB functionality
-  require('core-js/stable/structured-clone');
-  require('fake-indexeddb/auto');
-}
-
 export class DBConnection {
   private static storage: StorageFactory<OID4VCIServiceDBSchema>;
 
