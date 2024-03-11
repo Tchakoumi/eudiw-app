@@ -3,7 +3,7 @@
  * supported Credentials, and (internationalized) display information.
  * @link https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-13.html#name-credential-issuer-metadata
  */
-export interface CredentialIssuerMetadata {
+export interface CredentialIssuerMetadata<T = CredentialSupported> {
   /**
    * The Credential Issuer's identifier.
    */
@@ -85,7 +85,7 @@ export interface CredentialIssuerMetadata {
    * to communicate to the Wallet which Credential is being offered.
    */
   credential_configurations_supported: {
-    [key: string]: CredentialSupported;
+    [key: string]: T;
   };
 }
 
