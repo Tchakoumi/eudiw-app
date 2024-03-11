@@ -1,5 +1,9 @@
 import { eventBus } from '@datev/event-bus';
-import { OID4VCIServiceEventChannel, OID4VCIServiceImpl } from '@datev/oid4vci';
+import {
+  OID4VCIServiceEventChannel,
+  OID4VCIServiceImpl,
+  ResolvedCredentialOffer,
+} from '@datev/oid4vci';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
@@ -9,10 +13,7 @@ import DialogTransition from '../layout/DialogTransition';
 import CredentialIssued from './CredentialIssued';
 import CredentialTypeCard from './CredentialTypeCard';
 import WaitingCredential from './WaitingCredential';
-import {
-  CredentialOfferResponsePayload,
-  ICredentialCard,
-} from './credentials.types';
+import { ICredentialCard } from './credentials.types';
 
 export default function CredentialTypeDetails({
   isDialogOpen,
@@ -25,7 +26,7 @@ export default function CredentialTypeDetails({
   closeDialog: () => void;
   credntialTypeClaims: string[];
   selectedCredentialType?: ICredentialCard;
-  resolvedCredentialOfferPayload: CredentialOfferResponsePayload;
+  resolvedCredentialOfferPayload: ResolvedCredentialOffer;
 }) {
   const push = useNavigate();
   const OIDVCI = new OID4VCIServiceImpl(eventBus);
@@ -33,7 +34,7 @@ export default function CredentialTypeDetails({
   const [isDoneIssuing, setIsDoneIssuing] = useState<boolean>(false);
 
   function issueVC(
-    credentialOfferResponsePayload: CredentialOfferResponsePayload,
+    credentialOfferResponsePayload: ResolvedCredentialOffer,
     credentialTypeKey: string
   ) {
     setIsIssuing(true);
@@ -86,7 +87,7 @@ export default function CredentialTypeDetails({
               <CredentialTypeCard
                 displayName={
                   selectedCredentialType.data.display
-                    ? selectedCredentialType.data.display[0].name
+                    ? selectedCredentialType.data.display[0].name ?? ''
                     : ''
                 }
                 issuer={selectedCredentialType.issuer}

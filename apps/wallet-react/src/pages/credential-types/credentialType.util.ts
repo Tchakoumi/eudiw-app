@@ -1,8 +1,12 @@
 import {
   CredentialIssuerMetadata,
+  CredentialSubjectDisplay,
+  CredentialSupportedSdJwtVc,
+  IssuerCredentialSubject,
+} from '@datev/oid4vci';
+import {
   ICredentialCard,
   ISupportedCredential,
-  VCSDJWTClaim,
 } from '../../components/credential-types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
 
@@ -19,30 +23,32 @@ export enum SupportedCredentialTypeFormat {
  * if the claim has no display, then it'll remove underscores from
  * the claim and return as value for display
  *
- * @param {VCSDJWTClaim} claims - the different claims present in the credential type
+ * @param {IssuerCredentialSubject} claims - the different claims present in the credential type
  * @param {string} preferredLocale - the desired language in which we want the claims to be presented
  * @returns {string[]} - a list of all claims in preferred locale
  */
 function getVCClaimsInPreferredLocale(
-  claims: VCSDJWTClaim,
+  claims: IssuerCredentialSubject,
   preferredLocale: string
 ): string[] {
-  const claimKeys = Object.keys(claims) as (keyof typeof claims)[];
-
-  const claimKeysInPreferredLocal = claimKeys.map((claimKey) => {
-    if (claims[claimKey].display.length > 0) {
-      const claimInPreferredLocale = claims[claimKey].display.find(
+  const claimKeysInPreferredLocals: string[] = [];
+  for (const claimKey in claims) {
+    const claim = claims[claimKey] as CredentialSubjectDisplay;
+    if (claim.display && claim.display.length > 0) {
+      const claimInPreferredLocale = claim.display.find(
         ({ locale }) => locale === preferredLocale
       );
       // if preferred locale is found, then retun the name in that locale
-      if (claimInPreferredLocale) return claimInPreferredLocale.name;
+      if (claimInPreferredLocale)
+        claimKeysInPreferredLocals.push(claimInPreferredLocale.name ?? 'N/A');
       //if preferred local is not found, just return the name on first element in display list
-      return claims[claimKey].display[0].name;
-    }
-    // if the display list is empty return the cleanedup key
-    return removeUnderscoresFromWord(claimKey as string);
-  });
-  return claimKeysInPreferredLocal;
+      else claimKeysInPreferredLocals.push(claim.display[0].name ?? 'N/A');
+    } else
+      claimKeysInPreferredLocals.push(
+        removeUnderscoresFromWord(claimKey as string)
+      );
+  }
+  return claimKeysInPreferredLocals;
 }
 
 /**
@@ -52,7 +58,7 @@ function getVCClaimsInPreferredLocale(
  * @returns {ICredentialCard} - the metadata credential configurations supported, type and issuer of every supported type
  */
 export function getVCSDJWTOffers(
-  issuer_metadata: CredentialIssuerMetadata
+  issuer_metadata: CredentialIssuerMetadata<CredentialSupportedSdJwtVc>
 ): ICredentialCard[] {
   const credentialOfferTypeKeys = Object.keys(
     issuer_metadata.credential_configurations_supported
@@ -86,7 +92,7 @@ export function getVCSDJWTOffers(
  */
 export function getVCClaims(
   selectedCredential: ISupportedCredential,
-  credentialIssuerMetadata: CredentialIssuerMetadata,
+  credentialIssuerMetadata: CredentialIssuerMetadata<CredentialSupportedSdJwtVc>,
   preferredLocale: string
 ): string[] {
   const offeredCredentialTypeKeys = Object.keys(
@@ -100,7 +106,7 @@ export function getVCClaims(
       ].claims;
 
     return getVCClaimsInPreferredLocale(
-      selectedOfferClaims as VCSDJWTClaim,
+      selectedOfferClaims as IssuerCredentialSubject,
       preferredLocale
     );
   }
