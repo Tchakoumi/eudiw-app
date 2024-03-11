@@ -4,7 +4,7 @@ This proxy server bypasses CORS-related issues in a browser context
 by setting necessary origin headers in the middle.
 
 To proxy a URL through this server, simply append the URL to the
-server's location.
+server's location:
 
 `<proxy-server-location>/<fully-qualified-URL>`
 
