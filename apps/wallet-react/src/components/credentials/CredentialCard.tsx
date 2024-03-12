@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { IVerifiableCredential } from '../credential-types/credentials.types';
+import { IVerifiableCredential } from '../../types/credentials.types';
 
 export default function CredentialCard({
   credential: { issuer, logo, title },

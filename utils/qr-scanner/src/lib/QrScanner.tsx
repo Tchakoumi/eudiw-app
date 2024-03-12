@@ -1,7 +1,12 @@
-import { BrowserMultiFormatReader, Exception, Result } from '@zxing/library';
+import {
+  BrowserMultiFormatReader,
+  Exception,
+  NotFoundException,
+  Result,
+} from '@zxing/library';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { IQrScannerProps } from './qrScannerProps';
 import { Loading } from './Loading';
+import { IQrScannerProps } from './qrScannerProps';
 
 export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -72,8 +77,6 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
   }, [getQrData, handleDecodeError, props, videoRef]);
   if (props.children) return <>{props.children(videoRef)}</>;
 
-  const scanImageNotfoundErrors = ['NotFoundException', 't'];
-
   return (
     <div
       style={{
@@ -87,16 +90,13 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
       {error && (
         <div
           style={{
-            color: scanImageNotfoundErrors.includes(error.name)
-              ? 'inherit'
-              : 'red',
+            color: error instanceof NotFoundException ? 'inherit' : 'red',
             textAlign: 'center',
             fontWeight: 500,
             width: '100%',
           }}
         >
-          {/* TODO: in production notFoundException is t */}
-          {scanImageNotfoundErrors.includes(error.name) ? (
+          {error instanceof NotFoundException ? (
             <Loading message="🌀 Searching for Qr code" />
           ) : (
             error.message

@@ -89,8 +89,9 @@ export default function ConfirmDeleteVCDialog({
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box sx={{ display: 'grid', rowGap: 1 }}>
-                    {notLostOnDelete.map((line) => (
+                    {notLostOnDelete.map((line, index) => (
                       <Box
+                        key={index}
                         sx={{
                           display: 'grid',
                           alignItems: 'center',
@@ -117,8 +118,9 @@ export default function ConfirmDeleteVCDialog({
                 </AccordionSummary>
                 <AccordionDetails>
                   <Box sx={{ display: 'grid', rowGap: 1 }}>
-                    {restoreCredentialMessages.map((line) => (
+                    {restoreCredentialMessages.map((line, index) => (
                       <Box
+                        key={index}
                         sx={{
                           display: 'grid',
                           alignItems: 'center',

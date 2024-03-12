@@ -1,3 +1,5 @@
+import { eventBus } from '@datev/event-bus';
+import { OID4VCIServiceImpl } from '@datev/oid4vci';
 import { QrScanner } from '@datev/qr-scanner';
 import back from '@iconify/icons-fluent/arrow-left-48-filled';
 import swapCamera from '@iconify/icons-fluent/arrow-sync-24-regular';
@@ -19,26 +21,29 @@ export default function Scan() {
     'environment'
   );
 
+  const OIDVCI = new OID4VCIServiceImpl(eventBus);
+
   const [permissionStatus, setPermissionStatus] =
     useState<PermissionState>('prompt');
+  const [isRequestCameraDialogOpen, setIsRequestCameraDialogOpen] =
+    useState<boolean>(true);
+
+  const checkCameraPermission = async () => {
+    try {
+      const cameraPermission = await navigator.permissions.query({
+        name: 'camera' as PermissionName,
+      });
+      setPermissionStatus(cameraPermission.state);
+      return cameraPermission.state;
+    } catch (error) {
+      console.error('Error checking camera permission:', error);
+    }
+  };
 
   useEffect(() => {
-    const checkCameraPermission = async () => {
-      try {
-        const cameraPermission = await navigator.permissions.query({
-          name: 'camera' as PermissionName,
-        });
-        setPermissionStatus(cameraPermission.state);
-      } catch (error) {
-        console.error('Error checking camera permission:', error);
-      }
-    };
-
     checkCameraPermission();
   }, [permissionStatus]);
 
-  const [isRequestCameraDialogOpen, setIsRequestCameraDialogOpen] =
-    useState<boolean>(true);
   const requestCameraPermission = () => {
     setIsRequestCameraDialogOpen(false);
     navigator.mediaDevices
@@ -51,15 +56,17 @@ export default function Scan() {
       });
   };
 
+  function resolveCredentialOffer(result: string) {
+    setIsDetailsDialogOpen(true);
+    setConnectionString(result);
+    // TODO: Resolve the credentialOffer name to credentialURI
+    OIDVCI.resolveCredentialOffer({ credentialOffer: result });
+  }
+
   return (
     <>
       <LoadingScanDetails
-        connectionLink={connectionString}
         isDialogOpen={!!connectionString && isDetailsDialogOpen}
-        closeDialog={() => {
-          setIsDetailsDialogOpen(false);
-          setConnectionString('');
-        }}
       />
 
       <CameraAccessDialog
@@ -95,10 +102,7 @@ export default function Scan() {
           </Tooltip>
         </Box>
         <QrScanner
-          onResult={(result: string) => {
-            setIsDetailsDialogOpen(true);
-            setConnectionString(result);
-          }}
+          onResult={resolveCredentialOffer}
           validate={(result) => {
             return String(result);
           }}
