@@ -13,7 +13,7 @@ import {
 } from '../../lib/types';
 
 import {
-  configClient,
+  httpUtil,
   credentialOfferObjectRef1,
   credentialIssuerMetadataRef1,
   authorizationServerMetadataRef1,
@@ -26,7 +26,7 @@ import {
 
 describe('CredentialOfferResolver', () => {
   const resolver: CredentialOfferResolver = new CredentialOfferResolver(
-    configClient
+    httpUtil
   );
 
   beforeAll(async () => {

@@ -1,9 +1,6 @@
-import { fetch } from 'cross-fetch';
-
 import { WELL_KNOWN_ENDPOINTS } from '../constants';
 import { InvalidCredentialOffer, OID4VCIServiceError } from '../lib/errors';
-import { composeUrl, buildProxyUrl } from '../utils';
-import { ConfigClient } from './ConfigClient';
+import { composeUrl, HttpUtil } from '../utils';
 
 import {
   AuthorizationServerMetadata,
@@ -18,9 +15,9 @@ import {
 export class CredentialOfferResolver {
   /**
    * Constructor.
-   * @param configClient a gate to retrieve configuration data through
+   * @param httpUtil the service HTTP client
    */
-  public constructor(private configClient: ConfigClient) {}
+  public constructor(private httpUtil: HttpUtil) {}
 
   /**
    * Resolves a credential offer (along with issuer metadata).
@@ -95,20 +92,17 @@ export class CredentialOfferResolver {
   private async fetchCredentialOffer(
     credentialOfferURI: string
   ): Promise<string> {
-    const proxyUrl = buildProxyUrl(
-      this.configClient.getProxyServer(),
-      credentialOfferURI
-    );
+    return await this.httpUtil
+      .plainFetch(credentialOfferURI)
+      .then((response) => {
+        if (!response.ok) {
+          throw new OID4VCIServiceError(
+            InvalidCredentialOffer.DereferencingError
+          );
+        }
 
-    return await fetch(proxyUrl).then((response) => {
-      if (!response.ok) {
-        throw new OID4VCIServiceError(
-          InvalidCredentialOffer.DereferencingError
-        );
-      }
-
-      return response.text();
-    });
+        return response.text();
+      });
   }
 
   /**
@@ -281,16 +275,14 @@ export class CredentialOfferResolver {
    * @returns the retrieved metadata as JSON
    */
   private async fetchMetadata(url: string): Promise<object> {
-    const proxyUrl = buildProxyUrl(this.configClient.getProxyServer(), url);
+    const response = await this.httpUtil.openIdFetch(url);
 
-    return await fetch(proxyUrl).then((response) => {
-      if (!response.ok) {
-        throw new OID4VCIServiceError(
-          InvalidCredentialOffer.UnresolvableMetadata
-        );
-      }
+    if (!response.successBody) {
+      throw new OID4VCIServiceError(
+        InvalidCredentialOffer.UnresolvableMetadata
+      );
+    }
 
-      return response.json();
-    });
+    return response.successBody;
   }
 }

@@ -1,4 +1,5 @@
 import { ConfigClient, ConfigData } from '../../ConfigClient';
+import { HttpUtil } from '../../../utils';
 
 export const configData: ConfigData = {
   proxyServer: 'http://server.proxy.example',
@@ -11,3 +12,4 @@ export const configData: ConfigData = {
 };
 
 export const configClient = new ConfigClient(configData);
+export const httpUtil = new HttpUtil(configClient.getProxyServer());

@@ -1,6 +1,6 @@
 export interface ConfigData {
   /**
-   * The address a proxy server that can bypass CORS restrictions
+   * The address of a proxy server that can bypass CORS restrictions
    */
   proxyServer: string;
 

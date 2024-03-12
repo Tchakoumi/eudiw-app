@@ -2,7 +2,7 @@ import nock from 'nock';
 
 import { InvalidCredentialOffer } from '../../lib/errors';
 import { AccessTokenClient } from '../AccessTokenClient';
-import { configClient } from './fixtures';
+import { httpUtil } from './fixtures';
 
 import {
   AccessTokenRequest,
@@ -31,7 +31,7 @@ describe('AccessTokenResolver', () => {
     'should successfully acquire an access token using a pre-authorized code',
     async () => {
       const accessTokenClient: AccessTokenClient = new AccessTokenClient(
-        configClient
+        httpUtil
       );
 
       const accessTokenRequest: AccessTokenRequest = {
@@ -75,7 +75,7 @@ describe('AccessTokenResolver', () => {
     'should throw an error when a pre-authorized code is missing',
     async () => {
       const accessTokenClient: AccessTokenClient = new AccessTokenClient(
-        configClient
+        httpUtil
       );
 
       const accessTokenRequest: AccessTokenRequest = {
@@ -102,7 +102,7 @@ describe('AccessTokenResolver', () => {
     'should throw an error when a required pin is missing',
     async () => {
       const accessTokenClient: AccessTokenClient = new AccessTokenClient(
-        configClient
+        httpUtil
       );
 
       const accessTokenRequest: AccessTokenRequest = {
@@ -141,7 +141,7 @@ describe('AccessTokenResolver', () => {
     'should throw invalid grant.',
     async () => {
       const accessTokenClient: AccessTokenClient = new AccessTokenClient(
-        configClient
+        httpUtil
       );
 
       const accessTokenRequest: AccessTokenRequest = {

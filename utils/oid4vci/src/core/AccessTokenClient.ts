@@ -1,8 +1,5 @@
 import { InvalidCredentialOffer, OID4VCIServiceError } from '../lib/errors';
-import { buildProxyUrl } from '../utils';
-import { convertJsonToURI } from '../utils/Encoding';
-import { formPost } from '../utils/HttpUtils';
-import { ConfigClient } from './ConfigClient';
+import { HttpUtil, convertJsonToURI } from '../utils';
 
 import {
   AccessTokenRequest,
@@ -18,9 +15,9 @@ import {
 export class AccessTokenClient {
   /**
    * Constructor.
-   * @param configClient a gate to retrieve configuration data through
+   * @param httpUtil the service HTTP client
    */
-  public constructor(private configClient: ConfigClient) {}
+  public constructor(private httpUtil: HttpUtil) {}
 
   public async acquireAccessTokenUsingRequest({
     accessTokenRequest,
@@ -48,8 +45,8 @@ export class AccessTokenClient {
     requestTokenURL: string,
     accessTokenRequest: AccessTokenRequest
   ): Promise<OpenIDResponse<AccessTokenResponse>> {
-    return await formPost(
-      buildProxyUrl(this.configClient.getProxyServer(), requestTokenURL),
+    return await this.httpUtil.formPost(
+      requestTokenURL,
       convertJsonToURI(accessTokenRequest)
     );
   }
