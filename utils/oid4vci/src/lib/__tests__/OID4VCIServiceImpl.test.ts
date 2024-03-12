@@ -1,9 +1,11 @@
 import nock from 'nock';
 
 import { eventBus } from '@datev/event-bus';
+import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
 import { InvalidCredentialOffer } from '../errors';
+
 import {
   DisplayCredential,
   ServiceResponse,
@@ -11,22 +13,21 @@ import {
 } from '../types';
 
 import {
-  credentialOfferObjectRef1,
-  encodeCredentialOffer,
-  nockReplyWithMetadataRef1,
-  discoveryMetadataRef1,
-  credentialResponseRef1,
-  jwksRef1,
-  tokenResponseRef1,
-  storage,
-  sdJwtProcessedCredentialObjRef1,
   credentialHeaderObjRef2,
+  credentialOfferObjectRef1,
+  credentialResponseRef1,
+  discoveryMetadataRef1,
+  encodeCredentialOffer,
+  jwksRef1,
+  nockReplyWithMetadataRef1,
+  sdJwtProcessedCredentialObjRef1,
+  storage,
+  tokenResponseRef1,
 } from '../../core/__tests__/fixtures';
 
 // Mocking indexdedDB functionality
 import 'core-js/stable/structured-clone';
 import 'fake-indexeddb/auto';
-import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
 
 describe('OID4VCIServiceImpl', () => {
   const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);
@@ -45,7 +46,7 @@ describe('OID4VCIServiceImpl', () => {
       credentialOfferObjectRef1
     )}`;
 
-    const scope = nock(credentialOfferObjectRef1.credential_issuer);
+    const scope = nock(/./);
     nockReplyWithMetadataRef1(scope);
 
     const callback = jest.fn(() => {
@@ -97,7 +98,7 @@ describe('OID4VCIServiceImpl', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -134,7 +135,7 @@ describe('OID4VCIServiceImpl', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';
 
-    nock(credentialOffer.credential_issuer).post(/token/).reply(401);
+    nock(/./).post(/token/).reply(401);
 
     const callback = jest.fn(() => {
       eventBus.emit('complete');

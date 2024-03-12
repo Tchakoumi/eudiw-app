@@ -2,7 +2,8 @@ import { fetch } from 'cross-fetch';
 
 import { WELL_KNOWN_ENDPOINTS } from '../constants';
 import { InvalidCredentialOffer, OID4VCIServiceError } from '../lib/errors';
-import { composeUrl } from '../utils';
+import { composeUrl, buildProxyUrl } from '../utils';
+import { ConfigClient } from './ConfigClient';
 
 import {
   AuthorizationServerMetadata,
@@ -17,8 +18,9 @@ import {
 export class CredentialOfferResolver {
   /**
    * Constructor.
+   * @param configClient a gate to retrieve configuration data through
    */
-  public constructor() {}
+  public constructor(private configClient: ConfigClient) {}
 
   /**
    * Resolves a credential offer (along with issuer metadata).
@@ -93,7 +95,12 @@ export class CredentialOfferResolver {
   private async fetchCredentialOffer(
     credentialOfferURI: string
   ): Promise<string> {
-    return await fetch(credentialOfferURI).then((response) => {
+    const proxyUrl = buildProxyUrl(
+      this.configClient.getProxyServer(),
+      credentialOfferURI
+    );
+
+    return await fetch(proxyUrl).then((response) => {
       if (!response.ok) {
         throw new OID4VCIServiceError(
           InvalidCredentialOffer.DereferencingError
@@ -274,7 +281,9 @@ export class CredentialOfferResolver {
    * @returns the retrieved metadata as JSON
    */
   private async fetchMetadata(url: string): Promise<object> {
-    return await fetch(url).then((response) => {
+    const proxyUrl = buildProxyUrl(this.configClient.getProxyServer(), url);
+
+    return await fetch(proxyUrl).then((response) => {
       if (!response.ok) {
         throw new OID4VCIServiceError(
           InvalidCredentialOffer.UnresolvableMetadata

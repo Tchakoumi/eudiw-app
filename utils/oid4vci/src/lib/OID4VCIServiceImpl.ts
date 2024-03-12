@@ -33,7 +33,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
     const configClient = new ConfigClient(serviceConfig);
     const storage = this.initializeStorage();
 
-    this.credentialOfferResolver = new CredentialOfferResolver();
+    this.credentialOfferResolver = new CredentialOfferResolver(configClient);
     this.credentialEventClient = new CredentialEventClient(storage);
     this.credentialRequester = new CredentialRequester(configClient, storage);
   }

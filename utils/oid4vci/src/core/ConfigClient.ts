@@ -1,5 +1,10 @@
 export interface ConfigData {
   /**
+   * The address a proxy server that can bypass CORS restrictions
+   */
+  proxyServer: string;
+
+  /**
    * A registry of known authorization servers with granted client IDs.
    */
   clientIdRegistry?: {
@@ -14,6 +19,14 @@ export class ConfigClient {
    * @param config configuration data possibly sourced from a file
    */
   public constructor(private config: ConfigData) {}
+
+  /**
+   * Reads proxy server to bypass CORS restrictions
+   * @returns the URL of the proxy server
+   */
+  public getProxyServer(): string {
+    return this.config.proxyServer;
+  }
 
   /**
    * Reads matching client ID from configuration

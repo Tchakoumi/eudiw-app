@@ -38,3 +38,13 @@ export const fetchIntoDataUrl = async (uri: string): Promise<string> => {
     return `data:${contentType};base64,${buffer}`;
   });
 };
+
+/**
+ * Builds an alternative URL to proxy a request.
+ * @param proxyServer the address of the proxy server
+ * @param url a URL to proxy
+ * @returns an alternative URL to reach the URL via the proxy server
+ */
+export const buildProxyUrl = (proxyServer: string, url: string): string => {
+  return composeUrl(proxyServer, url);
+};

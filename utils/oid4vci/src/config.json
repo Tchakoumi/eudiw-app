@@ -1,4 +1,5 @@
 {
+  "proxyServer": "http://localhost:3010",
   "clientIdRegistry": [
     {
       "knownHost": "trial.authlete.net",

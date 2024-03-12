@@ -1,5 +1,8 @@
-import { AccessTokenClient } from '../AccessTokenClient';
+import nock from 'nock';
+
 import { InvalidCredentialOffer } from '../../lib/errors';
+import { AccessTokenClient } from '../AccessTokenClient';
+import { configClient } from './fixtures';
 
 import {
   AccessTokenRequest,
@@ -7,12 +10,15 @@ import {
   GrantType,
   OpenIDResponse,
 } from '../../lib/types';
-import nock from 'nock';
 
 const MOCK_URL = 'https://trial.authlete.net/api';
 const UNIT_TEST_TIMEOUT = 30000;
 
 describe('AccessTokenResolver', () => {
+  beforeAll(async () => {
+    nock.disableNetConnect();
+  });
+
   beforeEach(async () => {
     nock.cleanAll();
   });
@@ -24,7 +30,9 @@ describe('AccessTokenResolver', () => {
   it(
     'should successfully acquire an access token using a pre-authorized code',
     async () => {
-      const accessTokenClient: AccessTokenClient = new AccessTokenClient();
+      const accessTokenClient: AccessTokenClient = new AccessTokenClient(
+        configClient
+      );
 
       const accessTokenRequest: AccessTokenRequest = {
         grant_type: GrantType.PRE_AUTHORIZED_CODE,
@@ -50,7 +58,7 @@ describe('AccessTokenResolver', () => {
           },
         ],
       };
-      nock(MOCK_URL).post(/.*/).reply(200, JSON.stringify(body));
+      nock(/proxy/).post(/.*/).reply(200, JSON.stringify(body));
 
       const accessTokenResponse: OpenIDResponse<AccessTokenResponse> =
         await accessTokenClient.acquireAccessTokenUsingRequest({
@@ -66,7 +74,9 @@ describe('AccessTokenResolver', () => {
   it(
     'should throw an error when a pre-authorized code is missing',
     async () => {
-      const accessTokenClient: AccessTokenClient = new AccessTokenClient();
+      const accessTokenClient: AccessTokenClient = new AccessTokenClient(
+        configClient
+      );
 
       const accessTokenRequest: AccessTokenRequest = {
         grant_type: GrantType.PRE_AUTHORIZED_CODE,
@@ -91,7 +101,9 @@ describe('AccessTokenResolver', () => {
   it(
     'should throw an error when a required pin is missing',
     async () => {
-      const accessTokenClient: AccessTokenClient = new AccessTokenClient();
+      const accessTokenClient: AccessTokenClient = new AccessTokenClient(
+        configClient
+      );
 
       const accessTokenRequest: AccessTokenRequest = {
         grant_type: GrantType.PRE_AUTHORIZED_CODE,
@@ -99,7 +111,7 @@ describe('AccessTokenResolver', () => {
         tx_code: '',
       } as AccessTokenRequest;
 
-      nock(MOCK_URL).post(/.*/).reply(200, {});
+      nock(/proxy/).post(/.*/).reply(200, {});
 
       await expect(
         accessTokenClient.acquireAccessTokenUsingRequest({
@@ -128,7 +140,9 @@ describe('AccessTokenResolver', () => {
   it(
     'should throw invalid grant.',
     async () => {
-      const accessTokenClient: AccessTokenClient = new AccessTokenClient();
+      const accessTokenClient: AccessTokenClient = new AccessTokenClient(
+        configClient
+      );
 
       const accessTokenRequest: AccessTokenRequest = {
         grant_type: GrantType.PRE_AUTHORIZED_CODE,
@@ -136,7 +150,7 @@ describe('AccessTokenResolver', () => {
         client_id: '218232426',
       } as AccessTokenRequest;
 
-      nock(MOCK_URL).post(/.*/).reply(200, 'invalid_grant');
+      nock(/proxy/).post(/.*/).reply(200, 'invalid_grant');
 
       const accessTokenResponse: OpenIDResponse<AccessTokenResponse> =
         await accessTokenClient.acquireAccessTokenUsingRequest({

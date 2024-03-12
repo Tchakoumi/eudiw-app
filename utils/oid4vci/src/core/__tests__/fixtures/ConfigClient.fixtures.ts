@@ -1,6 +1,7 @@
 import { ConfigClient, ConfigData } from '../../ConfigClient';
 
 export const configData: ConfigData = {
+  proxyServer: 'http://server.proxy.example',
   clientIdRegistry: [
     {
       knownHost: 'trial.authlete.net',

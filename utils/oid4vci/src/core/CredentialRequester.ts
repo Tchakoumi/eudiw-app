@@ -5,7 +5,7 @@ import { ConfigClient } from './ConfigClient';
 import { OID4VCIServiceError } from '../lib/errors';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
-import { fetchIntoDataUrl } from '../utils';
+import { buildProxyUrl, fetchIntoDataUrl } from '../utils';
 import { OID4VCIServiceDBSchema } from '../schema';
 import { StorageFactory } from '@datev/storage';
 import { StoreIdentityManager } from './IdentityManager';
@@ -51,7 +51,7 @@ export class CredentialRequester {
   ) {
     this.configClient = configClient;
 
-    this.accessTokenClient = new AccessTokenClient();
+    this.accessTokenClient = new AccessTokenClient(configClient);
 
     this.identityProofGenerator = new IdentityProofGenerator(
       configClient,
@@ -312,7 +312,7 @@ export class CredentialRequester {
     const { request, credentialEndpoint, accessToken } = params;
 
     const credentialResponse: CredentialResponse = await fetch(
-      credentialEndpoint,
+      buildProxyUrl(this.configClient.getProxyServer(), credentialEndpoint),
       {
         method: 'POST',
         headers: {
@@ -358,7 +358,12 @@ export class CredentialRequester {
       );
     }
 
-    const jwks = await fetch(jwksUri).then(async (response) => {
+    const proxyJwksUri = buildProxyUrl(
+      this.configClient.getProxyServer(),
+      jwksUri
+    );
+
+    const jwks = await fetch(proxyJwksUri).then(async (response) => {
       if (!response.ok) {
         throw new OID4VCIServiceError(
           'Could not retrieve issuer verifying keys.'
@@ -412,7 +417,8 @@ export class CredentialRequester {
     // Fetch logo
     let logo = display?.logo?.uri ?? display?.logo?.url;
     if (logo?.startsWith('http://') || logo?.startsWith('https://')) {
-      logo = await fetchIntoDataUrl(logo).catch(() => logo);
+      const proxyUrl = buildProxyUrl(this.configClient.getProxyServer(), logo);
+      logo = await fetchIntoDataUrl(proxyUrl).catch(() => logo);
     }
 
     return { title, issuer, logo };
