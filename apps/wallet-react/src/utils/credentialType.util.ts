@@ -8,8 +8,8 @@ import {
   ICredentialCard,
   ISupportedCredential,
   SupportedCredentialTypeFormat,
-} from '../../types/credentials.types';
-import { removeUnderscoresFromWord } from '../../utils/common';
+} from '../types/credentials.types';
+import { removeUnderscoresFromWord } from './common';
 
 /**
  * This function helps to get the selected credential type's
