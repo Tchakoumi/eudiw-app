@@ -7,12 +7,9 @@ import {
 import {
   ICredentialCard,
   ISupportedCredential,
+  SupportedCredentialTypeFormat,
 } from '../../components/credential-types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
-
-export enum SupportedCredentialTypeFormat {
-  VC_SD_JWT = 'vc+sd-jwt',
-}
 
 /**
  * This function helps to get the selected credential type's
