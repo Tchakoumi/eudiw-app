@@ -24,9 +24,6 @@ import {
   credentialContentObjRef3,
 } from '../../core/__tests__/fixtures';
 
-// Mocking indexdedDB functionality
-import 'core-js/stable/structured-clone';
-import 'fake-indexeddb/auto';
 import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
 import { DBConnection } from '../../database/DBConnection';
 import { credentialStoreName, identityStoreName } from '../../database/schema';
