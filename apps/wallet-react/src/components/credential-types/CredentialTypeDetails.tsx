@@ -1,4 +1,5 @@
 import { Box, Button, Dialog, Typography } from '@mui/material';
+import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackTitleBar from '../layout/BackTitleBar';
@@ -8,16 +9,16 @@ import CredentialTypeCard from './CredentialTypeCard';
 import WaitingCredential from './WaitingCredential';
 import { ICredentialCard } from './credentials.types';
 
-export default function CredentialOfferDetails({
+export default function CredentialTypeDetails({
   isDialogOpen,
   closeDialog,
-  credentialOfferAttributes,
-  selectedCredentialOffer,
+  credntialTypeClaims,
+  selectedCredentialType,
 }: {
   isDialogOpen: boolean;
   closeDialog: () => void;
-  credentialOfferAttributes: string[];
-  selectedCredentialOffer?: ICredentialCard;
+  credntialTypeClaims: string[];
+  selectedCredentialType?: ICredentialCard;
 }) {
   const push = useNavigate();
   const [isIssuing, setIsIssuing] = useState<boolean>(false);
@@ -62,15 +63,15 @@ export default function CredentialOfferDetails({
           }}
         >
           <BackTitleBar
-            pageTitle="Credential Offer"
+            pageTitle="Credential Type Details"
             onBack={() => (isIssuing ? null : close())}
           />
           <Box sx={{ backgroundColor: '#F6F7F9', padding: '16px' }}>
-            {selectedCredentialOffer && (
+            {selectedCredentialType && (
               <CredentialTypeCard
-                displayName={selectedCredentialOffer.data.display[0].name}
-                issuer={selectedCredentialOffer.issuer}
-                type={selectedCredentialOffer.type}
+                displayName={selectedCredentialType.data.display[0].name}
+                issuer={selectedCredentialType.issuer}
+                type={selectedCredentialType.type}
               />
             )}
           </Box>
@@ -82,21 +83,23 @@ export default function CredentialOfferDetails({
               rowGap: '8px',
             }}
           >
-            <Box
-              sx={{
-                display: 'grid',
-                rowGap: '14px',
-                maxHeight: '100%',
-                alignContent: 'start',
-                overflow: 'auto',
-              }}
-            >
-              {credentialOfferAttributes.map((attr, index) => (
-                <Typography sx={{ fontSize: '14px' }} key={index}>
-                  {attr}
-                </Typography>
-              ))}
-            </Box>
+            <Scrollbars autoHide universal>
+              <Box
+                sx={{
+                  display: 'grid',
+                  rowGap: '14px',
+                  maxHeight: '100%',
+                  alignContent: 'start',
+                  overflow: 'auto',
+                }}
+              >
+                {credntialTypeClaims.map((claim, index) => (
+                  <Typography sx={{ fontSize: '14px' }} key={index}>
+                    {claim}
+                  </Typography>
+                ))}
+              </Box>
+            </Scrollbars>
 
             <Button
               variant="contained"

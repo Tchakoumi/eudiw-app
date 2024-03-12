@@ -11,6 +11,7 @@ import {
   Dialog,
   Typography,
 } from '@mui/material';
+import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
@@ -24,6 +25,13 @@ export default function ConfirmDeleteVCDialog({
   closeDialog: () => void;
   confirmDelete: () => void;
 }) {
+  const notLostOnDelete = [
+    'Your credential within the system that issued you your credential.',
+    'The issuing organization as a Contact.',
+  ];
+  const restoreCredentialMessages = [
+    'You will have to go to the organization that issued you this credential and request it again.',
+  ];
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   //TODO: CALL API HERE TO DELETE VC
@@ -58,76 +66,75 @@ export default function ConfirmDeleteVCDialog({
             backgroundColor: '#F6F7F9',
             padding: '16px',
             display: 'grid',
-            gridTemplateRows: 'auto auto auto auto 1fr',
-            alignItems: 'end',
+            gridTemplateRows: '1fr auto',
+            alignItems: 'start',
             rowGap: 1.5,
           }}
         >
-          <Typography fontWeight={700}>
-            Remove credentials from your wallet
-          </Typography>
-          <Typography>
-            You will lose your ability to prove the information on this
-            credential with this Wallet.
-          </Typography>
-          <Accordion>
-            <AccordionSummary
-              sx={{ backgroundColor: '#E8ECEF' }}
-              expandIcon={<Icon icon={caret} fontSize={24} />}
-            >
-              <Typography fontWeight={700}>You will not lose</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box sx={{ display: 'grid', rowGap: 1 }}>
-                {[
-                  'Your credential within the system that issued you your credential.',
-                  'The issuing organization as a Contact.',
-                ].map((line) => (
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      alignItems: 'center',
-                      gridTemplateColumns: 'auto 1fr',
-                      columnGap: 1,
-                    }}
-                  >
-                    <Icon icon={dot} fontSize={12} />
-                    <Typography>{line}</Typography>
-                  </Box>
-                ))}
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary
-              sx={{ backgroundColor: '#E8ECEF' }}
-              expandIcon={<Icon icon={caret} fontSize={24} />}
-            >
+          <Scrollbars universal autoHide>
+            <Box sx={{ display: 'grid', rowGap: 1.5 }}>
               <Typography fontWeight={700}>
-                How to get this credential back
+                Remove credentials from your wallet
               </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box sx={{ display: 'grid', rowGap: 1 }}>
-                {[
-                  'You will have to go to the organization that issued you this credential and request it again.',
-                ].map((line) => (
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      alignItems: 'center',
-                      gridTemplateColumns: 'auto 1fr',
-                      columnGap: 1,
-                    }}
-                  >
-                    <Icon icon={dot} fontSize={12} />
-                    <Typography>{line}</Typography>
+              <Typography>
+                You will lose your ability to prove the information on this
+                credential with this Wallet.
+              </Typography>
+              <Accordion>
+                <AccordionSummary
+                  sx={{ backgroundColor: '#E8ECEF' }}
+                  expandIcon={<Icon icon={caret} fontSize={24} />}
+                >
+                  <Typography fontWeight={700}>You will not lose</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box sx={{ display: 'grid', rowGap: 1 }}>
+                    {notLostOnDelete.map((line) => (
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          alignItems: 'center',
+                          gridTemplateColumns: 'auto 1fr',
+                          columnGap: 1,
+                        }}
+                      >
+                        <Icon icon={dot} fontSize={12} />
+                        <Typography>{line}</Typography>
+                      </Box>
+                    ))}
                   </Box>
-                ))}
-              </Box>
-            </AccordionDetails>
-          </Accordion>
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion>
+                <AccordionSummary
+                  sx={{ backgroundColor: '#E8ECEF' }}
+                  expandIcon={<Icon icon={caret} fontSize={24} />}
+                >
+                  <Typography fontWeight={700}>
+                    How to get this credential back
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box sx={{ display: 'grid', rowGap: 1 }}>
+                    {restoreCredentialMessages.map((line) => (
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          alignItems: 'center',
+                          gridTemplateColumns: 'auto 1fr',
+                          columnGap: 1,
+                        }}
+                      >
+                        <Icon icon={dot} fontSize={12} />
+                        <Typography>{line}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
+            </Box>
+          </Scrollbars>
 
           <Button
             color="error"

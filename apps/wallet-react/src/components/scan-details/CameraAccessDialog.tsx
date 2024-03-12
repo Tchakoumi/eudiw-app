@@ -1,13 +1,4 @@
-import close from '@iconify/icons-fluent/dismiss-24-regular';
-import { Icon } from '@iconify/react';
-import {
-  Box,
-  Button,
-  Dialog,
-  IconButton,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Dialog, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import unblockCameraDirection from '../../assets/camera_access_denied.png';
 import DialogTransition from '../layout/DialogTransition';
@@ -24,11 +15,7 @@ export default function CameraAccessDialog({
 }) {
   const push = useNavigate();
   return (
-    <Dialog
-      open={isDialogOpen}
-      onClose={() => null}
-      TransitionComponent={DialogTransition}
-    >
+    <Dialog open={isDialogOpen} TransitionComponent={DialogTransition}>
       <Box
         sx={{
           display: 'grid',
@@ -51,11 +38,6 @@ export default function CameraAccessDialog({
               ? 'Datev-Wallet has been blocked from Camera'
               : 'Allow Camera Use'}
           </Typography>
-          <Tooltip arrow title="Close">
-            <IconButton size="small">
-              <Icon icon={close} fontSize={24} />
-            </IconButton>
-          </Tooltip>
         </Box>
         {usage === 'denied' && (
           <img
