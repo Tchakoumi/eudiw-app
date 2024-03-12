@@ -14,3 +14,7 @@ export type IVerifiableCredential = Omit<DisplayCredential, 'claims'>;
 
 export type ISupportedCredential =
   keyof CredentialIssuerMetadata<CredentialSupportedSdJwtVc>['credential_configurations_supported'];
+
+export enum SupportedCredentialTypeFormat {
+  VC_SD_JWT = 'vc+sd-jwt',
+}

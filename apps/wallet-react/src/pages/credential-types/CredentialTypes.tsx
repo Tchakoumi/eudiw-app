@@ -16,10 +16,10 @@ import CredentialTypeDetails from '../../components/credential-types/CredentialT
 import {
   ICredentialCard,
   ISupportedCredential,
-} from '../../components/credential-types/credentials.types';
+} from '../../types/credentials.types';
 import BackTitleBar from '../../components/layout/BackTitleBar';
 import Footer from '../../components/layout/Footer';
-import { getVCClaims, getVCSDJWTOffers } from './credentialType.util';
+import { getVCClaims, getVCSDJWTOffers } from '../../utils/credentialType.util';
 
 export default function CredentialTypes() {
   const push = useNavigate();

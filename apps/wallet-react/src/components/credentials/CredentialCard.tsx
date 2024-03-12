@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import AuthleteLogo from '../../assets/authlete-logo.png';
+import { IVerifiableCredential } from '../../types/credentials.types';
 import { capitalize } from '../../utils/common';
-import { IVerifiableCredential } from '../credential-types/credentials.types';
 
 function presentDate(date: Date) {
   return `${date.toDateString().split(' ').slice(1).join(' ')} ${

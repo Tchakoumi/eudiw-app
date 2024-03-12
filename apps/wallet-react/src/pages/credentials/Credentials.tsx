@@ -8,7 +8,7 @@ import {
 import { Alert, Box, Snackbar } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useMemo, useState } from 'react';
-import { IVerifiableCredential } from '../../components/credential-types/credentials.types';
+import { IVerifiableCredential } from '../../types/credentials.types';
 import ConfirmDeleteVCDialog from '../../components/credentials/ConfirmDeleteVCDialog';
 import CredentialCard from '../../components/credentials/CredentialCard';
 import CredentialDetails from '../../components/credentials/CredentialDetails';

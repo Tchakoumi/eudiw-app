@@ -15,7 +15,7 @@ import DialogTransition from '../layout/DialogTransition';
 import CredentialIssued from './CredentialIssued';
 import CredentialTypeCard from './CredentialTypeCard';
 import WaitingCredential from './WaitingCredential';
-import { ICredentialCard } from './credentials.types';
+import { ICredentialCard } from '../../types/credentials.types';
 
 export default function CredentialTypeDetails({
   isDialogOpen,
