@@ -1,7 +1,16 @@
+import { eventBus } from '@datev/event-bus';
+import {
+  DisplayCredential,
+  OID4VCIServiceEventChannel,
+  OID4VCIServiceImpl,
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@datev/oid4vci';
 import { Box, Button, Dialog, Divider } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
 import { IVerifiableCredential } from '../../types/credentials.types';
+import { removeUnderscoresFromWord } from '../../utils/common';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
 import CredentialCard from './CredentialCard';
@@ -13,6 +22,7 @@ export interface IVerifiableCredentialDetails extends IVerifiableCredential {
 
 type IDisplayClaimValues = Record<string, boolean>;
 type IVcData = Record<string, string>;
+const OIDVCI = new OID4VCIServiceImpl(eventBus);
 
 export default function CredentialDetails({
   isDialogOpen,
@@ -25,29 +35,28 @@ export default function CredentialDetails({
   selectedCredential?: IVerifiableCredential;
   deleteVC: () => void;
 }) {
-  // TODO: FUNCTION WILL GET THE DETAILS OF A CREDENTIAL WHEN GIVEN A credential_id
-  function getCredentialDetails(credential_id: number | null): IVcData {
-    return {
-      'Phone number': 'Hans Schreiner',
-      'email address': 'hans.schreiner@datev.com',
-      address: 'Johannessgase #626',
-    };
-  }
   const [vcData, setVcData] = useState<IVcData>({});
   const [canDisplayClaimValue, setCanDisplayClaimValue] = useState<
     Record<string, boolean>
   >({});
   useEffect(() => {
-    const vcData = getCredentialDetails(
-      selectedCredential ? selectedCredential.id ?? null : null
-    );
-    setVcData(vcData);
-    const claimValuesDisplayStatus: IDisplayClaimValues = {};
-    Object.keys(vcData).forEach((key) => {
-      claimValuesDisplayStatus[key] = false;
-    });
-    setCanDisplayClaimValue(claimValuesDisplayStatus);
-  }, [selectedCredential]);
+    if (isDialogOpen && selectedCredential && selectedCredential.id) {
+      OIDVCI.retrieveCredentialDetails(selectedCredential.id);
+      eventBus.once(
+        OID4VCIServiceEventChannel.RetrieveCredentialDetails,
+        (data: ServiceResponse<DisplayCredential>) => {
+          if (data.status === ServiceResponseStatus.Success) {
+            setVcData(data.payload.claims as IVcData);
+            const claimValuesDisplayStatus: IDisplayClaimValues = {};
+            Object.keys(data.payload.claims as IVcData).forEach((key) => {
+              claimValuesDisplayStatus[key] = false;
+            });
+            setCanDisplayClaimValue(claimValuesDisplayStatus);
+          } else alert(data.payload);
+        }
+      );
+    }
+  }, [isDialogOpen, selectedCredential]);
 
   function handleShowAllValues() {
     const claimValuesDisplayStatus: IDisplayClaimValues = {};
@@ -117,17 +126,19 @@ export default function CredentialDetails({
                 overflow: 'auto',
               }}
             >
-              {Object.keys(vcData).map((claimKey, index) => (
-                <CredentialDetailLine
-                  key={index}
-                  title={claimKey}
-                  value={vcData[claimKey as keyof typeof vcData]}
-                  handleShowValue={() => handleShowClaimValue(claimKey)}
-                  showClaimValue={
-                    canDisplayClaimValue[claimKey as keyof typeof vcData]
-                  }
-                />
-              ))}
+              {Object.keys(vcData)
+                .filter((_) => _ !== 'sub')
+                .map((claimKey, index) => (
+                  <CredentialDetailLine
+                    key={index}
+                    title={removeUnderscoresFromWord(claimKey)}
+                    value={vcData[claimKey as keyof typeof vcData]}
+                    handleShowValue={() => handleShowClaimValue(claimKey)}
+                    showClaimValue={
+                      canDisplayClaimValue[claimKey as keyof typeof vcData]
+                    }
+                  />
+                ))}
             </Box>
           </Scrollbars>
           <Divider sx={{ width: '80%', justifySelf: 'center' }} />
