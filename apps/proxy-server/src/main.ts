@@ -9,8 +9,17 @@ const port = process.env.PROXY_SERVER_PORT
 // Create an Express application
 const app = express();
 
+// Relax CORS restrictions
+const setCorsHeaders = (res: Response) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+};
+
 // Proxy all requests
 app.use((req, res, next) => {
+  // Enable Cross-Origin Resource Sharing (CORS)
+  setCorsHeaders(res);
+
   // The new target is assumed to be the full path
   // of the current request.
   let target: URL;
@@ -24,15 +33,10 @@ app.use((req, res, next) => {
   }
 
   const proxy = createProxyMiddleware({
-    // Re-target request
     changeOrigin: true,
     target: target.origin,
     pathRewrite: () => target.href.substring(target.origin.length),
-
-    // Enable Cross-Origin Resource Sharing (CORS)
     onProxyRes: (proxyRes) => {
-      proxyRes.headers['access-control-allow-origin'] = '';
-      proxyRes.headers['access-control-allow-headers'] = '';
       delete proxyRes.headers['set-cookie'];
     },
   });

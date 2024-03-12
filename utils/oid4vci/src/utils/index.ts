@@ -7,8 +7,8 @@ import { fetch } from 'cross-fetch';
  * @returns a complete URL with path appended to baseUrl
  */
 export const composeUrl = (baseUrl: string, path: string): string => {
-  const trimmedBaseUrl = baseUrl.replace(/\/$/, '');
-  const trimmedPath = path.replace(/^\//, '');
+  const trimmedBaseUrl = baseUrl.trim().replace(/\/$/, '');
+  const trimmedPath = path.trim().replace(/^\//, '');
 
   return `${trimmedBaseUrl}/${trimmedPath}`;
 };
