@@ -23,7 +23,7 @@ import {
   jwksRef1,
   nockReplyWithMetadataRef1,
   sdJwtProcessedCredentialObjRef1,
-  tokenResponseRef1
+  tokenResponseRef1,
 } from '../../core/__tests__/fixtures';
 
 // Mocking indexdedDB functionality
