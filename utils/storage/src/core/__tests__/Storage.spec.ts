@@ -6,10 +6,6 @@ import {
 } from '../../lib/types/Storage.types';
 import { StorageFactory } from '../StorageFactory';
 
-// Mocking indexdedDB functionality
-import 'core-js/stable/structured-clone';
-import 'fake-indexeddb/auto';
-
 interface TestDBSchema extends DBSchema {
   testStore: {
     key: string;

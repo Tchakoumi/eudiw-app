@@ -18,17 +18,16 @@ import {
   jwksRef1,
   nockReplyWithMetadataRef1,
   tokenResponseRef1,
-  storage,
   sdJwtProcessedCredentialObjRef1,
   credentialHeaderObjRef2,
 } from '../../core/__tests__/fixtures';
 
-// Mocking indexdedDB functionality
-import 'core-js/stable/structured-clone';
-import 'fake-indexeddb/auto';
 import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
+import { DBConnection } from '../../database/DBConnection';
+import { credentialStoreName, identityStoreName } from '../../database/schema';
 
 describe('OID4VCIServiceImpl', () => {
+  const storage = DBConnection.getStorage();
   const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);
   const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
 
@@ -38,6 +37,8 @@ describe('OID4VCIServiceImpl', () => {
 
   beforeEach(async () => {
     nock.cleanAll();
+    await storage.clear(credentialStoreName);
+    await storage.clear(identityStoreName);
   });
 
   it('should resolve credential offer', async () => {
@@ -178,7 +179,10 @@ describe('OID4VCIServiceImpl', () => {
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith({
       status: ServiceResponseStatus.Success,
-      payload: credentialHeaderObjRef2,
+      payload: credentialHeaderObjRef2.map((credentialHeader) => ({
+        ...credentialHeader,
+        id: expect.any(Number),
+      })),
     });
   });
 });

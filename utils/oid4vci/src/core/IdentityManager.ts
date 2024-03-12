@@ -1,5 +1,5 @@
 import * as jose from 'jose';
-import { OID4VCIServiceDBSchema, identityStoreName } from '../schema';
+import { OID4VCIServiceDBSchema, identityStoreName } from '../database/schema';
 import { StorageFactory } from '@datev/storage';
 
 /**
