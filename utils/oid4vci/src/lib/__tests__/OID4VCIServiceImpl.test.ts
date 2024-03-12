@@ -12,11 +12,11 @@ import {
 
 import {
   credentialOfferObjectRef1,
-  encodeCredentialOffer,
-  nockReplyWithMetadataRef1,
-  discoveryMetadataRef1,
   credentialResponseRef1,
+  discoveryMetadataRef1,
+  encodeCredentialOffer,
   jwksRef1,
+  nockReplyWithMetadataRef1,
   tokenResponseRef1,
   sdJwtProcessedCredentialObjRef1,
   credentialHeaderObjRef2,

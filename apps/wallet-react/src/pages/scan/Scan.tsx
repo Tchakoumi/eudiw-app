@@ -1,3 +1,5 @@
+import { eventBus } from '@datev/event-bus';
+import { OID4VCIServiceImpl } from '@datev/oid4vci';
 import { QrScanner } from '@datev/qr-scanner';
 import back from '@iconify/icons-fluent/arrow-left-48-filled';
 import swapCamera from '@iconify/icons-fluent/arrow-sync-24-regular';
@@ -19,26 +21,29 @@ export default function Scan() {
     'environment'
   );
 
+  const OIDVCI = new OID4VCIServiceImpl(eventBus);
+
   const [permissionStatus, setPermissionStatus] =
     useState<PermissionState>('prompt');
+  const [isRequestCameraDialogOpen, setIsRequestCameraDialogOpen] =
+    useState<boolean>(true);
+
+  const checkCameraPermission = async () => {
+    try {
+      const cameraPermission = await navigator.permissions.query({
+        name: 'camera' as PermissionName,
+      });
+      setPermissionStatus(cameraPermission.state);
+      return cameraPermission.state;
+    } catch (error) {
+      console.error('Error checking camera permission:', error);
+    }
+  };
 
   useEffect(() => {
-    const checkCameraPermission = async () => {
-      try {
-        const cameraPermission = await navigator.permissions.query({
-          name: 'camera' as PermissionName,
-        });
-        setPermissionStatus(cameraPermission.state);
-      } catch (error) {
-        console.error('Error checking camera permission:', error);
-      }
-    };
-
     checkCameraPermission();
   }, [permissionStatus]);
 
-  const [isRequestCameraDialogOpen, setIsRequestCameraDialogOpen] =
-    useState<boolean>(true);
   const requestCameraPermission = () => {
     setIsRequestCameraDialogOpen(false);
     navigator.mediaDevices
@@ -51,15 +56,17 @@ export default function Scan() {
       });
   };
 
+  function resolveCredentialOffer(result: string) {
+    setIsDetailsDialogOpen(true);
+    setConnectionString(result);
+    // TODO: Resolve the credentialOffer name to credentialURI
+    OIDVCI.resolveCredentialOffer({ credentialOffer: result });
+  }
+
   return (
     <>
       <LoadingScanDetails
-        connectionLink={connectionString}
         isDialogOpen={!!connectionString && isDetailsDialogOpen}
-        closeDialog={() => {
-          setIsDetailsDialogOpen(false);
-          setConnectionString('');
-        }}
       />
 
       <CameraAccessDialog
@@ -71,70 +78,59 @@ export default function Scan() {
         requestPermission={requestCameraPermission}
       />
 
-      <Box sx={{ display: 'grid', gridTemplateRows: '1fr auto' }}>
+      <Box
+        sx={{
+          display: 'grid',
+          rowGap: 1,
+          gridTemplateRows: 'auto 1fr',
+          position: 'relative',
+        }}
+      >
         <Box
           sx={{
             display: 'grid',
-            rowGap: 1,
-            gridTemplateRows: 'auto 1fr',
-            position: 'relative',
+            alignContent: 'center',
+            justifyContent: 'start',
+            padding: '8px',
+            backgroundColor: theme.palette.secondary.light,
           }}
         >
-          <Box
-            sx={{
-              display: 'grid',
-              alignContent: 'center',
-              justifyContent: 'start',
-              padding: '8px',
-              backgroundColor: theme.palette.secondary.light,
-            }}
-          >
-            <Tooltip arrow title="Back">
-              <IconButton size="small" onClick={() => push('/')}>
-                <Icon icon={back} color="black" />
-              </IconButton>
-            </Tooltip>
-          </Box>
-          <QrScanner
-            onResult={(result: string) => {
-              setIsDetailsDialogOpen(true);
-              setConnectionString(result);
-            }}
-            validate={(result) => {
-              return String(result);
-            }}
-            onError={(error) => console.log(error.message)}
-            facingMode={facingMode}
-          />
-          <Tooltip arrow title={'Swap Camera'}>
-            <IconButton
-              color="secondary"
-              sx={{
-                backgroundColor: 'white',
-                position: 'absolute',
-                bottom: 0,
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                '&:hover': {
-                  backgroundColor: 'white',
-                },
-              }}
-              onClick={() =>
-                setFacingMode((prev) =>
-                  prev === 'environment' ? 'user' : 'environment'
-                )
-              }
-            >
-              <Icon icon={swapCamera} style={{ color: 'black' }} />
+          <Tooltip arrow title="Back">
+            <IconButton size="small" onClick={() => push('/')}>
+              <Icon icon={back} color="black" />
             </IconButton>
           </Tooltip>
         </Box>
-        <Box
-          sx={{
-            backgroundColor: 'black',
-            height: '22px',
+        <QrScanner
+          onResult={resolveCredentialOffer}
+          validate={(result) => {
+            return String(result);
           }}
+          onError={(error) => console.log(error.message)}
+          facingMode={facingMode}
         />
+        <Tooltip arrow title={'Swap Camera'}>
+          <IconButton
+            color="secondary"
+            sx={{
+              backgroundColor: 'white',
+              position: 'absolute',
+              bottom: 0,
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              '&:hover': {
+                backgroundColor: 'white',
+              },
+            }}
+            onClick={() =>
+              setFacingMode((prev) =>
+                prev === 'environment' ? 'user' : 'environment'
+              )
+            }
+          >
+            <Icon icon={swapCamera} style={{ color: 'black' }} />
+          </IconButton>
+        </Tooltip>
       </Box>
     </>
   );
