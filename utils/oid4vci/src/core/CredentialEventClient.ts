@@ -34,4 +34,36 @@ export class CredentialEventClient {
 
     return modifiedRecords;
   }
+
+  /**
+   * Retrieves the content of a single credential needed to populate the details view.
+   * @param id The unique identifier of the credential to retrieve.
+   * @returns A Promise that resolves with the details of the specified credential, or null if not found.
+   */
+  public async retrieveCredentialDetails(
+    id: number
+  ): Promise<DisplayCredential | null> {
+    const record: StoreRecord<OID4VCIServiceDBSchema> | null =
+      await this.storage.findOne(credentialStoreName, id);
+
+    if (!record) {
+      return null;
+    }
+
+    // Return the `DisplayCredential` format including all properties.
+    return record.value.display as DisplayCredential;
+  }
+
+  /**
+   * Deletes a credential by key.
+   * @param key The key of the credential to delete.
+   * @returns A Promise that resolves when the deletion is complete.
+   */
+  public async deleteCredentialByKey(key: IDBValidKey): Promise<void> {
+    try {
+      await this.storage.delete(credentialStoreName, key);
+    } catch (error) {
+      throw new Error(`Failed to delete credential: ${error}`);
+    }
+  }
 }

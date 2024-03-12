@@ -20,6 +20,8 @@ import {
   tokenResponseRef1,
   sdJwtProcessedCredentialObjRef1,
   credentialHeaderObjRef2,
+  sdJwtProcessedCredentialObjRef3,
+  credentialContentObjRef3,
 } from '../../core/__tests__/fixtures';
 
 import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
@@ -183,6 +185,60 @@ describe('OID4VCIServiceImpl', () => {
         ...credentialHeader,
         id: expect.any(Number),
       })),
+    });
+  });
+
+  it('should retrieve successfully one credential details ', async () => {
+    const storedCredential = await sdJwtCredentialProcessor.storeCredential(
+      sdJwtProcessedCredentialObjRef3
+    );
+
+    const callback = jest.fn(() => {
+      eventBus.emit('complete');
+    });
+
+    eventBus.on(OID4VCIServiceEventChannel.RetrieveCredentialDetails, callback);
+    service.retrieveCredentialDetails(storedCredential.display.id as number);
+
+    // Wait for callback completion
+    await new Promise((resolve) => {
+      eventBus.once('complete', resolve);
+    });
+
+    // Dynamically adjust the expected payload with the correct id
+    const expectedPayload = {
+      ...credentialContentObjRef3, // Assuming credentialContentObjRef3 is an array with the expected object
+      id: storedCredential.display.id, // Set the dynamic id correctly
+    };
+    expect(callback).toHaveBeenCalledTimes(1);
+    // Use the captured `expectedId` in your assertion to match against the dynamically assigned ID
+    expect(callback).toHaveBeenCalledWith({
+      status: ServiceResponseStatus.Success,
+      payload: expectedPayload, // Use the dynamically adjusted expected object
+    });
+  });
+
+  it('should successfully delete a credential and emit an event', async () => {
+    const storedCredential = await sdJwtCredentialProcessor.storeCredential(
+      sdJwtProcessedCredentialObjRef3
+    );
+
+    const deleteCallback = jest.fn(() => {
+      eventBus.emit('complete');
+    });
+
+    eventBus.on(OID4VCIServiceEventChannel.DeleteCredential, deleteCallback);
+
+    service.deleteCredential(storedCredential.display.id as IDBValidKey);
+
+    await new Promise((resolve) => {
+      eventBus.once('complete', resolve);
+    });
+
+    expect(deleteCallback).toHaveBeenCalledTimes(1);
+    expect(deleteCallback).toHaveBeenCalledWith({
+      status: ServiceResponseStatus.Success,
+      payload: `Credential with key ${storedCredential.display.id} successfully deleted.`,
     });
   });
 });
