@@ -3,17 +3,18 @@ import * as jose from 'jose';
 import { currentTimestampInSecs } from '../../utils';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
 import { StoreIdentityManager } from '../IdentityManager';
-import { identityStoreName } from '../../schema';
+import { identityStoreName } from '../../database/schema';
 import { CredentialSupported } from '../../lib/types';
 
 import {
   configClient,
   credentialIssuerMetadataRef1,
   keyRef1,
-  storage,
 } from './fixtures';
+import { DBConnection } from '../../database/DBConnection';
 
 describe('IdentityProofGenerator', () => {
+  const storage = DBConnection.getStorage();
   const identityProofGenerator = new IdentityProofGenerator(
     configClient,
     new StoreIdentityManager(storage)

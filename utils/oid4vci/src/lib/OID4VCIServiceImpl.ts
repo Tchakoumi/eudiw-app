@@ -1,17 +1,10 @@
 import serviceConfig from '../config.json';
 
-import { StorageFactory } from '@datev/storage';
 import { EventEmitter } from 'eventemitter3';
 import { ConfigClient } from '../core/ConfigClient';
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
-
-import {
-  OID4VCIServiceDBSchema,
-  credentialStoreName,
-  identityStoreName,
-} from '../schema';
 
 import {
   GrantType,
@@ -20,6 +13,7 @@ import {
   ServiceResponseStatus,
 } from './types';
 import { CredentialEventClient } from '../core/CredentialEventClient';
+import { DBConnection } from '../database/DBConnection';
 
 /**
  * Concrete implementation of the OID4VCI service.
@@ -31,33 +25,11 @@ export class OID4VCIServiceImpl implements OID4VCIService {
 
   public constructor(private eventBus: EventEmitter) {
     const configClient = new ConfigClient(serviceConfig);
-    const storage = this.initializeStorage();
+    const storage = DBConnection.getStorage();
 
     this.credentialOfferResolver = new CredentialOfferResolver(configClient);
     this.credentialEventClient = new CredentialEventClient(storage);
     this.credentialRequester = new CredentialRequester(configClient, storage);
-  }
-
-  private initializeStorage(): StorageFactory<OID4VCIServiceDBSchema> {
-    const dbName = 'OID4VCIServiceStorage';
-    const dbVersion = 1;
-
-    const storage = new StorageFactory<OID4VCIServiceDBSchema>(
-      dbName,
-      dbVersion,
-      {
-        upgrade(db) {
-          db.createObjectStore(credentialStoreName, {
-            keyPath: 'display.id',
-            autoIncrement: true,
-          });
-
-          db.createObjectStore(identityStoreName);
-        },
-      }
-    );
-
-    return storage;
   }
 
   public resolveCredentialOffer(opts: { credentialOffer: string }): void {
