@@ -9,13 +9,13 @@ import {
 import { Alert, Box, Snackbar } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useMemo, useState } from 'react';
-import { IVerifiableCredential } from '../../types/credentials.types';
 import ConfirmDeleteVCDialog from '../../components/credentials/ConfirmDeleteVCDialog';
 import CredentialCard from '../../components/credentials/CredentialCard';
 import CredentialDetails from '../../components/credentials/CredentialDetails';
 import NoCredentials from '../../components/credentials/NoCredentials';
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
+import { IVerifiableCredential } from '../../types/credentials.types';
 
 export default function Credentials() {
   const OIDVCI: OID4VCIService = useMemo(
@@ -52,39 +52,53 @@ export default function Credentials() {
   const [isConfirmDeleteVCDialogOpen, setIsConfirmDeleteVCDialogOpen] =
     useState<boolean>(false);
 
-  const [showDeleteSnackbar, setShowDeleteSnackbar] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>();
+
+  function deleteVC() {
+    if (selectedCredential) {
+      OIDVCI.deleteCredential(selectedCredential.id as number);
+      eventBus.once(
+        OID4VCIServiceEventChannel.DeleteCredential,
+        (data: ServiceResponse<string>) => {
+          if (data.status === ServiceResponseStatus.Success) {
+            setSnackbarMessage(data.payload);
+            setIsConfirmDeleteVCDialogOpen(false);
+            setSelectedCredential(undefined);
+          } else alert(data.payload);
+        }
+      );
+    }
+  }
 
   return (
     <>
       <Snackbar
-        open={showDeleteSnackbar}
+        open={!!snackbarMessage}
         autoHideDuration={6000}
-        onClose={() => setShowDeleteSnackbar(false)}
+        onClose={() => setSnackbarMessage(undefined)}
       >
         <Alert
-          onClose={() => setShowDeleteSnackbar(false)}
+          onClose={() => setSnackbarMessage(undefined)}
           severity="success"
           variant="filled"
           sx={{ width: '100%' }}
         >
-          Credential removed
+          {snackbarMessage}
         </Alert>
       </Snackbar>
-      <CredentialDetails
-        closeDialog={() => setSelectedCredential(undefined)}
-        isDialogOpen={!!selectedCredential && !isConfirmDeleteVCDialogOpen}
-        selectedCredential={selectedCredential}
-        deleteVC={() => {
-          setIsConfirmDeleteVCDialogOpen(true);
-        }}
-      />
+      {selectedCredential && (
+        <CredentialDetails
+          closeDialog={() => setSelectedCredential(undefined)}
+          isDialogOpen={!isConfirmDeleteVCDialogOpen}
+          selectedCredential={selectedCredential}
+          deleteVC={() => {
+            setIsConfirmDeleteVCDialogOpen(true);
+          }}
+        />
+      )}
       <ConfirmDeleteVCDialog
         closeDialog={() => setIsConfirmDeleteVCDialogOpen(false)}
-        confirmDelete={() => {
-          setIsConfirmDeleteVCDialogOpen(false);
-          setSelectedCredential(undefined);
-          setShowDeleteSnackbar(true);
-        }}
+        confirmDelete={deleteVC}
         isDialogOpen={isConfirmDeleteVCDialogOpen}
       />
       <Box
