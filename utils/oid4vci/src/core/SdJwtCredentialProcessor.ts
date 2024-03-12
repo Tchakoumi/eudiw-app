@@ -3,7 +3,10 @@ import sdjwt from '@hopae/sd-jwt';
 import * as jose from 'jose';
 import { OID4VCIServiceError } from '../lib/errors';
 import { DisplayCredential, SdJwtProcessedCredential } from '../lib/types';
-import { OID4VCIServiceDBSchema, credentialStoreName } from '../schema';
+import {
+  OID4VCIServiceDBSchema,
+  credentialStoreName,
+} from '../database/schema';
 
 /**
  * This class is responsible for processing, ie validating, decoding, and
