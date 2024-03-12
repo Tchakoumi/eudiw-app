@@ -4,6 +4,7 @@ import {
   OID4VCIServiceEventChannel,
   OID4VCIServiceImpl,
   ServiceResponse,
+  ServiceResponseStatus,
 } from '@datev/oid4vci';
 import { Alert, Box, Snackbar } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
@@ -29,7 +30,9 @@ export default function Credentials() {
     eventBus.once(
       OID4VCIServiceEventChannel.RetrieveCredentialHeaders,
       (data: ServiceResponse) => {
-        setCredentials(data.payload as IVerifiableCredential[]);
+        if (data.status === ServiceResponseStatus.Success)
+          setCredentials(data.payload as IVerifiableCredential[]);
+        else alert(data.payload);
       }
     );
 
