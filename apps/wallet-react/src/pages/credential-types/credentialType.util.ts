@@ -8,7 +8,7 @@ import {
   ICredentialCard,
   ISupportedCredential,
   SupportedCredentialTypeFormat,
-} from '../../components/credential-types/credentials.types';
+} from '../../types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
 
 /**
