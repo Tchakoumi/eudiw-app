@@ -126,19 +126,17 @@ export default function CredentialDetails({
                 overflow: 'auto',
               }}
             >
-              {Object.keys(vcData)
-                .filter((_) => _ !== 'sub')
-                .map((claimKey, index) => (
-                  <CredentialDetailLine
-                    key={index}
-                    title={removeUnderscoresFromWord(claimKey)}
-                    value={vcData[claimKey as keyof typeof vcData]}
-                    handleShowValue={() => handleShowClaimValue(claimKey)}
-                    showClaimValue={
-                      canDisplayClaimValue[claimKey as keyof typeof vcData]
-                    }
-                  />
-                ))}
+              {Object.keys(vcData).map((claimKey, index) => (
+                <CredentialDetailLine
+                  key={index}
+                  title={removeUnderscoresFromWord(claimKey)}
+                  value={vcData[claimKey as keyof typeof vcData]}
+                  handleShowValue={() => handleShowClaimValue(claimKey)}
+                  showClaimValue={
+                    canDisplayClaimValue[claimKey as keyof typeof vcData]
+                  }
+                />
+              ))}
             </Box>
           </Scrollbars>
           <Divider sx={{ width: '80%', justifySelf: 'center' }} />
