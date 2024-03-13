@@ -127,7 +127,11 @@ describe('OID4VCIServiceImpl', () => {
     expect(response).toBeDefined();
     response = response as unknown as ServiceResponse;
     expect(response.status).toEqual(ServiceResponseStatus.Success);
-    expect((response.payload as DisplayCredential).id).toEqual(1);
+    expect((response.payload as DisplayCredential).claims).toEqual({
+      birthdate: '1991-11-06',
+      family_name: 'Silverstone',
+      given_name: 'Inga',
+    });
   });
 
   it('should channel back errors (credential issuance request)', async () => {

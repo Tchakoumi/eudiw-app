@@ -1,17 +1,18 @@
 import * as jose from 'jose';
 
-import { currentTimestampInSecs } from '../../utils';
-import { IdentityProofGenerator } from '../IdentityProofGenerator';
-import { StoreIdentityManager } from '../IdentityManager';
+import { DBConnection } from '../../database/DBConnection';
 import { identityStoreName } from '../../database/schema';
 import { CredentialSupported } from '../../lib/types';
+import { currentTimestampInSecs } from '../../utils';
+import { StoreIdentityManager } from '../IdentityManager';
+import { IdentityProofGenerator } from '../IdentityProofGenerator';
 
 import {
   configClient,
   credentialIssuerMetadataRef1,
+  credentialSupportedRef1,
   keyRef1,
 } from './fixtures';
-import { DBConnection } from '../../database/DBConnection';
 
 describe('IdentityProofGenerator', () => {
   const storage = DBConnection.getStorage();
@@ -85,11 +86,6 @@ describe('IdentityProofGenerator', () => {
   });
 
   it('should throw when a non-JWT key proof is required', async () => {
-    const credentialSupportedRef1 =
-      credentialIssuerMetadataRef1.credential_configurations_supported[
-        'IdentityCredential'
-      ];
-
     const credentialSupported: CredentialSupported = {
       ...credentialSupportedRef1,
       proof_types: ['x5c'],
@@ -106,11 +102,6 @@ describe('IdentityProofGenerator', () => {
   });
 
   it('should throw when no issuer signing algorithm is supported', async () => {
-    const credentialSupportedRef1 =
-      credentialIssuerMetadataRef1.credential_configurations_supported[
-        'IdentityCredential'
-      ];
-
     const credentialSupported: CredentialSupported = {
       ...credentialSupportedRef1,
       credential_signing_alg_values_supported: [],

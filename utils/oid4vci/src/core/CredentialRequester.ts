@@ -100,6 +100,11 @@ export class CredentialRequester {
       );
     }
 
+    // Extract credential type configuration metadata
+    const credentialSupported =
+      discoveryMetadata.credentialIssuerMetadata
+        .credential_configurations_supported[credentialTypeKey];
+
     // Request an access token to present at the credential endpoint
     const tokenResponse = await this.requestAccessToken(
       grantType,
@@ -132,6 +137,7 @@ export class CredentialRequester {
       await this.sdJwtCredentialProcessor.processCredential(
         credential,
         await this.resolveIssuerVerifyingKeys(discoveryMetadata),
+        credentialSupported as CredentialSupportedSdJwtVc,
         displayCredentialStarter
       );
 
