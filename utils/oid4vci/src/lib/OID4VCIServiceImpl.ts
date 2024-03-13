@@ -1,13 +1,11 @@
-import serviceConfig from '../config.json';
-
 import { EventEmitter } from 'eventemitter3';
 import { ConfigClient } from '../core/ConfigClient';
+import { CredentialEventClient } from '../core/CredentialEventClient';
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
-import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
-import { CredentialEventClient } from '../core/CredentialEventClient';
 import { DBConnection } from '../database/DBConnection';
 import { HttpUtil } from '../utils';
+import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
 
 import {
   GrantType,
@@ -25,7 +23,7 @@ export class OID4VCIServiceImpl implements OID4VCIService {
   private readonly credentialEventClient: CredentialEventClient;
 
   public constructor(private eventBus: EventEmitter) {
-    const configClient = new ConfigClient(serviceConfig);
+    const configClient = new ConfigClient();
     const httpUtil = new HttpUtil(configClient.getProxyServer());
     const storage = DBConnection.getStorage();
 

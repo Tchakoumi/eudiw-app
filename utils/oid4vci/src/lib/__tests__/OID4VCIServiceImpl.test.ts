@@ -26,10 +26,6 @@ import {
   tokenResponseRef1,
 } from '../../core/__tests__/fixtures';
 
-// Mocking indexdedDB functionality
-import 'core-js/stable/structured-clone';
-import 'fake-indexeddb/auto';
-
 describe('OID4VCIServiceImpl', () => {
   const storage = DBConnection.getStorage();
   const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);

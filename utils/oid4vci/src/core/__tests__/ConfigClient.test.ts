@@ -41,10 +41,10 @@ describe('ConfigClient', () => {
     expect(clientId).toBeUndefined();
   });
 
-  it('should client ID to undefined on missing registry', () => {
+  it('should client ID to undefined on empty registry', () => {
     const configClient = new ConfigClient({
       ...configData,
-      clientIdRegistry: undefined,
+      clientIdRegistry: [],
     });
 
     const clientId = configClient.getClientId('https://trial.authlete.net');
