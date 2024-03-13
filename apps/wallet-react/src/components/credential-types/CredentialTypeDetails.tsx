@@ -50,7 +50,10 @@ export default function CredentialTypeDetails({
         if (data.status === ServiceResponseStatus.Success) {
           setIsIssuing(false);
           setIsDoneIssuing(true);
-        } else alert(data.payload);
+        } else {
+          closeDialog();
+          alert(data.payload);
+        }
       }
     );
   }
