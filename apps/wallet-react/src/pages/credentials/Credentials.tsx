@@ -24,9 +24,10 @@ export default function Credentials() {
   );
 
   const [credentials, setCredentials] = useState<IVerifiableCredential[]>([]);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>();
 
-  OIDVCI.retrieveCredentialHeaders();
   useEffect(() => {
+    OIDVCI.retrieveCredentialHeaders();
     eventBus.once(
       OID4VCIServiceEventChannel.RetrieveCredentialHeaders,
       (data: ServiceResponse) => {
@@ -45,14 +46,12 @@ export default function Credentials() {
         }
       );
     };
-  }, [OIDVCI]);
+  }, [OIDVCI, snackbarMessage]);
 
   const [selectedCredential, setSelectedCredential] =
     useState<IVerifiableCredential>();
   const [isConfirmDeleteVCDialogOpen, setIsConfirmDeleteVCDialogOpen] =
     useState<boolean>(false);
-
-  const [snackbarMessage, setSnackbarMessage] = useState<string>();
 
   function deleteVC() {
     if (selectedCredential) {
