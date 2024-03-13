@@ -61,7 +61,7 @@ export const credentialContentObjRef2: DisplayCredential = {
   title: 'Identity Credential',
   issuer: 'trial.authlete.net',
   logo: undefined,
-  issued_at: 1708613098,
+  issued_at: 1708613098000,
   id: 1,
   claims: {},
 };
@@ -71,14 +71,14 @@ export const credentialContentObjRef1: DisplayCredential[] = [
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
     logo: undefined,
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 1,
     claims: {},
   },
   {
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 2,
     claims: {
       sub: '1004',
@@ -92,7 +92,7 @@ export const credentialContentObjRef1: DisplayCredential[] = [
 export const credentialContentObjRef3: DisplayCredential = {
   title: 'Identity Credential',
   issuer: 'trial.authlete.net',
-  issued_at: 1708613098,
+  issued_at: 1708613098000,
   id: 1,
   claims: {
     sub: '1004',
