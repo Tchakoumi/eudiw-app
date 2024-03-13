@@ -1,7 +1,7 @@
 import nock from 'nock';
 import { HttpUtil } from '../HttpUtil';
 
-describe('fetchBase64', () => {
+describe('HttpUtil', () => {
   const httpUtil = new HttpUtil();
 
   beforeAll(async () => {
