@@ -9,19 +9,17 @@ import {
 import { Box, Button, Dialog, Divider } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
-import { IVerifiableCredential } from '../../types/credentials.types';
+import {
+  IDisplayClaimValues,
+  IVcData,
+  IVerifiableCredential,
+} from '../../types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
 import CredentialCard from './CredentialCard';
 import CredentialDetailLine from './CredentialDetailLine';
 
-export interface IVerifiableCredentialDetails extends IVerifiableCredential {
-  claims: IVcData;
-}
-
-type IDisplayClaimValues = Record<string, boolean>;
-type IVcData = Record<string, string>;
 const OIDVCI = new OID4VCIServiceImpl(eventBus);
 
 export default function CredentialDetails({

@@ -18,3 +18,10 @@ export type ISupportedCredential =
 export enum SupportedCredentialTypeFormat {
   VC_SD_JWT = 'vc+sd-jwt',
 }
+
+export interface IVerifiableCredentialDetails extends IVerifiableCredential {
+  claims: IVcData;
+}
+
+export type IDisplayClaimValues = Record<string, boolean>;
+export type IVcData = Record<string, string>;
