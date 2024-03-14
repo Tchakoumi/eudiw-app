@@ -43,15 +43,14 @@ export class CredentialEventClient {
   public async retrieveCredentialDetails(
     id: number
   ): Promise<DisplayCredential | null> {
-    const record: StoreRecord<OID4VCIServiceDBSchema> | null =
-      await this.storage.findOne(credentialStoreName, id);
+    const record = await this.storage.findOne(credentialStoreName, id);
 
     if (!record) {
       return null;
     }
 
     // Return the `DisplayCredential` format including all properties.
-    return record.value.display as DisplayCredential;
+    return record.value.display;
   }
 
   /**
