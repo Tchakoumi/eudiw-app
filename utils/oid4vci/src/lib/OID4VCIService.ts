@@ -82,5 +82,5 @@ export interface OID4VCIService {
    * - Error
    *
    */
-  deleteCredential(key: IDBValidKey): void;
+  deleteCredential(id: number): void;
 }

@@ -59,9 +59,9 @@ export class CredentialEventClient {
    * @param key The key of the credential to delete.
    * @returns A Promise that resolves when the deletion is complete.
    */
-  public async deleteCredentialByKey(key: IDBValidKey): Promise<void> {
+  public async deleteCredentialByKey(id: number): Promise<void> {
     try {
-      await this.storage.delete(credentialStoreName, key);
+      await this.storage.delete(credentialStoreName, id);
     } catch (error) {
       throw new Error(`Failed to delete credential: ${error}`);
     }

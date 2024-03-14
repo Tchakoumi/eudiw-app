@@ -233,7 +233,7 @@ describe('OID4VCIServiceImpl', () => {
 
     eventBus.on(OID4VCIServiceEventChannel.DeleteCredential, deleteCallback);
 
-    service.deleteCredential(storedCredential.display.id as IDBValidKey);
+    service.deleteCredential(storedCredential.display.id as number);
 
     await new Promise((resolve) => {
       eventBus.once('complete', resolve);
