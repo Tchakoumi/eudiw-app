@@ -9,4 +9,7 @@ export interface SubmissionRequirement {
   from_nested?: Array<SubmissionRequirement>;
 }
 
-export type Rules = 'all' | 'pick';
+export enum Rules {
+  ALL = 'all',
+  PICK = 'Pick',
+}
