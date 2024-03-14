@@ -60,7 +60,7 @@ describe('CredentialEventClient', () => {
     );
 
     const credentialContent = await client.retrieveCredentialDetails(
-      storedCredential.display.id as IDBValidKey
+      storedCredential.display.id as number
     );
 
     // Dynamically adjust the expected payload with the correct id
@@ -78,7 +78,7 @@ describe('CredentialEventClient', () => {
       sdJwtProcessedCredentialObjRef1
     );
 
-    const storedCredentialId = storedCredential.display.id as IDBValidKey;
+    const storedCredentialId = storedCredential.display.id as number;
 
     const credentialContent = await client.retrieveCredentialDetails(
       storedCredentialId
@@ -112,13 +112,13 @@ describe('CredentialEventClient', () => {
       sdJwtProcessedCredentialObjRef1
     );
 
-    const storedCredentialId1 = storedCredential1.display.id as IDBValidKey;
+    const storedCredentialId1 = storedCredential1.display.id as number;
 
     const storedCredential2 = await sdJwtCredentialProcessor.storeCredential(
       sdJwtProcessedCredentialObjRef3
     );
 
-    const storedCredentialId2 = storedCredential2.display.id as IDBValidKey;
+    const storedCredentialId2 = storedCredential2.display.id as number;
 
     // Attempt to delete the credential and validate it is gone.
     let deleteError;

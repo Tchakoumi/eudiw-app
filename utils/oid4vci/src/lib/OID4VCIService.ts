@@ -71,7 +71,7 @@ export interface OID4VCIService {
    * - or an error message indicative of what went wrong.
    *
    */
-  retrieveCredentialDetails(key: IDBValidKey): void;
+  retrieveCredentialDetails(id: number): void;
 
   /**
    * Deletes a credential
@@ -82,5 +82,5 @@ export interface OID4VCIService {
    * - Error
    *
    */
-  deleteCredential(key: IDBValidKey): void;
+  deleteCredential(id: number): void;
 }
