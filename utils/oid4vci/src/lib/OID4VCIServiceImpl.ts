@@ -1,9 +1,10 @@
-import serviceConfig from '../config.json';
-
 import { EventEmitter } from 'eventemitter3';
 import { ConfigClient } from '../core/ConfigClient';
+import { CredentialEventClient } from '../core/CredentialEventClient';
 import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
 import { CredentialRequester } from '../core/CredentialRequester';
+import { DBConnection } from '../database/DBConnection';
+import { HttpUtil } from '../utils';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';
 
 import {
@@ -12,8 +13,6 @@ import {
   ServiceResponse,
   ServiceResponseStatus,
 } from './types';
-import { CredentialEventClient } from '../core/CredentialEventClient';
-import { DBConnection } from '../database/DBConnection';
 
 /**
  * Concrete implementation of the OID4VCI service.
@@ -24,12 +23,18 @@ export class OID4VCIServiceImpl implements OID4VCIService {
   private readonly credentialEventClient: CredentialEventClient;
 
   public constructor(private eventBus: EventEmitter) {
-    const configClient = new ConfigClient(serviceConfig);
+    const configClient = new ConfigClient();
+    const httpUtil = new HttpUtil(configClient.getProxyServer());
     const storage = DBConnection.getStorage();
 
-    this.credentialOfferResolver = new CredentialOfferResolver();
+    this.credentialOfferResolver = new CredentialOfferResolver(httpUtil);
     this.credentialEventClient = new CredentialEventClient(storage);
-    this.credentialRequester = new CredentialRequester(configClient, storage);
+
+    this.credentialRequester = new CredentialRequester(
+      configClient,
+      httpUtil,
+      storage
+    );
   }
 
   public resolveCredentialOffer(opts: { credentialOffer: string }): void {

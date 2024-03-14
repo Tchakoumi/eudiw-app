@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Scan from './pages/scan/Scan';
-import CredentialType from './pages/credential-type/CredentialType';
+import CredentialTypes from './pages/credential-types/CredentialTypes';
 import Credentials from './pages/credentials/Credentials';
 
 export interface IRoute {
@@ -20,8 +20,8 @@ export const routes: IRoute[] = [
     path: '/scan',
   },
   {
-    element: <CredentialType />,
-    path: '/credential-type',
+    element: <CredentialTypes />,
+    path: '/credential-types',
   },
   {
     element: <Credentials />,

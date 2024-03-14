@@ -1,4 +1,4 @@
-import { InstallPWAContextProvider, isIosOrSafariDesktop } from '@datev/usePWA';
+import { InstallPWAContextProvider } from '@datev/usePWA';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 
@@ -15,7 +15,8 @@ root.render(
   <StrictMode>
     <BrowserRouter basename={baseHref}>
       <InstallPWAContextProvider
-        component={isIosOrSafariDesktop() ? 'tooltip' : 'banner'}
+        component={'banner'}
+        installPromptTimeout={30000}
       >
         <App />
       </InstallPWAContextProvider>

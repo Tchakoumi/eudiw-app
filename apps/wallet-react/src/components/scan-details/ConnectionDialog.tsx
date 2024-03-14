@@ -59,7 +59,7 @@ export default function ConnectionDialog({
         <Button
           variant="contained"
           color="primary"
-          onClick={() => push('/credential-type')}
+          onClick={() => push('/credential-types')}
         >
           Connect
         </Button>

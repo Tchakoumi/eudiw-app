@@ -21,8 +21,13 @@ export default function CredentialDetailLine({
       }}
     >
       <Box>
-        <Typography sx={{ fontSize: '14px' }}>{title}</Typography>
-        <Typography sx={{ fontSize: '14px' }}>
+        <Typography
+          variant="caption"
+          sx={{ fontWeight: '400', letterSpacing: '1px' }}
+        >
+          {title}
+        </Typography>
+        <Typography sx={{ fontSize: '16px', fontWeight: '500' }}>
           {showClaimValue ? value : '*****'}
         </Typography>
       </Box>

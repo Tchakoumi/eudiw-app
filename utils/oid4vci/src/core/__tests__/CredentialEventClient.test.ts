@@ -17,7 +17,7 @@ describe('CredentialEventClient', () => {
   const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
 
   afterEach(async () => {
-    storage.clear(credentialStoreName);
+    await storage.clear(credentialStoreName);
   });
 
   it('should retrieve successfully one credential headers', async () => {

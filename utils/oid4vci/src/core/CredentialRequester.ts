@@ -1,33 +1,33 @@
 import * as jose from 'jose';
-import { fetch } from 'cross-fetch';
 
-import { ConfigClient } from './ConfigClient';
+import { StorageFactory } from '@datev/storage';
+import { OID4VCIServiceDBSchema } from '../database/schema';
 import { OID4VCIServiceError } from '../lib/errors';
+import { HttpUtil } from '../utils';
+import { AccessTokenClient } from './AccessTokenClient';
+import { ConfigClient } from './ConfigClient';
+import { StoreIdentityManager } from './IdentityManager';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
-import { fetchIntoDataUrl } from '../utils';
-import { OID4VCIServiceDBSchema } from '../database/schema';
-import { StorageFactory } from '@datev/storage';
-import { StoreIdentityManager } from './IdentityManager';
-import { AccessTokenClient } from './AccessTokenClient';
 
 import {
-  DiscoveryMetadata,
-  CredentialTypeSelector,
-  CredentialSupportedSdJwtVc,
-  AccessTokenResponse,
-  CredentialResponse,
-  CredentialRequestParams,
-  GrantType,
-  ResolvedCredentialOffer,
-  AuthorizationServerMetadata,
-  CredentialOffer,
-  CredentialSupported,
-  CredentialIssuerMetadata,
-  DisplayCredential,
   AccessTokenRequest,
+  AccessTokenResponse,
+  AuthorizationServerMetadata,
+  CredentialIssuerMetadata,
+  CredentialOffer,
+  CredentialRequestParams,
+  CredentialResponse,
+  CredentialSupported,
+  CredentialSupportedSdJwtVc,
+  CredentialTypeSelector,
+  DiscoveryMetadata,
+  DisplayCredential,
   EndpointMetadata,
+  GrantType,
+  JWKSet,
   OpenIDResponse,
+  ResolvedCredentialOffer,
 } from '../lib/types';
 
 /**
@@ -35,7 +35,6 @@ import {
  * and handling all post-issuance operations.
  */
 export class CredentialRequester {
-  private readonly configClient: ConfigClient;
   private readonly accessTokenClient: AccessTokenClient;
   private readonly identityProofGenerator: IdentityProofGenerator;
   private readonly sdJwtCredentialProcessor: SdJwtCredentialProcessor;
@@ -43,15 +42,15 @@ export class CredentialRequester {
   /**
    * Constructor.
    * @param configClient a gate to retrieve configuration data through
+   * @param httpUtil the service HTTP client
    * @param storage a storage to persist requested issued credentials
    */
   public constructor(
-    configClient: ConfigClient,
+    private configClient: ConfigClient,
+    private httpUtil: HttpUtil,
     storage: StorageFactory<OID4VCIServiceDBSchema>
   ) {
-    this.configClient = configClient;
-
-    this.accessTokenClient = new AccessTokenClient();
+    this.accessTokenClient = new AccessTokenClient(httpUtil);
 
     this.identityProofGenerator = new IdentityProofGenerator(
       configClient,
@@ -101,6 +100,11 @@ export class CredentialRequester {
       );
     }
 
+    // Extract credential type configuration metadata
+    const credentialSupported =
+      discoveryMetadata.credentialIssuerMetadata
+        .credential_configurations_supported[credentialTypeKey];
+
     // Request an access token to present at the credential endpoint
     const tokenResponse = await this.requestAccessToken(
       grantType,
@@ -133,6 +137,7 @@ export class CredentialRequester {
       await this.sdJwtCredentialProcessor.processCredential(
         credential,
         await this.resolveIssuerVerifyingKeys(discoveryMetadata),
+        credentialSupported as CredentialSupportedSdJwtVc,
         displayCredentialStarter
       );
 
@@ -311,27 +316,23 @@ export class CredentialRequester {
   ): Promise<string> {
     const { request, credentialEndpoint, accessToken } = params;
 
-    const credentialResponse: CredentialResponse = await fetch(
+    const response = await this.httpUtil.post(
       credentialEndpoint,
+      JSON.stringify(request),
       {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
+        bearerToken: accessToken,
       }
-    ).then(async (response) => {
-      if (!response.ok) {
-        throw new OID4VCIServiceError(
-          `CredentialIssuerError: ${response.status} ${response.statusText}`
-        );
-      }
+    );
 
-      return response.json();
-    });
+    if (!response.successBody) {
+      const { status, statusText } = response.origResponse;
+      throw new OID4VCIServiceError(
+        `CredentialIssuerError: ${status} ${statusText}`
+      );
+    }
 
-    return credentialResponse.credential;
+    const { credential } = response.successBody as CredentialResponse;
+    return credential;
   }
 
   /**
@@ -358,17 +359,16 @@ export class CredentialRequester {
       );
     }
 
-    const jwks = await fetch(jwksUri).then(async (response) => {
-      if (!response.ok) {
-        throw new OID4VCIServiceError(
-          'Could not retrieve issuer verifying keys.'
-        );
-      }
+    const response = await this.httpUtil.openIdFetch(jwksUri);
 
-      return response.json();
-    });
+    if (!response.successBody) {
+      throw new OID4VCIServiceError(
+        'Could not retrieve issuer verifying keys.'
+      );
+    }
 
-    return jwks.keys as jose.JWK[];
+    const { keys } = response.successBody as JWKSet;
+    return keys;
   }
 
   /**
@@ -412,7 +412,8 @@ export class CredentialRequester {
     // Fetch logo
     let logo = display?.logo?.uri ?? display?.logo?.url;
     if (logo?.startsWith('http://') || logo?.startsWith('https://')) {
-      logo = await fetchIntoDataUrl(logo).catch(() => logo);
+      const response = await this.httpUtil.openIdFetchIntoDataUrl(logo);
+      logo = response.successBody ?? logo;
     }
 
     return { title, issuer, logo };
