@@ -5,6 +5,7 @@ import {
   AuthorizationServerMetadata,
   CredentialIssuerMetadata,
   CredentialOffer,
+  CredentialSupportedSdJwtVc,
   DiscoveryMetadata,
   JwtIssuerMetadata,
 } from '../../../lib/types';
@@ -585,6 +586,11 @@ export const discoveryMetadataRef1: DiscoveryMetadata = {
   authorizationServerMetadata: authorizationServerMetadataRef1,
   jwtIssuerMetadata: jwtIssuerMetadataRef1,
 };
+
+export const credentialSupportedRef1 = credentialIssuerMetadataRef1
+  .credential_configurations_supported[
+  'IdentityCredential'
+] as CredentialSupportedSdJwtVc;
 
 export const encodeCredentialOffer = (credentialOffer: CredentialOffer) => {
   return encodeURIComponent(JSON.stringify(credentialOffer));

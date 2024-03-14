@@ -1,8 +1,6 @@
-import { fetch } from 'cross-fetch';
-
 import { WELL_KNOWN_ENDPOINTS } from '../constants';
 import { InvalidCredentialOffer, OID4VCIServiceError } from '../lib/errors';
-import { composeUrl } from '../utils';
+import { composeUrl, HttpUtil } from '../utils';
 
 import {
   AuthorizationServerMetadata,
@@ -17,8 +15,9 @@ import {
 export class CredentialOfferResolver {
   /**
    * Constructor.
+   * @param httpUtil the service HTTP client
    */
-  public constructor() {}
+  public constructor(private httpUtil: HttpUtil) {}
 
   /**
    * Resolves a credential offer (along with issuer metadata).
@@ -93,15 +92,17 @@ export class CredentialOfferResolver {
   private async fetchCredentialOffer(
     credentialOfferURI: string
   ): Promise<string> {
-    return await fetch(credentialOfferURI).then((response) => {
-      if (!response.ok) {
-        throw new OID4VCIServiceError(
-          InvalidCredentialOffer.DereferencingError
-        );
-      }
+    return await this.httpUtil
+      .plainFetch(credentialOfferURI)
+      .then((response) => {
+        if (!response.ok) {
+          throw new OID4VCIServiceError(
+            InvalidCredentialOffer.DereferencingError
+          );
+        }
 
-      return response.text();
-    });
+        return response.text();
+      });
   }
 
   /**
@@ -274,14 +275,14 @@ export class CredentialOfferResolver {
    * @returns the retrieved metadata as JSON
    */
   private async fetchMetadata(url: string): Promise<object> {
-    return await fetch(url).then((response) => {
-      if (!response.ok) {
-        throw new OID4VCIServiceError(
-          InvalidCredentialOffer.UnresolvableMetadata
-        );
-      }
+    const response = await this.httpUtil.openIdFetch(url);
 
-      return response.json();
-    });
+    if (!response.successBody) {
+      throw new OID4VCIServiceError(
+        InvalidCredentialOffer.UnresolvableMetadata
+      );
+    }
+
+    return response.successBody;
   }
 }
