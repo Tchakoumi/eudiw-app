@@ -202,7 +202,7 @@ describe('OID4VCIServiceImpl', () => {
     });
 
     eventBus.on(OID4VCIServiceEventChannel.RetrieveCredentialDetails, callback);
-    service.retrieveCredentialDetails(storedCredential.display.id as number);
+    service.retrieveCredentialDetails(storedCredential.display.id as IDBValidKey);
 
     // Wait for callback completion
     await new Promise((resolve) => {
