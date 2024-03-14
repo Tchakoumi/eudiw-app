@@ -41,10 +41,10 @@ export class CredentialEventClient {
    * @returns A Promise that resolves with the details of the specified credential, or null if not found.
    */
   public async retrieveCredentialDetails(
-    id: number
+    key: IDBValidKey
   ): Promise<DisplayCredential | null> {
     const record: StoreRecord<OID4VCIServiceDBSchema> | null =
-      await this.storage.findOne(credentialStoreName, id);
+      await this.storage.findOne(credentialStoreName, key);
 
     if (!record) {
       return null;

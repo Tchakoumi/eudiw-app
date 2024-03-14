@@ -109,11 +109,11 @@ export class OID4VCIServiceImpl implements OID4VCIService {
       });
   }
 
-  public retrieveCredentialDetails(id: number): void {
+  public retrieveCredentialDetails(key: IDBValidKey): void {
     const channel = OID4VCIServiceEventChannel.RetrieveCredentialDetails;
 
     this.credentialEventClient
-      .retrieveCredentialDetails(id)
+      .retrieveCredentialDetails(key)
       .then((result) => {
         const response: ServiceResponse = {
           status: ServiceResponseStatus.Success,
