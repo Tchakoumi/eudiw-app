@@ -51,7 +51,7 @@ export class CredentialEventClient {
     }
 
     // Return the `DisplayCredential` format including all properties.
-    return record.value.display;
+    return record.value.display as DisplayCredential;
   }
 
   /**
