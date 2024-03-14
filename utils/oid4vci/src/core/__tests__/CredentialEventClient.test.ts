@@ -15,7 +15,7 @@ describe('CredentialEventClient', () => {
   const client = new CredentialEventClient(storage);
 
   afterEach(async () => {
-    storage.clear(credentialStoreName);
+    await storage.clear(credentialStoreName);
   });
 
   it('should retrieve successfully one credential headers', async () => {

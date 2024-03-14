@@ -13,6 +13,7 @@ import {
 } from '../../lib/types';
 
 import {
+  httpUtil,
   credentialOfferObjectRef1,
   credentialIssuerMetadataRef1,
   authorizationServerMetadataRef1,
@@ -20,10 +21,13 @@ import {
   encodeCredentialOffer,
   nockReplyWithEmptyPayload,
   nockReplyWithMetadataRef1,
+  discoveryMetadataRef1,
 } from './fixtures';
 
 describe('CredentialOfferResolver', () => {
-  const resolver: CredentialOfferResolver = new CredentialOfferResolver();
+  const resolver: CredentialOfferResolver = new CredentialOfferResolver(
+    httpUtil
+  );
 
   beforeAll(async () => {
     nock.disableNetConnect();
@@ -67,7 +71,7 @@ describe('CredentialOfferResolver', () => {
       credentialOfferObjectRef1
     )}`;
 
-    const scope = nock(credentialOfferObjectRef1.credential_issuer);
+    const scope = nock(/./);
     nockReplyWithMetadataRef1(scope);
 
     const resolved = await resolver.resolveCredentialOffer(credentialOffer);
@@ -87,7 +91,7 @@ describe('CredentialOfferResolver', () => {
       'https://trial.authlete.net/api/offer/xxxx'
     )}`;
 
-    const scope = nock(/authlete/)
+    const scope = nock(/./)
       .get(/xxxx/)
       .reply(200, JSON.stringify(credentialOfferObjectRef1));
     nockReplyWithMetadataRef1(scope);
@@ -96,11 +100,7 @@ describe('CredentialOfferResolver', () => {
 
     expect(resolved).toEqual({
       credentialOffer: credentialOfferObjectRef1,
-      discoveryMetadata: {
-        credentialIssuerMetadata: credentialIssuerMetadataRef1,
-        authorizationServerMetadata: authorizationServerMetadataRef1,
-        jwtIssuerMetadata: jwtIssuerMetadataRef1,
-      },
+      discoveryMetadata: discoveryMetadataRef1,
     });
   });
 
@@ -252,7 +252,7 @@ describe('CredentialOfferResolver', () => {
       credentialOfferObjectRef1
     )}`;
 
-    const scope = nock(credentialOfferObjectRef1.credential_issuer)
+    const scope = nock(/./)
       .get((uri) =>
         uri.endsWith(WELL_KNOWN_ENDPOINTS.OPENID_PROVIDER_CONFIGURATION)
       )
@@ -263,11 +263,7 @@ describe('CredentialOfferResolver', () => {
 
     const resolved = await resolver.resolveCredentialOffer(credentialOffer);
 
-    expect(resolved.discoveryMetadata).toEqual({
-      credentialIssuerMetadata: credentialIssuerMetadataRef1,
-      authorizationServerMetadata: authorizationServerMetadataRef1,
-      jwtIssuerMetadata: jwtIssuerMetadataRef1,
-    });
+    expect(resolved.discoveryMetadata).toEqual(discoveryMetadataRef1);
   });
 
   it('should resolve referenced authorization server', async () => {
@@ -290,7 +286,7 @@ describe('CredentialOfferResolver', () => {
       authorization_servers: ['https://auth.authlete.com'],
     };
 
-    const scope = nock(/authlete/)
+    const scope = nock(/./)
       .get((uri) =>
         uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
       )
@@ -321,7 +317,7 @@ describe('CredentialOfferResolver', () => {
       credentialOfferObject
     )}`;
 
-    const scope = nock(credentialOfferObject.credential_issuer)
+    const scope = nock(/./)
       .get(/./)
       .reply(200, JSON.stringify(credentialOfferObject));
     nockReplyWithMetadataRef1(scope);
@@ -342,7 +338,7 @@ describe('CredentialOfferResolver', () => {
       authorization_servers: [credentialOfferObjectRef1.credential_issuer],
     };
 
-    const scope = nock(credentialOfferObjectRef1.credential_issuer)
+    const scope = nock(/./)
       .get((uri) =>
         uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
       )
@@ -373,7 +369,7 @@ describe('CredentialOfferResolver', () => {
       grant_types_supported: [],
     };
 
-    nock(credentialOfferObjectRef1.credential_issuer)
+    nock(/./)
       .get((uri) =>
         uri.endsWith(WELL_KNOWN_ENDPOINTS.CREDENTIAL_ISSUER_METADATA)
       )

@@ -2,6 +2,11 @@ import { ConfigClient } from '../ConfigClient';
 import { configData } from './fixtures';
 
 describe('ConfigClient', () => {
+  it('should reliably retrieve a proxy server', () => {
+    const configClient = new ConfigClient(configData);
+    expect(configClient.getProxyServer()).toBe(configData.proxyServer);
+  });
+
   it('should match client IDs', () => {
     let clientId: string | undefined;
 
@@ -36,10 +41,10 @@ describe('ConfigClient', () => {
     expect(clientId).toBeUndefined();
   });
 
-  it('should client ID to undefined on missing registry', () => {
+  it('should client ID to undefined on empty registry', () => {
     const configClient = new ConfigClient({
       ...configData,
-      clientIdRegistry: undefined,
+      clientIdRegistry: [],
     });
 
     const clientId = configClient.getClientId('https://trial.authlete.net');

@@ -23,7 +23,6 @@ export const sdJwtProcessedCredentialObjRef2: SdJwtProcessedCredential = {
     issuer: 'trial.authlete.net',
     issued_at: 1708613098,
     claims: {
-      sub: '1004',
       given_name: 'Henry',
       family_name: 'Silverstone',
       birthdate: '1991-11-06',

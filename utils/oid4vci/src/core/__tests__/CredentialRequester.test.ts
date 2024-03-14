@@ -1,24 +1,29 @@
 import nock from 'nock';
 
+import { DBConnection } from '../../database/DBConnection';
 import { credentialStoreName, identityStoreName } from '../../database/schema';
 import { DiscoveryMetadata, GrantType } from '../../lib/types';
 import { CredentialRequester } from '../CredentialRequester';
 
 import {
   configClient,
+  credentialOfferObjectRef1,
+  credentialResponseRef1,
+  credentialResponseRef2,
+  discoveryMetadataRef1,
+  httpUtil,
   jwksRef1,
   jwksRef2,
   tokenResponseRef1,
-  discoveryMetadataRef1,
-  credentialResponseRef1,
-  credentialResponseRef2,
-  credentialOfferObjectRef1,
 } from './fixtures';
-import { DBConnection } from '../../database/DBConnection';
 
 describe('CredentialRequester', () => {
   const storage = DBConnection.getStorage();
-  const credentialRequester = new CredentialRequester(configClient, storage);
+  const credentialRequester = new CredentialRequester(
+    configClient,
+    httpUtil,
+    storage
+  );
 
   beforeAll(async () => {
     nock.disableNetConnect();
@@ -40,7 +45,7 @@ describe('CredentialRequester', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -74,7 +79,7 @@ describe('CredentialRequester', () => {
       },
     };
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -106,7 +111,7 @@ describe('CredentialRequester', () => {
       },
     };
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -140,7 +145,7 @@ describe('CredentialRequester', () => {
       },
     };
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -180,7 +185,7 @@ describe('CredentialRequester', () => {
       },
     };
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -214,7 +219,7 @@ describe('CredentialRequester', () => {
       },
     };
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -234,7 +239,7 @@ describe('CredentialRequester', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'org.iso.18013.5.1.mDL';
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -258,7 +263,7 @@ describe('CredentialRequester', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -311,9 +316,7 @@ describe('CredentialRequester', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'InvalidKey';
 
-    nock(credentialOffer.credential_issuer)
-      .post(/token/)
-      .reply(200, tokenResponseRef1);
+    nock(/./).post(/token/).reply(200, tokenResponseRef1);
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
@@ -340,9 +343,7 @@ describe('CredentialRequester', () => {
     if (!credentialResponseEncryption) throw 'unreachable';
     credentialResponseEncryption.encryption_required = true;
 
-    nock(credentialOffer.credential_issuer)
-      .post(/token/)
-      .reply(200, tokenResponseRef1);
+    nock(/./).post(/token/).reply(200, tokenResponseRef1);
 
     const promise = credentialRequester.requestCredentialIssuance(
       { credentialOffer, discoveryMetadata },
@@ -369,7 +370,7 @@ describe('CredentialRequester', () => {
       jwtIssuerMetadata: undefined,
     };
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -391,7 +392,7 @@ describe('CredentialRequester', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
