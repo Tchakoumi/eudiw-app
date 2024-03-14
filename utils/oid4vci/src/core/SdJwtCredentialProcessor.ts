@@ -2,7 +2,12 @@ import { StorageFactory, StoreRecord } from '@datev/storage';
 import sdjwt from '@hopae/sd-jwt';
 import * as jose from 'jose';
 import { OID4VCIServiceError } from '../lib/errors';
-import { DisplayCredential, SdJwtProcessedCredential } from '../lib/types';
+import {
+  CredentialSupportedSdJwtVc,
+  DisplayCredential,
+  SdJwtProcessedCredential,
+} from '../lib/types';
+
 import {
   OID4VCIServiceDBSchema,
   credentialStoreName,
@@ -24,18 +29,21 @@ export class SdJwtCredentialProcessor {
    * Validates, decodes, and stores credential.
    * @param credential the credential to process
    * @param verifyingKeys the issuer keys to validate the credential
+   * @param credentialSupported the credential configuration metadata associated
    * @param displayCredentialStarter a starter for displayable fields
    * @returns the credential under its processed format
    */
   public async processCredential(
     credential: string,
     verifyingKeys: jose.JWK[],
+    credentialSupported: CredentialSupportedSdJwtVc,
     displayCredentialStarter?: DisplayCredential
   ): Promise<SdJwtProcessedCredential> {
     await this.validateCredential(credential, verifyingKeys);
 
     const decoded = await this.decodeCredential(
       credential,
+      credentialSupported,
       displayCredentialStarter
     );
 
@@ -83,20 +91,27 @@ export class SdJwtCredentialProcessor {
   /**
    * Decodes SD-JWT credential.
    * @param credential the credential to decode
+   * @param credentialSupported the credential configuration metadata associated
    * @param displayCredentialStarter a starter for displayable fields
    * @returns a persistable representation of the credential
    */
   private async decodeCredential(
     credential: string,
+    credentialSupported: CredentialSupportedSdJwtVc,
     displayCredentialStarter?: DisplayCredential
   ): Promise<SdJwtProcessedCredential> {
+    // TODO: Handle nested claims
+    const expectedClaims = Object.keys(credentialSupported.claims ?? {});
+
     const decoded = sdjwt.decode(credential);
     const claims: Record<string, unknown> = await decoded.getClaims();
 
     const disclosed: Record<string, unknown> = {};
     for (const disclosure of decoded.disclosures ?? []) {
       if (disclosure.key) {
-        disclosed[disclosure.key] = disclosure.value;
+        if (expectedClaims.includes(disclosure.key)) {
+          disclosed[disclosure.key] = disclosure.value;
+        }
       } else {
         // TODO! Handle array elements (?)
       }

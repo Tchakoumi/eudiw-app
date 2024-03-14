@@ -1,4 +1,5 @@
-import { fetch } from 'cross-fetch';
+export * from './Encoding';
+export * from './HttpUtil';
 
 /**
  * Attaches a path to a base URL, avoiding double slash.
@@ -7,8 +8,8 @@ import { fetch } from 'cross-fetch';
  * @returns a complete URL with path appended to baseUrl
  */
 export const composeUrl = (baseUrl: string, path: string): string => {
-  const trimmedBaseUrl = baseUrl.replace(/\/$/, '');
-  const trimmedPath = path.replace(/^\//, '');
+  const trimmedBaseUrl = baseUrl.trim().replace(/\/$/, '');
+  const trimmedPath = path.trim().replace(/^\//, '');
 
   return `${trimmedBaseUrl}/${trimmedPath}`;
 };
@@ -18,23 +19,4 @@ export const composeUrl = (baseUrl: string, path: string): string => {
  */
 export const currentTimestampInSecs = (): number => {
   return Math.floor(new Date().getTime() / 1000);
-};
-
-/**
- * Fetches resource into data URL (Base64).
- * @param uri the URI to fetch data from
- * @returns the data URL of the response payload
- */
-export const fetchIntoDataUrl = async (uri: string): Promise<string> => {
-  return await fetch(uri).then(async (response) => {
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
-    }
-
-    const contentType = response.headers.get('content-type');
-    const data = await response.arrayBuffer();
-    const buffer = Buffer.from(data).toString('base64');
-
-    return `data:${contentType};base64,${buffer}`;
-  });
 };

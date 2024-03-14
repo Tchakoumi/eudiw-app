@@ -1,19 +1,24 @@
-import { OID4VCIServiceError, InvalidCredentialOffer } from '../lib/errors';
-import { convertJsonToURI } from '../utils/Encoding';
-import { formPost } from '../utils/HttpUtils';
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../lib/errors';
+import { HttpUtil, convertJsonToURI } from '../utils';
 
 import {
   AccessTokenRequest,
+  AccessTokenResponse,
   AuthorizationServerOpts,
   EndpointMetadata,
   GrantType,
   IssuerOpts,
-  PRE_AUTH_CODE_LITERAL,
   OpenIDResponse,
-  AccessTokenResponse,
+  PRE_AUTH_CODE_LITERAL,
 } from '../lib/types';
 
 export class AccessTokenClient {
+  /**
+   * Constructor.
+   * @param httpUtil the service HTTP client
+   */
+  public constructor(private httpUtil: HttpUtil) {}
+
   public async acquireAccessTokenUsingRequest({
     accessTokenRequest,
     metadata,
@@ -40,7 +45,7 @@ export class AccessTokenClient {
     requestTokenURL: string,
     accessTokenRequest: AccessTokenRequest
   ): Promise<OpenIDResponse<AccessTokenResponse>> {
-    return await formPost(
+    return await this.httpUtil.formPost(
       requestTokenURL,
       convertJsonToURI(accessTokenRequest)
     );

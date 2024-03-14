@@ -1,6 +1,10 @@
 import { DBConnection } from '../../database/DBConnection';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
-import { credentialResponseRef1, jwksRef1 } from './fixtures';
+import {
+  credentialResponseRef1,
+  credentialSupportedRef1,
+  jwksRef1,
+} from './fixtures';
 
 describe('SdJwtCredentialProcessor', () => {
   const storage = DBConnection.getStorage();
@@ -12,7 +16,8 @@ describe('SdJwtCredentialProcessor', () => {
 
     const processed = await processor.processCredential(
       credential,
-      verifyingKeys
+      verifyingKeys,
+      credentialSupportedRef1
     );
 
     expect(processed.display.claims).toEqual({});

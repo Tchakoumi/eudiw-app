@@ -1,9 +1,13 @@
 import nock from 'nock';
 
 import { eventBus } from '@datev/event-bus';
+import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
+import { DBConnection } from '../../database/DBConnection';
+import { credentialStoreName, identityStoreName } from '../../database/schema';
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
 import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
 import { InvalidCredentialOffer } from '../errors';
+
 import {
   DisplayCredential,
   ServiceResponse,
@@ -11,22 +15,18 @@ import {
 } from '../types';
 
 import {
+  credentialContentObjRef3,
+  credentialHeaderObjRef2,
   credentialOfferObjectRef1,
   credentialResponseRef1,
   discoveryMetadataRef1,
   encodeCredentialOffer,
   jwksRef1,
   nockReplyWithMetadataRef1,
-  tokenResponseRef1,
   sdJwtProcessedCredentialObjRef1,
-  credentialHeaderObjRef2,
   sdJwtProcessedCredentialObjRef3,
-  credentialContentObjRef3,
+  tokenResponseRef1,
 } from '../../core/__tests__/fixtures';
-
-import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
-import { DBConnection } from '../../database/DBConnection';
-import { credentialStoreName, identityStoreName } from '../../database/schema';
 
 describe('OID4VCIServiceImpl', () => {
   const storage = DBConnection.getStorage();
@@ -48,7 +48,7 @@ describe('OID4VCIServiceImpl', () => {
       credentialOfferObjectRef1
     )}`;
 
-    const scope = nock(credentialOfferObjectRef1.credential_issuer);
+    const scope = nock(/./);
     nockReplyWithMetadataRef1(scope);
 
     const callback = jest.fn(() => {
@@ -100,7 +100,7 @@ describe('OID4VCIServiceImpl', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';
 
-    nock(credentialOffer.credential_issuer)
+    nock(/./)
       .post(/token/)
       .reply(200, tokenResponseRef1)
       .post(/credential/)
@@ -129,7 +129,11 @@ describe('OID4VCIServiceImpl', () => {
     expect(response).toBeDefined();
     response = response as unknown as ServiceResponse;
     expect(response.status).toEqual(ServiceResponseStatus.Success);
-    expect((response.payload as DisplayCredential).id).toEqual(1);
+    expect((response.payload as DisplayCredential).claims).toEqual({
+      birthdate: '1991-11-06',
+      family_name: 'Silverstone',
+      given_name: 'Inga',
+    });
   });
 
   it('should channel back errors (credential issuance request)', async () => {
@@ -137,7 +141,7 @@ describe('OID4VCIServiceImpl', () => {
     const discoveryMetadata = discoveryMetadataRef1;
     const credentialTypeKey = 'IdentityCredential';
 
-    nock(credentialOffer.credential_issuer).post(/token/).reply(401);
+    nock(/./).post(/token/).reply(401);
 
     const callback = jest.fn(() => {
       eventBus.emit('complete');
