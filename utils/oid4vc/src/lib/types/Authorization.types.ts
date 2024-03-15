@@ -42,7 +42,7 @@ export interface AccessTokenRequest {
   client_id?: string;
   code?: string;
   code_verifier?: string;
-  'pre-authorized_code': string;
+  [PRE_AUTH_CODE_LITERAL]: string;
   redirect_uri?: string;
   tx_code?: string;
 }
@@ -56,3 +56,5 @@ export interface IssuerOpts {
   issuer: string;
   tokenEndpoint?: string;
 }
+
+export const PRE_AUTH_CODE_LITERAL = 'pre-authorized_code';

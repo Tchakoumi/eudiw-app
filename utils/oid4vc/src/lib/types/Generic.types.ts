@@ -4,5 +4,3 @@ export interface ErrorResponse extends Response {
   error_uri?: string;
   state?: string;
 }
-
-export const PRE_AUTH_CODE_LITERAL = 'pre-authorized_code';
