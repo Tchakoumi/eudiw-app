@@ -3,7 +3,7 @@ import {
   CredentialSubjectDisplay,
   CredentialSupportedSdJwtVc,
   IssuerCredentialSubject,
-} from '@datev/oid4vci';
+} from '@datev/oid4vc';
 import {
   ICredentialCard,
   ISupportedCredential,
