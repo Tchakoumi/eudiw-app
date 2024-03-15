@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { WELL_KNOWN_ENDPOINTS } from '../../../constants';
+import { WELL_KNOWN_ENDPOINTS } from '../../../../constants';
 
 import {
   AuthorizationServerMetadata,
@@ -8,7 +8,7 @@ import {
   CredentialSupportedSdJwtVc,
   DiscoveryMetadata,
   JwtIssuerMetadata,
-} from '../../../lib/types';
+} from '../../../../lib/types';
 
 export const credentialOfferObjectRef1: CredentialOffer = {
   credential_issuer: 'https://trial.authlete.net',

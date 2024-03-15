@@ -1,8 +1,8 @@
 import { EventEmitter } from 'eventemitter3';
 import { ConfigClient } from '../core/ConfigClient';
-import { CredentialEventClient } from '../core/CredentialEventClient';
-import { CredentialOfferResolver } from '../core/CredentialOfferResolver';
-import { CredentialRequester } from '../core/CredentialRequester';
+import { CredentialEventClient } from '../core/issuance/CredentialEventClient';
+import { CredentialOfferResolver } from '../core/issuance/CredentialOfferResolver';
+import { CredentialRequester } from '../core/issuance/CredentialRequester';
 import { DBConnection } from '../database/DBConnection';
 import { HttpUtil } from '../utils';
 import { OID4VCIService, OID4VCIServiceEventChannel } from './OID4VCIService';

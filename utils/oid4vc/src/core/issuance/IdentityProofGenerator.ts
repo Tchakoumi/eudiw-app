@@ -1,10 +1,10 @@
 import * as jose from 'jose';
 
-import { ConfigClient } from './ConfigClient';
-import { OID4VCIServiceError } from '../lib/errors';
-import { OID4VCI_PROOF_TYP } from '../constants';
-import { currentTimestampInSecs } from '../utils';
-import { CredentialSupported, JwtKeyProof, KeyProof } from '../lib/types';
+import { ConfigClient } from '../ConfigClient';
+import { OID4VCIServiceError } from '../../lib/errors';
+import { OID4VCI_PROOF_TYP } from '../../constants';
+import { currentTimestampInSecs } from '../../utils';
+import { CredentialSupported, JwtKeyProof, KeyProof } from '../../lib/types';
 import { IdentityManager } from './IdentityManager';
 
 /**

@@ -1,7 +1,7 @@
 import nock from 'nock';
 
 import { eventBus } from '@datev/event-bus';
-import { SdJwtCredentialProcessor } from '../../core/SdJwtCredentialProcessor';
+import { SdJwtCredentialProcessor } from '../../core/issuance/SdJwtCredentialProcessor';
 import { DBConnection } from '../../database/DBConnection';
 import { credentialStoreName, identityStoreName } from '../../database/schema';
 import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
@@ -26,7 +26,7 @@ import {
   sdJwtProcessedCredentialObjRef1,
   sdJwtProcessedCredentialObjRef3,
   tokenResponseRef1,
-} from '../../core/__tests__/fixtures';
+} from '../../core/issuance/__tests__/fixtures';
 
 describe('OID4VCIServiceImpl', () => {
   const storage = DBConnection.getStorage();

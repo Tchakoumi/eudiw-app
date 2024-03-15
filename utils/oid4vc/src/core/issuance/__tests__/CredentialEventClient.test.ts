@@ -1,5 +1,5 @@
-import { DBConnection } from '../../database/DBConnection';
-import { credentialStoreName } from '../../database/schema';
+import { DBConnection } from '../../../database/DBConnection';
+import { credentialStoreName } from '../../../database/schema';
 import { CredentialEventClient } from '../CredentialEventClient';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
 

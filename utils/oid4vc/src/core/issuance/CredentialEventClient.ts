@@ -2,8 +2,8 @@ import { StorageFactory, StoreRecord } from '@datev/storage';
 import {
   OID4VCIServiceDBSchema,
   credentialStoreName,
-} from '../database/schema';
-import { DisplayCredential } from '../lib/types';
+} from '../../database/schema';
+import { DisplayCredential } from '../../lib/types';
 
 /**
  * This class is responsible for retrieving credentials for the landing page

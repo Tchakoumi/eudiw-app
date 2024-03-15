@@ -1,6 +1,6 @@
-import { WELL_KNOWN_ENDPOINTS } from '../constants';
-import { InvalidCredentialOffer, OID4VCIServiceError } from '../lib/errors';
-import { composeUrl, HttpUtil } from '../utils';
+import { WELL_KNOWN_ENDPOINTS } from '../../constants';
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../../lib/errors';
+import { composeUrl, HttpUtil } from '../../utils';
 
 import {
   AuthorizationServerMetadata,
@@ -10,7 +10,7 @@ import {
   GrantType,
   JwtIssuerMetadata,
   ResolvedCredentialOffer,
-} from '../lib/types';
+} from '../../lib/types';
 
 export class CredentialOfferResolver {
   /**

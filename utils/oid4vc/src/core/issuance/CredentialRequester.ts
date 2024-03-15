@@ -1,11 +1,11 @@
 import * as jose from 'jose';
 
 import { StorageFactory } from '@datev/storage';
-import { OID4VCIServiceDBSchema } from '../database/schema';
-import { OID4VCIServiceError } from '../lib/errors';
-import { HttpUtil } from '../utils';
+import { OID4VCIServiceDBSchema } from '../../database/schema';
+import { OID4VCIServiceError } from '../../lib/errors';
+import { HttpUtil } from '../../utils';
 import { AccessTokenClient } from './AccessTokenClient';
-import { ConfigClient } from './ConfigClient';
+import { ConfigClient } from '../ConfigClient';
 import { StoreIdentityManager } from './IdentityManager';
 import { IdentityProofGenerator } from './IdentityProofGenerator';
 import { SdJwtCredentialProcessor } from './SdJwtCredentialProcessor';
@@ -28,7 +28,7 @@ import {
   JWKSet,
   OpenIDResponse,
   ResolvedCredentialOffer,
-} from '../lib/types';
+} from '../../lib/types';
 
 /**
  * This class is responsible for requesting credentials

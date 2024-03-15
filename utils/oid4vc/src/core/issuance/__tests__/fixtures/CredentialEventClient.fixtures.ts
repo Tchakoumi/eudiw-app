@@ -1,7 +1,7 @@
 import {
   DisplayCredential,
   SdJwtProcessedCredential,
-} from '../../../lib/types';
+} from '../../../../lib/types';
 
 export const sdJwtProcessedCredentialObjRef1: SdJwtProcessedCredential = {
   encoded:

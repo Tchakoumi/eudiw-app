@@ -1,5 +1,5 @@
-import { DBConnection } from '../../database/DBConnection';
-import { identityStoreName } from '../../database/schema';
+import { DBConnection } from '../../../database/DBConnection';
+import { identityStoreName } from '../../../database/schema';
 import { IdentityManager, StoreIdentityManager } from '../IdentityManager';
 
 describe('IdentityManager', () => {

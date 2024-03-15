@@ -1,8 +1,11 @@
 import nock from 'nock';
 
-import { DBConnection } from '../../database/DBConnection';
-import { credentialStoreName, identityStoreName } from '../../database/schema';
-import { DiscoveryMetadata, GrantType } from '../../lib/types';
+import { DBConnection } from '../../../database/DBConnection';
+import {
+  credentialStoreName,
+  identityStoreName,
+} from '../../../database/schema';
+import { DiscoveryMetadata, GrantType } from '../../../lib/types';
 import { CredentialRequester } from '../CredentialRequester';
 
 import {

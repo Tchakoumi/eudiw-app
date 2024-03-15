@@ -1,4 +1,4 @@
-import { DBConnection } from '../../database/DBConnection';
+import { DBConnection } from '../../../database/DBConnection';
 import { SdJwtCredentialProcessor } from '../SdJwtCredentialProcessor';
 import {
   credentialResponseRef1,

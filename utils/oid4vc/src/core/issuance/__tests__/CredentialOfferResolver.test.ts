@@ -1,7 +1,7 @@
 import nock from 'nock';
 
-import { WELL_KNOWN_ENDPOINTS } from '../../constants';
-import { InvalidCredentialOffer } from '../../lib/errors';
+import { WELL_KNOWN_ENDPOINTS } from '../../../constants';
+import { InvalidCredentialOffer } from '../../../lib/errors';
 import { CredentialOfferResolver } from '../CredentialOfferResolver';
 
 import {
@@ -10,7 +10,7 @@ import {
   CredentialOffer,
   ResolvedCredentialOffer,
   TxCodeInputMode,
-} from '../../lib/types';
+} from '../../../lib/types';
 
 import {
   httpUtil,

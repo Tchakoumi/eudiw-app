@@ -2,18 +2,18 @@ import sdjwt from '@hopae/sd-jwt';
 import * as jose from 'jose';
 
 import { StorageFactory, StoreRecord } from '@datev/storage';
-import { OID4VCIServiceError } from '../lib/errors';
+import { OID4VCIServiceError } from '../../lib/errors';
 
 import {
   OID4VCIServiceDBSchema,
   credentialStoreName,
-} from '../database/schema';
+} from '../../database/schema';
 
 import {
   CredentialSupportedSdJwtVc,
   DisplayCredential,
   SdJwtProcessedCredential,
-} from '../lib/types';
+} from '../../lib/types';
 
 /**
  * This class is responsible for processing, ie validating, decoding, and

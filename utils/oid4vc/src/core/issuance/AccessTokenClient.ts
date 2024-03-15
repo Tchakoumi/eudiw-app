@@ -1,5 +1,5 @@
-import { InvalidCredentialOffer, OID4VCIServiceError } from '../lib/errors';
-import { HttpUtil, convertJsonToURI } from '../utils';
+import { InvalidCredentialOffer, OID4VCIServiceError } from '../../lib/errors';
+import { HttpUtil, convertJsonToURI } from '../../utils';
 
 import {
   AccessTokenRequest,
@@ -10,7 +10,7 @@ import {
   IssuerOpts,
   OpenIDResponse,
   PRE_AUTH_CODE_LITERAL,
-} from '../lib/types';
+} from '../../lib/types';
 
 export class AccessTokenClient {
   /**

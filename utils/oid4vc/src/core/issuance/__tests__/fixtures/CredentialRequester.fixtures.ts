@@ -2,7 +2,7 @@ import {
   AccessTokenResponse,
   CredentialResponse,
   JWKSet,
-} from '../../../lib/types';
+} from '../../../../lib/types';
 
 export const tokenResponseRef1: AccessTokenResponse = {
   access_token: 'ZoR1S8Its2dfbhdCMf5uGkUbB0TBWpctOUv-chU1-6M',
