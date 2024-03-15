@@ -23,6 +23,7 @@ export interface RequestObject extends AuthorizationRequestCommonPayload {
   presentation_definition_uri?: string;
 
   id_token_type?: string;
+  response_uri?: string;
 }
 
 export interface AuthorizationRequestCommonPayload
