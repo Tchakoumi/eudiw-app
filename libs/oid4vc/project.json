@@ -1,17 +1,17 @@
 {
-  "name": "event-bus",
+  "name": "oid4vc",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "utils/event-bus/src",
+  "sourceRoot": "libs/oid4vc/src",
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:swc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/utils/event-bus",
-        "main": "utils/event-bus/src/index.ts",
-        "tsConfig": "utils/event-bus/tsconfig.lib.json",
-        "assets": ["utils/event-bus/*.md"]
+        "outputPath": "dist/libs/oid4vc",
+        "main": "libs/oid4vc/src/index.ts",
+        "tsConfig": "libs/oid4vc/tsconfig.lib.json",
+        "assets": ["libs/oid4vc/*.md"]
       }
     },
     "lint": {
@@ -22,7 +22,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "utils/event-bus/jest.config.ts"
+        "jestConfig": "libs/oid4vc/jest.config.ts"
       }
     }
   },

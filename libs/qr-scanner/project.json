@@ -1,7 +1,7 @@
 {
   "name": "qr-scanner",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "utils/qr-scanner/src",
+  "sourceRoot": "libs/qr-scanner/src",
   "projectType": "library",
   "tags": [],
   "targets": {

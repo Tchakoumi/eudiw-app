@@ -1,17 +1,17 @@
 {
-  "name": "storage",
+  "name": "event-bus",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "utils/storage/src",
+  "sourceRoot": "libs/event-bus/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nx/js:swc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/utils/storage",
-        "main": "utils/storage/src/index.ts",
-        "tsConfig": "utils/storage/tsconfig.lib.json",
-        "assets": ["utils/storage/*.md"]
+        "outputPath": "dist/libs/event-bus",
+        "main": "libs/event-bus/src/index.ts",
+        "tsConfig": "libs/event-bus/tsconfig.lib.json",
+        "assets": ["libs/event-bus/*.md"]
       }
     },
     "lint": {
@@ -22,7 +22,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "utils/storage/jest.config.ts"
+        "jestConfig": "libs/event-bus/jest.config.ts"
       }
     }
   },
