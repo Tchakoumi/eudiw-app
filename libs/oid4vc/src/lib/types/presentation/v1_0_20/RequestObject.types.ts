@@ -1,5 +1,5 @@
-import { PresentationDefinition } from './PresentationExchange.types';
-import { RequestClientMetadata } from './RequestClientMetadata.types';
+import { PresentationDefinition } from '../PresentationExchange.types';
+import { RequestClientMetadata } from '../RequestClientMetadata.types';
 import { ResponseMode } from './ResponseType.types';
 
 export enum ClientIdScheme {
