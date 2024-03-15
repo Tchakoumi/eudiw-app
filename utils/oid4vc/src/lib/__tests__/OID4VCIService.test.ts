@@ -4,8 +4,11 @@ import { eventBus } from '@datev/event-bus';
 import { SdJwtCredentialProcessor } from '../../core/issuance/SdJwtCredentialProcessor';
 import { DBConnection } from '../../database/DBConnection';
 import { credentialStoreName, identityStoreName } from '../../database/schema';
-import { OID4VCIService, OID4VCIServiceEventChannel } from '../OID4VCIService';
-import { OID4VCIServiceImpl } from '../OID4VCIServiceImpl';
+import {
+  OID4VCIInterface,
+  OID4VCIServiceEventChannel,
+} from '../types/OID4VCIInterface';
+import { OID4VCIService } from '../OID4VCIService';
 import { InvalidCredentialOffer } from '../errors';
 
 import {
@@ -28,9 +31,9 @@ import {
   tokenResponseRef1,
 } from '../../core/issuance/__tests__/fixtures';
 
-describe('OID4VCIServiceImpl', () => {
+describe('OID4VCIService', () => {
   const storage = DBConnection.getStorage();
-  const service: OID4VCIService = new OID4VCIServiceImpl(eventBus);
+  const service: OID4VCIInterface = new OID4VCIService(eventBus);
   const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
 
   beforeAll(async () => {
