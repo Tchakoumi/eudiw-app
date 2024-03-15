@@ -1,6 +1,6 @@
 import * as jose from 'jose';
 import { DBSchema } from 'idb';
-import { ProcessedCredential } from '../../lib/types';
+import { ProcessedCredential } from '../../lib/types/issuance';
 
 export interface OID4VCIServiceDBSchema extends DBSchema {
   credentialStore: {

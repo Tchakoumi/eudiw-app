@@ -10,7 +10,7 @@ import {
   GrantType,
   JwtIssuerMetadata,
   ResolvedCredentialOffer,
-} from '../../lib/types';
+} from '../../lib/types/issuance';
 
 export class CredentialOfferResolver {
   /**

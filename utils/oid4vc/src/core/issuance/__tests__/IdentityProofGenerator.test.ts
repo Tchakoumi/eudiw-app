@@ -2,7 +2,7 @@ import * as jose from 'jose';
 
 import { DBConnection } from '../../../database/DBConnection';
 import { identityStoreName } from '../../../database/schema';
-import { CredentialSupported } from '../../../lib/types';
+import { CredentialSupported } from '../../../lib/types/issuance';
 import { currentTimestampInSecs } from '../../../utils';
 import { StoreIdentityManager } from '../IdentityManager';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';

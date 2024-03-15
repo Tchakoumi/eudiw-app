@@ -12,7 +12,7 @@ import {
   ResolvedCredentialOffer,
   ServiceResponse,
   ServiceResponseStatus,
-} from './types';
+} from './types/issuance';
 
 /**
  * Concrete implementation of the OID4VCI service.

@@ -3,7 +3,7 @@ import {
   OID4VCIServiceDBSchema,
   credentialStoreName,
 } from '../../database/schema';
-import { DisplayCredential } from '../../lib/types';
+import { DisplayCredential } from '../../lib/types/issuance';
 
 /**
  * This class is responsible for retrieving credentials for the landing page

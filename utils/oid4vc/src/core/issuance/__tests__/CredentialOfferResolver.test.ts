@@ -10,7 +10,7 @@ import {
   CredentialOffer,
   ResolvedCredentialOffer,
   TxCodeInputMode,
-} from '../../../lib/types';
+} from '../../../lib/types/issuance';
 
 import {
   httpUtil,

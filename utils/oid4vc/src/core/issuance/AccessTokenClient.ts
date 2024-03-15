@@ -10,7 +10,7 @@ import {
   IssuerOpts,
   OpenIDResponse,
   PRE_AUTH_CODE_LITERAL,
-} from '../../lib/types';
+} from '../../lib/types/issuance';
 
 export class AccessTokenClient {
   /**

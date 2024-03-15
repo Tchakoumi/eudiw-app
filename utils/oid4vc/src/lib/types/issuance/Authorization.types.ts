@@ -1,4 +1,4 @@
-import { ErrorResponse } from './Generic.types';
+import { ErrorResponse } from '../Generic.types';
 
 export enum Encoding {
   FORM_URL_ENCODED = 'application/x-www-form-urlencoded',

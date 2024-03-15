@@ -12,7 +12,7 @@ import {
   DisplayCredential,
   ServiceResponse,
   ServiceResponseStatus,
-} from '../types';
+} from '../types/issuance';
 
 import {
   credentialContentObjRef3,

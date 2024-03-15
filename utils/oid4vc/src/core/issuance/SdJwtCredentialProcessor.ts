@@ -13,7 +13,7 @@ import {
   CredentialSupportedSdJwtVc,
   DisplayCredential,
   SdJwtProcessedCredential,
-} from '../../lib/types';
+} from '../../lib/types/issuance';
 
 /**
  * This class is responsible for processing, ie validating, decoding, and

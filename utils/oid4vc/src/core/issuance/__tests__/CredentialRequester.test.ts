@@ -5,7 +5,7 @@ import {
   credentialStoreName,
   identityStoreName,
 } from '../../../database/schema';
-import { DiscoveryMetadata, GrantType } from '../../../lib/types';
+import { DiscoveryMetadata, GrantType } from '../../../lib/types/issuance';
 import { CredentialRequester } from '../CredentialRequester';
 
 import {

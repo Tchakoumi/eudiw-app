@@ -28,7 +28,7 @@ import {
   JWKSet,
   OpenIDResponse,
   ResolvedCredentialOffer,
-} from '../../lib/types';
+} from '../../lib/types/issuance';
 
 /**
  * This class is responsible for requesting credentials

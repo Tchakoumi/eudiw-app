@@ -9,7 +9,7 @@ import {
   AccessTokenResponse,
   GrantType,
   OpenIDResponse,
-} from '../../../lib/types';
+} from '../../../lib/types/issuance';
 
 const MOCK_URL = 'https://trial.authlete.net/api';
 const UNIT_TEST_TIMEOUT = 30000;

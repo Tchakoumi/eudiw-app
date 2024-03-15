@@ -1,5 +1,5 @@
 import { composeUrl } from '.';
-import { Encoding, OpenIDResponse } from '../lib/types';
+import { Encoding, OpenIDResponse } from '../lib/types/issuance';
 import { fetch } from 'cross-fetch';
 
 /**

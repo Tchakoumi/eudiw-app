@@ -1,4 +1,4 @@
-import { GrantType, ResolvedCredentialOffer } from '../lib/types';
+import { GrantType, ResolvedCredentialOffer } from './types/issuance';
 
 /**
  * Event channels on which implementations are to send back responses.
