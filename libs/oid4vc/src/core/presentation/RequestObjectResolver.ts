@@ -13,8 +13,19 @@ export class RequestObjectResolver {
    */
   public constructor(private httpUtil: HttpUtil) {}
 
-  async resolveRequestObject(requestObject: string) {
-    const parsedRequestObject = await this.parsedRequestObject(requestObject);
+  async resolveRequestObject(requestObjectUri: string) {
+    const parsedRequestObject = await this.parsedRequestObjectUri(
+      requestObjectUri
+    );
+
+    if (
+      !parsedRequestObject.redirect_uri &&
+      !parsedRequestObject.response_uri
+    ) {
+      throw new OID4VCIServiceError(
+        PresentationError.InvalidRequestObjectResponseParams
+      );
+    }
 
     if (parsedRequestObject.client_metadata_uri) {
       parsedRequestObject.client_metadata = await this.resolvedClientMetadata(
@@ -31,18 +42,34 @@ export class RequestObjectResolver {
     return parsedRequestObject;
   }
 
-  async parsedRequestObject(encodedUri: string) {
+  async parsedRequestObjectUri(encodedUri: string) {
     const url = new URL(encodedUri);
     if (!url.search) {
       throw new OID4VCIServiceError(PresentationError.MissingQueryString);
     }
 
     const params = new URLSearchParams(url.search);
-    if (!params.has('request_uri')) {
+    const requestUri = params.get('request_uri');
+    const responseType = params.get('response_type');
+
+    if (!requestUri && !responseType) {
       throw new OID4VCIServiceError(PresentationError.MissingRequiredParams);
     }
 
-    const requestUri = params.get('request_uri');
+    let parsedRequestObject: RequestObject = {};
+    if (requestUri) {
+      parsedRequestObject = await this.fetchRequestObject(requestUri);
+    } else {
+      //The presence of the `response_type` params means the request object was passed by value
+      for (const [key, value] of params.entries()) {
+        parsedRequestObject[key] = value;
+      }
+    }
+
+    return parsedRequestObject;
+  }
+
+  async fetchRequestObject(requestUri: string) {
     const response = await this.httpUtil.openIdFetch<RequestObject>(
       requestUri as string
     );

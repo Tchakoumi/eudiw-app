@@ -13,7 +13,7 @@ export enum ClientIdScheme {
 }
 
 export interface RequestObject extends AuthorizationRequestCommonPayload {
-  client_id: string;
+  client_id?: string;
   client_id_scheme?: ClientIdScheme;
 
   client_metadata?: RequestClientMetadata;
