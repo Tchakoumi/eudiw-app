@@ -3,7 +3,7 @@ import {
   OID4VCIServiceEventChannel,
   ServiceResponse,
   ServiceResponseStatus,
-} from '@datev/oid4vci';
+} from '@datev/oid4vc';
 import { Box, CircularProgress, Dialog, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

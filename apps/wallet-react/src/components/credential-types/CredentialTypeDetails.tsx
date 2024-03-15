@@ -5,7 +5,7 @@ import {
   ResolvedCredentialOffer,
   ServiceResponse,
   ServiceResponseStatus,
-} from '@datev/oid4vci';
+} from '@datev/oid4vc';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';

@@ -1,5 +1,5 @@
 {
-  "name": "@datev/oid4vci",
+  "name": "@datev/oid4vc",
   "version": "0.0.1",
   "dependencies": {
     "@datev/storage": "*",

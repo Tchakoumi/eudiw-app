@@ -1,7 +1,7 @@
 import {
   CredentialIssuerMetadata,
   CredentialSupportedSdJwtVc,
-} from '@datev/oid4vci';
+} from '@datev/oid4vc';
 
 export interface ICredentialCard {
   type: string;
