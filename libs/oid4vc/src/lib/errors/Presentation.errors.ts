@@ -5,5 +5,5 @@ export enum PresentationError {
   UnResolvedPresentationDefinition = `${PresentationError}: Could not resolved presentation definition`,
   MissingQueryString = `${PresentationError}: Missing query string`,
   MissingRequiredParams = `${PresentationError}: Missing required params`,
-  InvalidRequestObjectResponseParams = `${PresentationError}: Invalid request object response params`,
+  InvalidRequestObjectJwt = `${PresentationError}: Could not decode request object JWT`
 }

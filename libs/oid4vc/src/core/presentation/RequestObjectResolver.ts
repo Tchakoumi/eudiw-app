@@ -18,24 +18,15 @@ export class RequestObjectResolver {
       requestObjectUri
     );
 
-    if (
-      !parsedRequestObject.redirect_uri &&
-      !parsedRequestObject.response_uri
-    ) {
-      throw new OID4VCIServiceError(
-        PresentationError.InvalidRequestObjectResponseParams
-      );
-    }
-
     if (parsedRequestObject.client_metadata_uri) {
-      parsedRequestObject.client_metadata = await this.resolvedClientMetadata(
+      parsedRequestObject.client_metadata = await this.resolveClientMetadata(
         parsedRequestObject.client_metadata_uri
       );
     }
 
     if (parsedRequestObject.presentation_definition_uri) {
       parsedRequestObject.presentation_definition =
-        await this.resolvedPresentationDefinition(
+        await this.resolvePresentationDefinition(
           parsedRequestObject.presentation_definition_uri
         );
     }
@@ -49,28 +40,45 @@ export class RequestObjectResolver {
     }
 
     const params = new URLSearchParams(url.search);
+    const request = params.get('request');
     const requestUri = params.get('request_uri');
-    const responseType = params.get('response_type');
+    const presentationDefinitionUri = params.get('presentation_definition_uri');
 
-    if (!requestUri && !responseType) {
+    if (!request && !requestUri && !presentationDefinitionUri) {
       throw new OID4VCIServiceError(PresentationError.MissingRequiredParams);
     }
 
     let parsedRequestObject: RequestObject = {};
-    if (requestUri) {
+    if (request) {
+      parsedRequestObject = this.resolveRequestObjectJwt(request);
+    } else if (requestUri) {
       parsedRequestObject = await this.fetchRequestObject(requestUri);
     } else {
-      //The presence of the `response_type` params means the request object was passed by value
       for (const [key, value] of params.entries()) {
         parsedRequestObject[key] = value;
       }
     }
 
+    if (
+      !parsedRequestObject.redirect_uri &&
+      !parsedRequestObject.response_uri
+    ) {
+      throw new OID4VCIServiceError(PresentationError.MissingRequiredParams);
+    }
+
     return parsedRequestObject;
   }
 
+  private resolveRequestObjectJwt(request: string) {
+    try {
+      return jose.decodeJwt<RequestObject>(request);
+    } catch (e) {
+      throw new OID4VCIServiceError(PresentationError.InvalidRequestObjectJwt);
+    }
+  }
+
   async fetchRequestObject(requestUri: string) {
-    const response = await this.httpUtil.openIdFetch<RequestObject>(
+    const response = await this.httpUtil.openIdFetch<string | RequestObject>(
       requestUri as string
     );
 
@@ -80,13 +88,13 @@ export class RequestObjectResolver {
 
     let requestObject = response.successBody;
     if (typeof requestObject === 'string') {
-      requestObject = jose.decodeJwt<RequestObject>(requestObject);
+      requestObject = this.resolveRequestObjectJwt(requestObject);
     }
 
     return requestObject;
   }
 
-  async resolvedClientMetadata(clientMetadatUri: string) {
+  async resolveClientMetadata(clientMetadatUri: string) {
     const response = await this.httpUtil.openIdFetch<RequestClientMetadata>(
       clientMetadatUri
     );
@@ -98,7 +106,7 @@ export class RequestObjectResolver {
     return response.successBody;
   }
 
-  async resolvedPresentationDefinition(presentationDefinitionUri: string) {
+  async resolvePresentationDefinition(presentationDefinitionUri: string) {
     const response = await this.httpUtil.openIdFetch<PresentationDefinition>(
       presentationDefinitionUri
     );
