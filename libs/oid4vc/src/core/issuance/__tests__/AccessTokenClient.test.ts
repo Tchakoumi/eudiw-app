@@ -2,7 +2,6 @@ import nock from 'nock';
 
 import { InvalidCredentialOffer } from '../../../lib/errors';
 import { AccessTokenClient } from '../AccessTokenClient';
-import { httpUtil } from './fixtures';
 
 import {
   AccessTokenRequest,
@@ -10,6 +9,7 @@ import {
   GrantType,
   OpenIDResponse,
 } from '../../../lib/types/issuance';
+import { httpUtil } from '../../__tests__/fixtures';
 
 const MOCK_URL = 'https://trial.authlete.net/api';
 const UNIT_TEST_TIMEOUT = 30000;

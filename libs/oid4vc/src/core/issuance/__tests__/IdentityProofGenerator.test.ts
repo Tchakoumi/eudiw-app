@@ -7,8 +7,8 @@ import { currentTimestampInSecs } from '../../../utils';
 import { StoreIdentityManager } from '../IdentityManager';
 import { IdentityProofGenerator } from '../IdentityProofGenerator';
 
+import { configClient } from '../../__tests__/fixtures';
 import {
-  configClient,
   credentialIssuerMetadataRef1,
   credentialSupportedRef1,
   keyRef1,

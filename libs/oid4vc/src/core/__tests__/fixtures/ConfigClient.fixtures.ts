@@ -1,5 +1,5 @@
-import { ConfigClient, ConfigData } from '../../../ConfigClient';
-import { HttpUtil } from '../../../../utils';
+import { HttpUtil } from '../../../utils';
+import { ConfigClient, ConfigData } from '../../ConfigClient';
 
 export const configData: ConfigData = {
   proxyServer: 'http://server.proxy.example',
