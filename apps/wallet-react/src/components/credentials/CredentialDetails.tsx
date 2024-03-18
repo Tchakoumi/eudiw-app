@@ -1,11 +1,11 @@
 import { eventBus } from '@datev/event-bus';
 import {
   DisplayCredential,
+  OID4VCIService,
   OID4VCIServiceEventChannel,
-  OID4VCIServiceImpl,
   ServiceResponse,
   ServiceResponseStatus,
-} from '@datev/oid4vci';
+} from '@datev/oid4vc';
 import { Box, Button, Dialog, Divider } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
@@ -20,7 +20,7 @@ import DialogTransition from '../layout/DialogTransition';
 import CredentialCard from './CredentialCard';
 import CredentialDetailLine from './CredentialDetailLine';
 
-const OIDVCI = new OID4VCIServiceImpl(eventBus);
+const OIDVCI = new OID4VCIService(eventBus);
 
 export default function CredentialDetails({
   isDialogOpen,
@@ -50,7 +50,10 @@ export default function CredentialDetails({
               claimValuesDisplayStatus[key] = false;
             });
             setCanDisplayClaimValue(claimValuesDisplayStatus);
-          } else alert(data.payload);
+          } else {
+            //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
+            alert(data.payload);
+          }
         }
       );
     }

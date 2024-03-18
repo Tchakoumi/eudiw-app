@@ -1,7 +1,7 @@
 import { eventBus } from '@datev/event-bus';
 import {
-  OID4VCIServiceEventChannel,
   OID4VCIService,
+  OID4VCIServiceEventChannel,
   ResolvedCredentialOffer,
   ServiceResponse,
   ServiceResponseStatus,
@@ -10,12 +10,12 @@ import { Box, Button, Dialog, Typography } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ICredentialCard } from '../../types/credentials.types';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
 import CredentialIssued from './CredentialIssued';
 import CredentialTypeCard from './CredentialTypeCard';
 import WaitingCredential from './WaitingCredential';
-import { ICredentialCard } from '../../types/credentials.types';
 
 export default function CredentialTypeDetails({
   isDialogOpen,
@@ -52,6 +52,7 @@ export default function CredentialTypeDetails({
           setIsDoneIssuing(true);
         } else {
           closeDialog();
+          //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
           alert(data.payload);
         }
       }
