@@ -1,11 +1,11 @@
 import { eventBus } from '@datev/event-bus';
 import {
   OID4VCIServiceEventChannel,
-  OID4VCIServiceImpl,
+  OID4VCIService,
   ResolvedCredentialOffer,
   ServiceResponse,
   ServiceResponseStatus,
-} from '@datev/oid4vci';
+} from '@datev/oid4vc';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useState } from 'react';
@@ -31,7 +31,7 @@ export default function CredentialTypeDetails({
   resolvedCredentialOfferPayload: ResolvedCredentialOffer;
 }) {
   const push = useNavigate();
-  const OIDVCI = new OID4VCIServiceImpl(eventBus);
+  const OIDVCI = new OID4VCIService(eventBus);
   const [isIssuing, setIsIssuing] = useState<boolean>(false);
   const [isDoneIssuing, setIsDoneIssuing] = useState<boolean>(false);
 

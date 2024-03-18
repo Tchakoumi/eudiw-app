@@ -1,5 +1,5 @@
 import { eventBus } from '@datev/event-bus';
-import { OID4VCIServiceImpl } from '@datev/oid4vci';
+import { OID4VCIService } from '@datev/oid4vc';
 import { QrScanner } from '@datev/qr-scanner';
 import back from '@iconify/icons-fluent/arrow-left-48-filled';
 import swapCamera from '@iconify/icons-fluent/arrow-sync-24-regular';
@@ -21,7 +21,7 @@ export default function Scan() {
     'environment'
   );
 
-  const OIDVCI = new OID4VCIServiceImpl(eventBus);
+  const OIDVCI = new OID4VCIService(eventBus);
 
   const [permissionStatus, setPermissionStatus] =
     useState<PermissionState>('prompt');
