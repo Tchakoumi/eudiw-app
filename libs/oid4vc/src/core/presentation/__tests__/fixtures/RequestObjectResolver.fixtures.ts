@@ -1,14 +1,14 @@
-export const requestObjectEncodedUri1 = `haip://?client_id=verifier.ssi.tir.budru.de&request_uri=https://verifier.ssi.tir.budru.de/presentation/authorization-request?id%3D506707d6-3d50-4652-ba3e-f5f669c3a635%26crossDevice%3Dtrue`;
+export const requestObjectEncodedUri1 = `haip://?client_id=verifier.ssi.tir.budru.de&request_uri=https://verifier.ssi.tir.budru.de/presentation/authorization-request?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190%26crossDevice%3Dtrue`;
 export const resolvedRequestObject1 = {
   response_uri:
-    'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=506707d6-3d50-4652-ba3e-f5f669c3a635',
+    'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
   client_id_scheme: 'x509_san_dns',
   response_type: 'vp_token',
   presentation_definition: {
-    id: '506707d6-3d50-4652-ba3e-f5f669c3a635',
+    id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
     input_descriptors: [
       {
-        id: '5f99e88f-3098-445e-a50d-6fb9ed457342',
+        id: '6d96f2bf-f25e-40e6-972d-d9d0a542f252',
         format: {
           'vc+sd-jwt': {},
         },
@@ -30,8 +30,8 @@ export const resolvedRequestObject1 = {
       },
     ],
   },
-  state: '506707d6-3d50-4652-ba3e-f5f669c3a635',
-  nonce: 'kDwWmgkQYXDAKHKHOgxqpW',
+  state: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  nonce: 'lLD1o3L6qJdazVcfCw3shh',
   client_id: 'verifier.ssi.tir.budru.de',
   response_mode: 'direct_post',
 };
