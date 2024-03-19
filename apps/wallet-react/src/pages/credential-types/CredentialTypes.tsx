@@ -7,12 +7,13 @@ import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@datev/oid4vc';
-import { Box, Button, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CredentialTypeCard from '../../components/credential-types/CredentialTypeCard';
 import CredentialTypeDetails from '../../components/credential-types/CredentialTypeDetails';
+import NoOffer from '../../components/credential-types/NoOffer';
 import BackTitleBar from '../../components/layout/BackTitleBar';
 import Footer from '../../components/layout/Footer';
 import {
@@ -92,27 +93,7 @@ export default function CredentialTypes() {
         }}
       >
         {vcSdJwtOffers.length === 0 ? (
-          <Box
-            sx={{
-              height: '100%',
-              display: 'grid',
-              alignContent: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Box sx={{ display: 'grid', justifyItems: 'center', rowGap: 2 }}>
-              <Typography>
-                No supported offers found, please scan again!!!
-              </Typography>
-              <Button
-                onClick={() => push('/scan')}
-                variant="contained"
-                color="primary"
-              >
-                Scan again
-              </Button>
-            </Box>
-          </Box>
+          <NoOffer />
         ) : (
           <Scrollbars universal autoHide>
             <Box
