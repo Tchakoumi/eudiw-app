@@ -1,11 +1,11 @@
 import { Filter } from './Filter.types';
-import { OID4VPFormatType } from './Format.types';
+import { VPFormat } from './Format.types';
 
 export interface InputDescriptor {
   id: string;
   name?: string;
   purpose?: string;
-  format?: OID4VPFormatType;
+  format?: VPFormat;
   group?: Array<string>;
   issuance?: Array<Issuance>;
   constraints: Constraints;

@@ -1,5 +1,5 @@
 import { PresentationDefinition } from '../PresentationExchange.types';
-import { RequestClientMetadata } from '../RequestClientMetadata.types';
+import { ClientMetadata } from '../RequestClientMetadata.types';
 import { ResponseMode } from './ResponseType.types';
 
 export enum ClientIdScheme {
@@ -16,7 +16,7 @@ export interface RequestObject extends AuthorizationRequestCommonPayload {
   client_id?: string;
   client_id_scheme?: ClientIdScheme;
 
-  client_metadata?: RequestClientMetadata;
+  client_metadata?: ClientMetadata;
   client_metadata_uri?: string;
 
   presentation_definition?: PresentationDefinition;

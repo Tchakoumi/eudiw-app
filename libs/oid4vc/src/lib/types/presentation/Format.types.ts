@@ -44,4 +44,4 @@ export type LdpFormatType = FormatType<LdpFormat, LdpObject>;
 export type SDJwtFormatType = FormatType<SdJwtFormat, SdJwtObject>;
 
 // Export the combined format type
-export type OID4VPFormatType = JwtFormatType | LdpFormatType | SDJwtFormatType;
+export type VPFormat = JwtFormatType | LdpFormatType | SDJwtFormatType;

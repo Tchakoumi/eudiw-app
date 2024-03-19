@@ -1,51 +1,25 @@
-import { OID4VPFormatType } from './Format.types';
+import { VPFormat } from './Format.types';
+import * as jose from 'jose';
+import { ResponseType } from './v1_0_20/ResponseType.types';
 
-export interface RequestClientMetadata {
+export interface ClientMetadata {
   client_id?: string;
-  id_token_signing_alg_values_supported?: SigningAlgo[] | SigningAlgo;
-  request_object_signing_alg_values_supported?: SigningAlgo[] | SigningAlgo;
+  id_token_signing_alg_values_supported?: string[] | string;
   response_types_supported?: ResponseType[] | ResponseType;
-  scopes_supported?: Scope[] | Scope;
-  subject_types_supported?: SubjectType[] | SubjectType;
+  scopes_supported?: string[] | string;
   subject_syntax_types_supported?: string[];
-  vp_formats?: OID4VPFormatType;
+  vp_formats?: VPFormat;
   client_name?: string;
   logo_uri?: string;
   client_purpose?: string;
+  jwks_uri?: string;
+  jwks?: JWKSet;
+  authorization_signed_response_alg?: string;
+  authorization_encrypted_response_alg?: string;
+  authorization_encrypted_response_enc?: string;
   [x: string]: unknown; // Index signature for other properties
 }
 
-export interface JWTPayload {
-  iss?: string;
-  sub?: string;
-  aud?: string | string[];
-  iat?: number;
-  nbf?: number;
-  type?: string;
-  exp?: number;
-  rexp?: number;
-  jti?: string;
-  [x: string]: unknown;
-}
-
-export declare enum SigningAlgo {
-  EDDSA = 'EdDSA',
-  RS256 = 'RS256',
-  PS256 = 'PS256',
-  ES256 = 'ES256',
-  ES256K = 'ES256K',
-}
-
-export declare enum Scope {
-  OPENID = 'openid',
-  OPENID_DIDAUTHN = 'openid did_authn',
-  PROFILE = 'profile',
-  EMAIL = 'email',
-  ADDRESS = 'address',
-  PHONE = 'phone',
-}
-
-export declare enum SubjectType {
-  PUBLIC = 'public',
-  PAIRWISE = 'pairwise',
+export interface JWKSet {
+  keys: jose.JWK[];
 }
