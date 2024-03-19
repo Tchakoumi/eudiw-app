@@ -10,6 +10,11 @@ Use the following Docker commands to run the server:
 
 ```bash
 $ docker build -t nginx-proxy:latest .
+
+or pull 
+
+$ docker pull ghcr.io/adorsys/nginx-proxy:latest
+
 $ docker run --rm -it -p 80:80 nginx-proxy:latest
 
 
@@ -18,3 +23,9 @@ To access locally, open your browser and enter either of the following URLs:
 
 - [http://localhost/cors/https://trial.authlete.net/.well-known/openid-credential-issuer](http://localhost/cors/https://trial.authlete.net/.well-known/openid-credential-issuer)
 - [http://localhost/cors/https://www.google.com/](http://localhost/cors/https://www.google.com/)
+
+Online :
+
+http://16.16.171.114:8001/cors/https://trial.authlete.net/.well-known/openid-credential-issuer
+
+http://16.16.171.114:8001/cors/https://www.google.com/
