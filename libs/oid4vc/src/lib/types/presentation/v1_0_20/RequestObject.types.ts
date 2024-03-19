@@ -35,6 +35,7 @@ export interface ResolvedRequestObject
     'client_metadata_uri' | 'presentation_definition_uri'
   > {
   client_metadata?: ResolvedClientMetadata;
+  presentation_definition: PresentationDefinition;
 }
 
 export interface AuthorizationRequestCommonPayload
@@ -42,7 +43,7 @@ export interface AuthorizationRequestCommonPayload
   request?: string;
   request_uri?: string;
 }
-export interface RequestCommonPayload extends JWTPayload {
+export interface RequestCommonPayload {
   scope?: string;
   response_type?: ResponseType | string;
   client_id?: string;
@@ -51,18 +52,4 @@ export interface RequestCommonPayload extends JWTPayload {
   nonce?: string;
   state?: string;
   response_mode?: ResponseMode;
-}
-
-export interface JWTPayload {
-  iss?: string;
-  sub?: string;
-  aud?: string | string[];
-  iat?: number;
-  nbf?: number;
-  type?: string;
-  exp?: number;
-  rexp?: number;
-  jti?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [x: string]: any;
 }

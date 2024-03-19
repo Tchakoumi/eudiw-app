@@ -1,4 +1,3 @@
-import { ResolvedRequestObject } from './presentation';
 
 export interface OID4VPInterface {
   /**
@@ -8,7 +7,5 @@ export interface OID4VPInterface {
    * @param requestObjectUri string obtain from the scanned Qr code
    * @returns the resolved and verified authentication request.
    */
-  resolveRequestObject(
-    requestObjectUri: string
-  ): Promise<ResolvedRequestObject>;
+  resolveRequestObject(requestObjectUri: string): Promise<void>;
 }
