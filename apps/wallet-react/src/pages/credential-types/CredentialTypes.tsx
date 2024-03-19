@@ -13,12 +13,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CredentialTypeCard from '../../components/credential-types/CredentialTypeCard';
 import CredentialTypeDetails from '../../components/credential-types/CredentialTypeDetails';
+import BackTitleBar from '../../components/layout/BackTitleBar';
+import Footer from '../../components/layout/Footer';
 import {
   ICredentialCard,
   ISupportedCredential,
 } from '../../types/credentials.types';
-import BackTitleBar from '../../components/layout/BackTitleBar';
-import Footer from '../../components/layout/Footer';
 import { getVCClaims, getVCSDJWTOffers } from '../../utils/credentialType.util';
 
 export default function CredentialTypes() {
