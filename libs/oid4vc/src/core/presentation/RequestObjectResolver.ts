@@ -1,10 +1,12 @@
 import * as jose from 'jose';
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
-import { JWKSet } from '../../lib/types';
-import { PresentationDefinition } from '../../lib/types/presentation/PresentationExchange.types';
-import { ClientMetadata } from '../../lib/types/presentation/RequestClientMetadata.types';
-import { RequestObject } from '../../lib/types/presentation/v1_0_20/RequestObject.types';
+import {
+  ClientMetadata,
+  JWKSet,
+  PresentationDefinition,
+  RequestObject,
+} from '../../lib/types';
 import { HttpUtil } from '../../utils';
 
 export class RequestObjectResolver {
@@ -39,6 +41,7 @@ export class RequestObjectResolver {
       parsedRequestObject.client_metadata = await this.resolveClientMetadata(
         parsedRequestObject.client_metadata_uri
       );
+      delete parsedRequestObject.client_metadata_uri;
     }
 
     return parsedRequestObject;
