@@ -1,9 +1,10 @@
+import { JWKSet } from '../issuance';
 import { VPFormat } from './Format.types';
-import * as jose from 'jose';
 import { ResponseType } from './v1_0_20/ResponseType.types';
 
 export interface ClientMetadata {
   client_id?: string;
+  id_token_signed_response_alg: string;
   id_token_signing_alg_values_supported?: string[] | string;
   response_types_supported?: ResponseType[] | ResponseType;
   scopes_supported?: string[] | string;
@@ -18,8 +19,4 @@ export interface ClientMetadata {
   authorization_encrypted_response_alg?: string;
   authorization_encrypted_response_enc?: string;
   [x: string]: unknown; // Index signature for other properties
-}
-
-export interface JWKSet {
-  keys: jose.JWK[];
 }

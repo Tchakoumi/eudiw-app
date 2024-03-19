@@ -1,8 +1,8 @@
 // Define enums for JWT and LDP formats
 export enum JwtFormat {
   JWT = 'jwt',
-  JWT_VC = 'jwt_vc',
-  JWT_VP = 'jwt_vp',
+  JWT_VC = 'jwt_vc_json',
+  JWT_VP = 'jwt_vp_json',
 }
 
 export enum LdpFormat {
