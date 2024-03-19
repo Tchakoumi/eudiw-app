@@ -1,6 +1,6 @@
 import { RequestObjectResolver } from '../core/presentation';
 import { HttpUtil } from '../utils';
-import { OID4VPInterface, ResolvedRequestObject } from './types';
+import { OID4VPInterface } from './types';
 
 export class OID4VPService implements OID4VPInterface {
   private requestObjetResolver: RequestObjectResolver;
@@ -9,9 +9,9 @@ export class OID4VPService implements OID4VPInterface {
     this.requestObjetResolver = new RequestObjectResolver(httpUtil);
   }
 
-  resolveRequestObject(
-    requestObjectUri: string
-  ): Promise<ResolvedRequestObject> {
-    return this.requestObjetResolver.resolveRequestObject(requestObjectUri);
+  async resolveRequestObject(requestObjectUri: string) {
+    const requestObject = await this.requestObjetResolver.resolveRequestObject(
+      requestObjectUri
+    );
   }
 }

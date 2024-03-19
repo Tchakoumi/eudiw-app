@@ -2,10 +2,12 @@ import * as jose from 'jose';
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
 import {
+  ClientIdScheme,
   ClientMetadata,
   JWKSet,
   PresentationDefinition,
   RequestObject,
+  ResolvedRequestObject,
 } from '../../lib/types';
 import { HttpUtil } from '../../utils';
 
@@ -44,7 +46,7 @@ export class RequestObjectResolver {
       delete parsedRequestObject.client_metadata_uri;
     }
 
-    return parsedRequestObject;
+    return parsedRequestObject as ResolvedRequestObject;
   }
 
   async parsedRequestObjectUri(encodedUri: string) {
@@ -69,11 +71,12 @@ export class RequestObjectResolver {
       parsedRequestObject = await this.fetchRequestObject(requestUri);
     } else {
       for (const [key, value] of params.entries()) {
-        parsedRequestObject[key] = value;
+        Object.assign(parsedRequestObject, { [key]: value });
       }
     }
 
     if (
+      parsedRequestObject.client_id_scheme !== ClientIdScheme.REDIRECT_URI &&
       !parsedRequestObject.redirect_uri &&
       !parsedRequestObject.response_uri
     ) {
