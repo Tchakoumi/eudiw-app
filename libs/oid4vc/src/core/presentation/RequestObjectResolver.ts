@@ -1,11 +1,11 @@
 import * as jose from 'jose';
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
+import { JWKSet } from '../../lib/types';
 import { PresentationDefinition } from '../../lib/types/presentation/PresentationExchange.types';
 import { ClientMetadata } from '../../lib/types/presentation/RequestClientMetadata.types';
 import { RequestObject } from '../../lib/types/presentation/v1_0_20/RequestObject.types';
 import { HttpUtil } from '../../utils';
-import { JWKSet } from '../../lib/types';
 
 export class RequestObjectResolver {
   /**
@@ -18,6 +18,14 @@ export class RequestObjectResolver {
     const parsedRequestObject = await this.parsedRequestObjectUri(
       requestObjectUri
     );
+
+    if (parsedRequestObject.presentation_definition_uri) {
+      parsedRequestObject.presentation_definition =
+        await this.resolvePresentationDefinition(
+          parsedRequestObject.presentation_definition_uri
+        );
+      delete parsedRequestObject.presentation_definition_uri;
+    }
 
     if (parsedRequestObject.client_metadata) {
       if (parsedRequestObject.client_metadata.jwks_uri) {
@@ -33,13 +41,6 @@ export class RequestObjectResolver {
       );
     }
 
-    if (parsedRequestObject.presentation_definition_uri) {
-      parsedRequestObject.presentation_definition =
-        await this.resolvePresentationDefinition(
-          parsedRequestObject.presentation_definition_uri
-        );
-      delete parsedRequestObject.presentation_definition_uri;
-    }
     return parsedRequestObject;
   }
 
