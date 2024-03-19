@@ -24,7 +24,10 @@ export default function LoadingScanDetails({
         (data: ServiceResponse) => {
           if (data.status === ServiceResponseStatus.Success)
             push('/credential-types');
-          else alert(data.payload);
+          else {
+            //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
+            alert(data.payload);
+          }
         }
       );
     }
