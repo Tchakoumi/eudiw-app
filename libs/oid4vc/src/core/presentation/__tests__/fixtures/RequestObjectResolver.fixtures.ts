@@ -1,91 +1,173 @@
-export const requestObjectEncodedUri1 = `haip://?client_id=verifier.ssi.tir.budru.de&request_uri=https://verifier.ssi.tir.budru.de/presentation/authorization-request?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190%26crossDevice%3Dtrue`;
-export const resolvedRequestObject1 = {
+import {
+  ClientIdScheme,
+  ClientMetadata,
+  JWKSet,
+  Optionality,
+  PresentationDefinition,
+  RequestObject,
+  ResponseMode,
+} from '../../../../lib/types';
+
+export const encodedRequestUri = `haip://?client_id=verifier.ssi.tir.budru.de&request_uri=https://verifier.ssi.tir.budru.de/presentation/authorization-request?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190%26crossDevice%3Dtrue`;
+
+export const requestObjectJwt = `eyJ4NWMiOlsiTUlJQ0x6Q0NBZFdnQXdJQkFnSUJCREFLQmdncWhrak9QUVFEQWpCak1Rc3dDUVlEVlFRR0V3SkVSVEVQTUEwR0ExVUVCd3dHUW1WeWJHbHVNUjB3R3dZRFZRUUtEQlJDZFc1a1pYTmtjblZqYTJWeVpXa2dSMjFpU0RFS01BZ0dBMVVFQ3d3QlNURVlNQllHQTFVRUF3d1BTVVIxYm1sdmJpQlVaWE4wSUVOQk1CNFhEVEl6TURnd016QTROREkwTkZvWERUSTRNRGd3TVRBNE5ESTBORm93VlRFTE1Ba0dBMVVFQmhNQ1JFVXhIVEFiQmdOVkJBb01GRUoxYm1SbGMyUnlkV05yWlhKbGFTQkhiV0pJTVFvd0NBWURWUVFMREFGSk1Sc3dHUVlEVlFRRERCSlBjR1Z1U1dRMFZsQWdWbVZ5YVdacFpYSXdXVEFUQmdjcWhrak9QUUlCQmdncWhrak9QUU1CQndOQ0FBUnNoUzVDaVBrSzVXRUN1RHpybmN0SXBwYm1nc1lkOURzT1lEcElFeFpFczFmUWNOeXZrQjVFZU5Xc2MwU0ExUU5xd3dHVzRndUZLZzBJZjFKR0R4VWZvNEdITUlHRU1CMEdBMVVkRGdRV0JCUmZMQVBzeG1Mc3AxblEvRk12RkkzN0MzQmxZREFNQmdOVkhSTUJBZjhFQWpBQU1BNEdBMVVkRHdFQi93UUVBd0lIZ0RBa0JnTlZIUkVFSFRBYmdobDJaWEpwWm1sbGNpNXpjMmt1ZEdseUxtSjFaSEoxTG1SbE1COEdBMVVkSXdRWU1CYUFGRStXNno3YWpUdW1leCtZY0Zib05yVmVDMnRSTUFvR0NDcUdTTTQ5QkFNQ0EwZ0FNRVVDSUNWZURUMnNkZHhySEMrZ0ZJTUVmc3huc0lXRmdIdnZlZnBuWXZrb0RjbHdBaUVBMlFnRVRHV3hIWUVObWxsNDA2VUNwYnFRb1kzMzJPbE9qdDUwWjc2WHBtQT0iLCJNSUlDTFRDQ0FkU2dBd0lCQWdJVU1ZVUhoR0Q5aFUvYzBFbzZtVzhyamplSit0MHdDZ1lJS29aSXpqMEVBd0l3WXpFTE1Ba0dBMVVFQmhNQ1JFVXhEekFOQmdOVkJBY01Ca0psY214cGJqRWRNQnNHQTFVRUNnd1VRblZ1WkdWelpISjFZMnRsY21WcElFZHRZa2d4Q2pBSUJnTlZCQXNNQVVreEdEQVdCZ05WQkFNTUQwbEVkVzVwYjI0Z1ZHVnpkQ0JEUVRBZUZ3MHlNekEzTVRNd09USTFNamhhRncwek16QTNNVEF3T1RJMU1qaGFNR014Q3pBSkJnTlZCQVlUQWtSRk1ROHdEUVlEVlFRSERBWkNaWEpzYVc0eEhUQWJCZ05WQkFvTUZFSjFibVJsYzJSeWRXTnJaWEpsYVNCSGJXSklNUW93Q0FZRFZRUUxEQUZKTVJnd0ZnWURWUVFEREE5SlJIVnVhVzl1SUZSbGMzUWdRMEV3V1RBVEJnY3Foa2pPUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVNFSHo4WWpyRnlUTkhHTHZPMTRFQXhtOXloOGJLT2drVXpZV2NDMWN2ckpuNUpnSFlITXhaYk5NTzEzRWgwRXIyNzM4UVFPZ2VSb1pNSVRhb2RrZk5TbzJZd1pEQWRCZ05WSFE0RUZnUVVUNWJyUHRxTk82WjdINWh3VnVnMnRWNExhMUV3SHdZRFZSMGpCQmd3Rm9BVVQ1YnJQdHFOTzZaN0g1aHdWdWcydFY0TGExRXdFZ1lEVlIwVEFRSC9CQWd3QmdFQi93SUJBREFPQmdOVkhROEJBZjhFQkFNQ0FZWXdDZ1lJS29aSXpqMEVBd0lEUndBd1JBSWdZMERlcmRDeHQ0ekdQWW44eU5yRHhJV0NKSHB6cTRCZGpkc1ZOMm8xR1JVQ0lCMEtBN2JHMUZWQjFJaUs4ZDU3UUFMK1BHOVg1bGRLRzdFa29BbWhXVktlIl0sImtpZCI6Ik1Hd3daNlJsTUdNeEN6QUpCZ05WQkFZVEFrUkZNUTh3RFFZRFZRUUhEQVpDWlhKc2FXNHhIVEFiQmdOVkJBb01GRUoxYm1SbGMyUnlkV05yWlhKbGFTQkhiV0pJTVFvd0NBWURWUVFMREFGSk1SZ3dGZ1lEVlFRRERBOUpSSFZ1YVc5dUlGUmxjM1FnUTBFQ0FRUT0iLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJyZXNwb25zZV91cmkiOiJodHRwczovL3ZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUvcHJlc2VudGF0aW9uL2F1dGhvcml6YXRpb24tcmVzcG9uc2U_aWQ9Mjc3ZDBmYjUtZWY0Yi00Y2ZmLTkzZjAtMDg2YWYzNmY5MTkwIiwiY2xpZW50X2lkX3NjaGVtZSI6Ing1MDlfc2FuX2RucyIsInJlc3BvbnNlX3R5cGUiOiJ2cF90b2tlbiIsInByZXNlbnRhdGlvbl9kZWZpbml0aW9uIjp7ImlkIjoiMjc3ZDBmYjUtZWY0Yi00Y2ZmLTkzZjAtMDg2YWYzNmY5MTkwIiwiaW5wdXRfZGVzY3JpcHRvcnMiOlt7ImlkIjoiNmQ5NmYyYmYtZjI1ZS00MGU2LTk3MmQtZDlkMGE1NDJmMjUyIiwiZm9ybWF0Ijp7InZjK3NkLWp3dCI6e319LCJjb25zdHJhaW50cyI6eyJmaWVsZHMiOlt7InBhdGgiOlsiJC52Y3QiXSwiZmlsdGVyIjp7InR5cGUiOiJzdHJpbmciLCJjb25zdCI6Imh0dHBzOi8vY3JlZGVudGlhbHMuaWR1bmlvbi5vcmcvVmVyaWZpZWRFTWFpbCJ9fSx7InBhdGgiOlsiJC5lbWFpbCJdfV0sImxpbWl0X2Rpc2Nsb3N1cmUiOiJyZXF1aXJlZCJ9fV19LCJzdGF0ZSI6IjI3N2QwZmI1LWVmNGItNGNmZi05M2YwLTA4NmFmMzZmOTE5MCIsIm5vbmNlIjoibExEMW8zTDZxSmRhelZjZkN3M3NoaCIsImNsaWVudF9pZCI6InZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUiLCJyZXNwb25zZV9tb2RlIjoiZGlyZWN0X3Bvc3QifQ.v6-fVYQK6v6AxL3yYmEGknkPV7ojU-I26fsLT3GMsEc63PeDv7lNfHtfeMVi065fq2Vg6RWM0Oo7v0agNuYjLQ`;
+
+export const presentationDefinition: PresentationDefinition = {
+  id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  input_descriptors: [
+    {
+      id: '6d96f2bf-f25e-40e6-972d-d9d0a542f252',
+      format: {
+        'vc+sd-jwt': {},
+      },
+      constraints: {
+        fields: [
+          {
+            path: ['$.vct'],
+            filter: {
+              type: 'string',
+              const: 'https://credentials.idunion.org/VerifiedEMail',
+            },
+          },
+          {
+            path: ['$.email'],
+          },
+        ],
+        limit_disclosure: Optionality.REQUIRED,
+      },
+    },
+  ],
+};
+
+export const noClientMetadataRequestObject: RequestObject = {
   response_uri:
     'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
-  client_id_scheme: 'x509_san_dns',
+  client_id_scheme: ClientIdScheme.X509_SAN_DNS,
   response_type: 'vp_token',
-  presentation_definition: {
-    id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
-    input_descriptors: [
-      {
-        id: '6d96f2bf-f25e-40e6-972d-d9d0a542f252',
-        format: {
-          'vc+sd-jwt': {},
-        },
-        constraints: {
-          fields: [
-            {
-              path: ['$.vct'],
-              filter: {
-                type: 'string',
-                const: 'https://credentials.idunion.org/VerifiedEMail',
-              },
-            },
-            {
-              path: ['$.email'],
-            },
-          ],
-          limit_disclosure: 'required',
-        },
-      },
-    ],
-  },
   state: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
   nonce: 'lLD1o3L6qJdazVcfCw3shh',
   client_id: 'verifier.ssi.tir.budru.de',
-  response_mode: 'direct_post',
+  response_mode: ResponseMode.DIRECT_POST,
 };
 
-export const requestObjectEncodedUri2 = `openid4vp://authorize?response_type=vp_token&client_id=&response_mode=direct_post&state=KVc4W0wsANjL&presentation_definition_uri=https%3A%2F%2Fverifier.portal.walt.id%2Fopenid4vc%2Fpd%2FKVc4W0wsANjL&client_id_scheme=redirect_uri&response_uri=https%3A%2F%2Fverifier.portal.walt.id%2Fopenid4vc%2Fverify%2FKVc4W0wsANjL`;
-export const resolvedRequestObject2 = {
+export const noClientMetadataResolvedRequestObject: RequestObject = {
+  response_uri:
+    'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  client_id_scheme: ClientIdScheme.X509_SAN_DNS,
   response_type: 'vp_token',
-  client_id: '',
-  response_mode: 'direct_post',
-  state: 'KVc4W0wsANjL',
+  presentation_definition: presentationDefinition,
+  state: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  nonce: 'lLD1o3L6qJdazVcfCw3shh',
+  client_id: 'verifier.ssi.tir.budru.de',
+  response_mode: ResponseMode.DIRECT_POST,
+};
+
+export const encodedRequestObjectUri = `haip://?client_id=verifier.ssi.tir.budru.de&response_uri=https://verifier.ssi.tir.budru.de/presentation/authorization-response?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190&client_id_scheme=x509_san_dns&presentation_definition_uri=https://verifier.ssi.tir.budru.de/presentation/definition?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190&response_type=vp_token&state=277d0fb5-ef4b-4cff-93f0-086af36f9190&nonce=lLD1o3L6qJdazVcfCw3shh&response_mode=direct_post&client_metadata_uri=https://verifier.ssi.tir.budru.de/presentation/client-metadata.json`;
+
+export const decodedRequestObject: RequestObject = {
+  response_uri:
+    'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  client_id_scheme: ClientIdScheme.X509_SAN_DNS,
+  client_metadata_uri:
+    'https://verifier.ssi.tir.budru.de/presentation/client-metadata.json',
   presentation_definition_uri:
-    'https://verifier.portal.walt.id/openid4vc/pd/KVc4W0wsANjL',
-  client_id_scheme: 'redirect_uri',
-  response_uri: 'https://verifier.portal.walt.id/openid4vc/verify/KVc4W0wsANjL',
-  presentation_definition: {
-    input_descriptors: [
-      {
-        id: 'ProofOfResidence',
-        format: {
-          jwt_vc_json: {
-            alg: ['EdDSA'],
-          },
-        },
-        constraints: {
-          fields: [
-            {
-              path: ['$.type'],
-              filter: {
-                type: 'string',
-                pattern: 'ProofOfResidence',
-              },
-            },
-          ],
+    'https://verifier.ssi.tir.budru.de/presentation/definition?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  response_type: 'vp_token',
+  state: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  nonce: 'lLD1o3L6qJdazVcfCw3shh',
+  client_id: 'verifier.ssi.tir.budru.de',
+  response_mode: ResponseMode.DIRECT_POST,
+};
+
+export const clientMetadataValueJwks: JWKSet = {
+  keys: [
+    {
+      kty: 'EC',
+      use: 'enc',
+      crv: 'P-256',
+      kid: '2483b80b-d9fc-46f0-8e10-358401c274fe',
+      x: 'koPQM9kfAg8jOk5dyQQy7pF2Pq_NFp2SFklouaXaLL0',
+      y: 'qapFx_2e-HGpJ7LnEqx2CX3dQqRFJWw-eDqbsYEZeYw',
+      alg: 'ECDH-ES',
+    },
+  ],
+};
+
+export const clientMetadataValue: ClientMetadata = {
+  jwks_uri: `https://verifier.ssi.tir.budru.de/presentation/jwks.json`,
+  authorization_encrypted_response_alg: 'ECDH-ES',
+  authorization_encrypted_response_enc: 'A128CBC-HS256',
+  id_token_encrypted_response_alg: 'RSA-OAEP-256',
+  id_token_encrypted_response_enc: 'A128CBC-HS256',
+  subject_syntax_types_supported: ['urn:ietf:params:oauth:jwk-thumbprint'],
+  id_token_signed_response_alg: 'RS256',
+};
+
+export const resolvedClientMetadata: ClientMetadata = {
+  jwks: clientMetadataValueJwks,
+  authorization_encrypted_response_alg: 'ECDH-ES',
+  authorization_encrypted_response_enc: 'A128CBC-HS256',
+  id_token_encrypted_response_alg: 'RSA-OAEP-256',
+  id_token_encrypted_response_enc: 'A128CBC-HS256',
+  subject_syntax_types_supported: ['urn:ietf:params:oauth:jwk-thumbprint'],
+  id_token_signed_response_alg: 'RS256',
+};
+
+export const presentationDefinitionValue: PresentationDefinition = {
+  id: 'KVc4W0wsANjL',
+  input_descriptors: [
+    {
+      id: 'ProofOfResidence',
+      format: {
+        jwt_vc_json: {
+          alg: ['EdDSA'],
         },
       },
-      {
-        id: 'OpenBadgeCredential',
-        format: {
-          jwt_vc_json: {
-            alg: ['EdDSA'],
-          },
-        },
-        constraints: {
-          fields: [
-            {
-              path: ['$.type'],
-              filter: {
-                type: 'string',
-                pattern: 'OpenBadgeCredential',
-              },
+      constraints: {
+        fields: [
+          {
+            path: ['$.type'],
+            filter: {
+              type: 'string',
+              pattern: 'ProofOfResidence',
             },
-          ],
+          },
+        ],
+      },
+    },
+    {
+      id: 'OpenBadgeCredential',
+      format: {
+        jwt_vc_json: {
+          alg: ['EdDSA'],
         },
       },
-    ],
-  },
+      constraints: {
+        fields: [
+          {
+            path: ['$.type'],
+            filter: {
+              type: 'string',
+              pattern: 'OpenBadgeCredential',
+            },
+          },
+        ],
+      },
+    },
+  ],
+};
+
+export const resolvedRequestObject: RequestObject = {
+  response_uri:
+    'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  client_id_scheme: ClientIdScheme.X509_SAN_DNS,
+  client_metadata_uri:
+    'https://verifier.ssi.tir.budru.de/presentation/client-metadata.json',
+  client_metadata: resolvedClientMetadata,
+  presentation_definition: presentationDefinitionValue,
+  response_type: 'vp_token',
+  state: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  nonce: 'lLD1o3L6qJdazVcfCw3shh',
+  client_id: 'verifier.ssi.tir.budru.de',
+  response_mode: ResponseMode.DIRECT_POST,
 };
