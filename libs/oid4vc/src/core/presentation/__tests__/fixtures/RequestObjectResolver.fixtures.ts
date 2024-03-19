@@ -5,6 +5,8 @@ import {
   Optionality,
   PresentationDefinition,
   RequestObject,
+  ResolvedClientMetadata,
+  ResolvedRequestObject,
   ResponseMode,
 } from '../../../../lib/types';
 
@@ -50,7 +52,7 @@ export const noClientMetadataRequestObject: RequestObject = {
   response_mode: ResponseMode.DIRECT_POST,
 };
 
-export const noClientMetadataResolvedRequestObject: RequestObject = {
+export const noClientMetadataResolvedRequestObject: ResolvedRequestObject = {
   response_uri:
     'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
   client_id_scheme: ClientIdScheme.X509_SAN_DNS,
@@ -103,7 +105,7 @@ export const clientMetadataValue: ClientMetadata = {
   id_token_signed_response_alg: 'RS256',
 };
 
-export const resolvedClientMetadata: ClientMetadata = {
+export const resolvedClientMetadata: ResolvedClientMetadata = {
   jwks: clientMetadataValueJwks,
   authorization_encrypted_response_alg: 'ECDH-ES',
   authorization_encrypted_response_enc: 'A128CBC-HS256',
@@ -157,7 +159,7 @@ export const presentationDefinitionValue: PresentationDefinition = {
   ],
 };
 
-export const resolvedRequestObject: RequestObject = {
+export const resolvedRequestObject: ResolvedRequestObject = {
   response_uri:
     'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
   client_id_scheme: ClientIdScheme.X509_SAN_DNS,

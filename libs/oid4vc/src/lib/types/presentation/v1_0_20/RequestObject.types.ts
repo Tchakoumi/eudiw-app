@@ -1,5 +1,8 @@
 import { PresentationDefinition } from '../PresentationExchange.types';
-import { ClientMetadata } from '../RequestClientMetadata.types';
+import {
+  ClientMetadata,
+  ResolvedClientMetadata,
+} from '../RequestClientMetadata.types';
 import { ResponseMode } from './ResponseType.types';
 
 export enum ClientIdScheme {
@@ -24,6 +27,14 @@ export interface RequestObject extends AuthorizationRequestCommonPayload {
 
   id_token_type?: string;
   response_uri?: string;
+}
+
+export interface ResolvedRequestObject
+  extends Omit<
+    RequestObject,
+    'client_metadata_uri' | 'presentation_definition_uri'
+  > {
+  client_metadata?: ResolvedClientMetadata;
 }
 
 export interface AuthorizationRequestCommonPayload

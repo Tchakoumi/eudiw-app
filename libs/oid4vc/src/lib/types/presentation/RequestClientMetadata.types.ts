@@ -20,3 +20,6 @@ export interface ClientMetadata {
   authorization_encrypted_response_enc?: string;
   [x: string]: unknown; // Index signature for other properties
 }
+
+export interface ResolvedClientMetadata
+  extends Omit<ClientMetadata, 'jwks_uri'> {}
