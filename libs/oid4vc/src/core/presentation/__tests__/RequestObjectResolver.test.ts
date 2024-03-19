@@ -1,3 +1,4 @@
+import { ClientIdScheme } from '../../../lib/types';
 import { PresentationError } from '../../../lib/errors/Presentation.errors';
 import { HttpUtil } from '../../../utils/HttpUtil';
 import { RequestObjectResolver } from '../RequestObjectResolver';
@@ -9,6 +10,7 @@ import {
   noClientMetadataResolvedRequestObject,
   presentationDefinitionValue,
   requestObjectJwt,
+  requestObjectJwtWithClientMetadata,
   resolvedRequestObject,
 } from './fixtures/RequestObjectResolver.fixtures';
 
@@ -64,6 +66,26 @@ describe('RequestObjectResolver', () => {
     );
 
     expect(requestObject).toStrictEqual(resolvedRequestObject);
+  });
+
+  it('should resolve request object containing client metadata', async () => {
+    nock(MOCK_URL)
+      .get('/presentation/definition')
+      .query({
+        id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
+      })
+      .reply(200, presentationDefinitionValue)
+      .get('/presentation/jwks.json')
+      .reply(200, clientMetadataValueJwks);
+
+    const requestObject = await requestObjectResolver.resolveRequestObject(
+      `haip://?client_id=verifier.ssi.tir.budru.de&request=${requestObjectJwtWithClientMetadata}`
+    );
+
+    expect(requestObject).toStrictEqual({
+      ...resolvedRequestObject,
+      client_id_scheme: ClientIdScheme.REDIRECT_URI,
+    });
   });
 
   it('should successfully resolve request object jwt (Passed By value)', async () => {
