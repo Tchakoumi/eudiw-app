@@ -73,7 +73,7 @@ export class RequestObjectResolver {
       !parsedRequestObject.redirect_uri &&
       !parsedRequestObject.response_uri
     ) {
-      throw new OID4VCIServiceError(PresentationError.MissingRequiredParams);
+      throw new OID4VCIServiceError(PresentationError.MissingResponseParams);
     }
 
     return parsedRequestObject;
