@@ -2,9 +2,10 @@ import * as jose from 'jose';
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
 import { PresentationDefinition } from '../../lib/types/presentation/PresentationExchange.types';
-import { RequestClientMetadata } from '../../lib/types/presentation/RequestClientMetadata.types';
+import { ClientMetadata } from '../../lib/types/presentation/RequestClientMetadata.types';
 import { RequestObject } from '../../lib/types/presentation/v1_0_20/RequestObject.types';
 import { HttpUtil } from '../../utils';
+import { JWKSet } from '../../lib/types';
 
 export class RequestObjectResolver {
   /**
@@ -18,7 +19,15 @@ export class RequestObjectResolver {
       requestObjectUri
     );
 
-    if (parsedRequestObject.client_metadata_uri) {
+    if (parsedRequestObject.client_metadata) {
+      if (parsedRequestObject.client_metadata.jwks_uri) {
+        parsedRequestObject.client_metadata.jwks =
+          await this.resolveClientMetadataJwks(
+            parsedRequestObject.client_metadata.jwks_uri
+          );
+        delete parsedRequestObject.client_metadata.jwks_uri;
+      }
+    } else if (parsedRequestObject.client_metadata_uri) {
       parsedRequestObject.client_metadata = await this.resolveClientMetadata(
         parsedRequestObject.client_metadata_uri
       );
@@ -29,6 +38,7 @@ export class RequestObjectResolver {
         await this.resolvePresentationDefinition(
           parsedRequestObject.presentation_definition_uri
         );
+      delete parsedRequestObject.presentation_definition_uri;
     }
     return parsedRequestObject;
   }
@@ -78,7 +88,7 @@ export class RequestObjectResolver {
   }
 
   async fetchRequestObject(requestUri: string) {
-    const response = await this.httpUtil.openIdFetch<string | RequestObject>(
+    const response = await this.httpUtil.openIdFetch<string>(
       requestUri as string
     );
 
@@ -86,16 +96,11 @@ export class RequestObjectResolver {
       throw new OID4VCIServiceError(PresentationError.UnResolvedRequestObject);
     }
 
-    let requestObject = response.successBody;
-    if (typeof requestObject === 'string') {
-      requestObject = this.resolveRequestObjectJwt(requestObject);
-    }
-
-    return requestObject;
+    return this.resolveRequestObjectJwt(response.successBody);
   }
 
   async resolveClientMetadata(clientMetadatUri: string) {
-    const response = await this.httpUtil.openIdFetch<RequestClientMetadata>(
+    const response = await this.httpUtil.openIdFetch<ClientMetadata>(
       clientMetadatUri
     );
 
@@ -103,6 +108,25 @@ export class RequestObjectResolver {
       throw new OID4VCIServiceError(PresentationError.UnResolvedClientMetadata);
     }
 
+    const clientMetadata = response.successBody;
+    if (response.successBody.jwks_uri) {
+      clientMetadata.jwks = await this.resolveClientMetadataJwks(
+        response.successBody.jwks_uri
+      );
+      delete clientMetadata.jwks_uri;
+    }
+
+    return clientMetadata;
+  }
+
+  async resolveClientMetadataJwks(jwksUri: string) {
+    const response = await this.httpUtil.openIdFetch<JWKSet>(jwksUri);
+
+    if (!response.successBody || response.errorBody) {
+      throw new OID4VCIServiceError(
+        PresentationError.UnResolvedClientMetadataJwk
+      );
+    }
     return response.successBody;
   }
 
