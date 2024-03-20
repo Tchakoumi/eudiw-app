@@ -9,7 +9,7 @@ import LoadingScanDetails from '../../components/scan-details/LoadingScanDetails
 import Scanner from '../../components/scanner/Scanner';
 import { useTheme } from '../../utils/theme';
 
-export default function Scan() {
+export default function IssuanceScan() {
   const theme = useTheme();
   const push = useNavigate();
   const [connectionString, setConnectionString] = useState<string>('');
