@@ -1,34 +1,18 @@
-import { eventBus } from '@datev/event-bus';
-import {
-  OID4VCIServiceEventChannel,
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@datev/oid4vc';
 import { Box, CircularProgress, Dialog, Typography } from '@mui/material';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import wallet from '../../assets/illu-wallet.png';
 import DialogTransition from '../layout/DialogTransition';
 
 export default function LoadingScanDetails({
   isDialogOpen,
+  resultListener,
 }: {
   isDialogOpen: boolean;
+  resultListener: () => void;
 }) {
-  const push = useNavigate();
-
   useEffect(() => {
-    if (isDialogOpen) {
-      eventBus.once(
-        OID4VCIServiceEventChannel.ProcessCredentialOffer,
-        (data: ServiceResponse) => {
-          if (data.status === ServiceResponseStatus.Success)
-            push('/credential-types');
-          else alert(data.payload);
-        }
-      );
-    }
-  }, [isDialogOpen, push]);
+    if (isDialogOpen) resultListener();
+  }, [isDialogOpen, resultListener]);
 
   return (
     <Dialog

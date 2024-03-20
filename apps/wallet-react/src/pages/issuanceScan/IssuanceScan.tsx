@@ -1,5 +1,10 @@
 import { eventBus } from '@datev/event-bus';
-import { OID4VCIService } from '@datev/oid4vc';
+import {
+  OID4VCIService,
+  OID4VCIServiceEventChannel,
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@datev/oid4vc';
 import back from '@iconify/icons-fluent/arrow-left-48-filled';
 import { Icon } from '@iconify/react';
 import { Box, IconButton, Tooltip } from '@mui/material';
@@ -24,9 +29,23 @@ export default function IssuanceScan() {
     OIDVCI.resolveCredentialOffer({ credentialOffer: result });
   }
 
+  function credentialOfferListener() {
+    eventBus.once(
+      OID4VCIServiceEventChannel.ProcessCredentialOffer,
+      (data: ServiceResponse) => {
+        if (data.status === ServiceResponseStatus.Success)
+          push('/credential-types');
+        else alert(data.payload);
+      }
+    );
+  }
+
   return (
     <>
-      <LoadingScanDetails isDialogOpen={!!scanResult && isLoadingDialogOpen} />
+      <LoadingScanDetails
+        isDialogOpen={!!scanResult && isLoadingDialogOpen}
+        resultListener={credentialOfferListener}
+      />
 
       <Box
         sx={{
