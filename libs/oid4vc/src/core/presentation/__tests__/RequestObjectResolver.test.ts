@@ -77,6 +77,8 @@ describe('RequestObjectResolver', () => {
         id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
       })
       .reply(200, presentationDefinitionValue)
+      .get('/presentation/client-metadata.json')
+      .reply(200, clientMetadataValue)
       .get('/presentation/jwks.json')
       .reply(200, clientMetadataValueJwks);
 
@@ -156,6 +158,10 @@ describe('RequestObjectResolver', () => {
         crossDevice: 'true',
       })
       .reply(200, requestObjectJwt)
+      .get('/presentation/client-metadata.json')
+      .reply(200, clientMetadataValue)
+      .get('/presentation/jwks.json')
+      .reply(200, clientMetadataValueJwks)
       .get('/presentation/definition')
       .query({
         id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
