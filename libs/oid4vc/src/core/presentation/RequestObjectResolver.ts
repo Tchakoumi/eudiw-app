@@ -1,12 +1,9 @@
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
 import {
-  ClientIdScheme,
-  ClientMetadata,
-  JWKSet,
   PresentationDefinition,
   RequestObject,
-  ResolvedRequestObject,
+  ResolvedRequestObject
 } from '../../lib/types';
 import { HttpUtil } from '../../utils';
 import { RequestObjectValidator } from './RequestObjectValidator';
@@ -18,7 +15,7 @@ export class RequestObjectResolver {
    * @param httpUtil the service HTTP client
    */
   public constructor(private readonly httpUtil: HttpUtil) {
-    this.requestObjectValidator = new RequestObjectValidator();
+    this.requestObjectValidator = new RequestObjectValidator(httpUtil);
   }
 
   async resolveRequestObject(requestObjectUri: string) {
@@ -32,21 +29,6 @@ export class RequestObjectResolver {
           parsedRequestObject.presentation_definition_uri
         );
       delete parsedRequestObject.presentation_definition_uri;
-    }
-
-    if (parsedRequestObject.client_metadata) {
-      if (parsedRequestObject.client_metadata.jwks_uri) {
-        parsedRequestObject.client_metadata.jwks =
-          await this.resolveClientMetadataJwks(
-            parsedRequestObject.client_metadata.jwks_uri
-          );
-        delete parsedRequestObject.client_metadata.jwks_uri;
-      }
-    } else if (parsedRequestObject.client_metadata_uri) {
-      parsedRequestObject.client_metadata = await this.resolveClientMetadata(
-        parsedRequestObject.client_metadata_uri
-      );
-      delete parsedRequestObject.client_metadata_uri;
     }
 
     return parsedRequestObject as ResolvedRequestObject;
@@ -79,17 +61,9 @@ export class RequestObjectResolver {
       }
 
       parsedRequestObject =
-        this.requestObjectValidator.redirectUriSchemeValidator(
+        await this.requestObjectValidator.redirectUriSchemeValidator(
           parsedRequestObject
         );
-    }
-
-    if (
-      parsedRequestObject.client_id_scheme !== ClientIdScheme.REDIRECT_URI &&
-      !parsedRequestObject.redirect_uri &&
-      !parsedRequestObject.response_uri
-    ) {
-      throw new OID4VCIServiceError(PresentationError.MissingResponseParams);
     }
 
     return parsedRequestObject;
@@ -105,37 +79,6 @@ export class RequestObjectResolver {
     }
 
     return this.resolveRequestObjectJwt(response.successBody);
-  }
-
-  async resolveClientMetadata(clientMetadatUri: string) {
-    const response = await this.httpUtil.openIdFetch<ClientMetadata>(
-      clientMetadatUri
-    );
-
-    if (!response.successBody || response.errorBody) {
-      throw new OID4VCIServiceError(PresentationError.UnResolvedClientMetadata);
-    }
-
-    const clientMetadata = response.successBody;
-    if (response.successBody.jwks_uri) {
-      clientMetadata.jwks = await this.resolveClientMetadataJwks(
-        response.successBody.jwks_uri
-      );
-      delete clientMetadata.jwks_uri;
-    }
-
-    return clientMetadata;
-  }
-
-  async resolveClientMetadataJwks(jwksUri: string) {
-    const response = await this.httpUtil.openIdFetch<JWKSet>(jwksUri);
-
-    if (!response.successBody || response.errorBody) {
-      throw new OID4VCIServiceError(
-        PresentationError.UnResolvedClientMetadataJwk
-      );
-    }
-    return response.successBody;
   }
 
   async resolvePresentationDefinition(presentationDefinitionUri: string) {

@@ -2,26 +2,33 @@ import * as jose from 'jose';
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
 import { ClientIdScheme, RequestObject } from '../../lib/types';
-import { isValidDNSName } from '../../utils';
+import { HttpUtil, isValidDNSName } from '../../utils';
+import { ClientMetadataResolver } from './ClientMetadataResolver';
 
 export class RequestObjectValidator {
+  private readonly clientMetadataResolver: ClientMetadataResolver;
   /**
    * Constructor.
+   * @param httpUtil the service HTTP client
    */
-  public constructor() {}
+  public constructor(httpUtil: HttpUtil) {
+    this.clientMetadataResolver = new ClientMetadataResolver(httpUtil);
+  }
 
   /**
    * Validate an authorization request object matching the specified client identifier scheme
    *  @see https://openid.net/specs/openid-4-verifiable-presentations-1_0-20.html#name-verifier-metadata-managemen
    *
    * @param requestObjectJwt JWT Signed request object
-   * @returns
+   * @returns a valid decode request object
    */
-  validate(requestObjectJwt: string) {
-    const requestObject = this.decodeRequestJwt(requestObjectJwt);
+  async validate(requestObjectJwt: string) {
+    let requestObject = this.decodeRequestJwt(requestObjectJwt);
     if (!requestObject.redirect_uri && !requestObject.response_uri) {
       throw new OID4VCIServiceError(PresentationError.MissingResponseParams);
     }
+
+    requestObject = await this.resolveRequestClientMetadata(requestObject);
 
     switch (requestObject.client_id_scheme) {
       case ClientIdScheme.X509_SAN_DNS:
@@ -40,7 +47,26 @@ export class RequestObjectValidator {
     }
   }
 
-  redirectUriSchemeValidator(requestObject: RequestObject) {
+  private async resolveRequestClientMetadata(
+    requestObject: RequestObject & jose.JWTPayload
+  ) {
+    const clientMetadataOrUri =
+      requestObject.client_metadata || requestObject.client_metadata_uri;
+    if (clientMetadataOrUri) {
+      requestObject = {
+        ...requestObject,
+        client_metadata:
+          await this.clientMetadataResolver.resolveClientMetadataOrUri(
+            clientMetadataOrUri
+          ),
+      };
+      delete requestObject.client_metadata_uri;
+      delete requestObject.client_metadata?.jwks_uri;
+    }
+    return requestObject;
+  }
+
+  async redirectUriSchemeValidator(requestObject: RequestObject) {
     if (
       requestObject.redirect_uri &&
       requestObject.redirect_uri !== requestObject.client_id
@@ -48,7 +74,7 @@ export class RequestObjectValidator {
       throw new OID4VCIServiceError(PresentationError.MismatchedClientId);
     }
 
-    return requestObject;
+    return this.resolveRequestClientMetadata(requestObject);
   }
 
   preRegisteredSchemeValidator(requestObject: RequestObject) {
