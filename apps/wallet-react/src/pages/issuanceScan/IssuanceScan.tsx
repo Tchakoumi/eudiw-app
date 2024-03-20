@@ -12,23 +12,21 @@ import { useTheme } from '../../utils/theme';
 export default function IssuanceScan() {
   const theme = useTheme();
   const push = useNavigate();
-  const [connectionString, setConnectionString] = useState<string>('');
-  const [isDetailsDialogOpen, setIsDetailsDialogOpen] =
+  const [scanResult, setScanResult] = useState<string>('');
+  const [isLoadingDialogOpen, setIsLoadingDialogOpen] =
     useState<boolean>(false);
 
   const OIDVCI = new OID4VCIService(eventBus);
 
   function resolveCredentialOffer(result: string) {
-    setIsDetailsDialogOpen(true);
-    setConnectionString(result);
+    setIsLoadingDialogOpen(true);
+    setScanResult(result);
     OIDVCI.resolveCredentialOffer({ credentialOffer: result });
   }
 
   return (
     <>
-      <LoadingScanDetails
-        isDialogOpen={!!connectionString && isDetailsDialogOpen}
-      />
+      <LoadingScanDetails isDialogOpen={!!scanResult && isLoadingDialogOpen} />
 
       <Box
         sx={{
