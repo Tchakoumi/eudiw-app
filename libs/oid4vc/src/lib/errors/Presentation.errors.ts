@@ -11,7 +11,7 @@ export enum PresentationError {
   MismatchedClientId = `${PresentationError}: Client identifier does not match the specified client identifier scheme`,
   MisusedClientIdScheme = `${PresentationError}: Misused client identifier scheme`,
   MissingJwtRequiredHeaderParams = `${PresentationError}:  Missing jwt required header params`,
-  UnResolvedJwKHeaderParams = `${PresentationError}:  Could not resolve jwk header params`,
+  UnResolvedJwkHeaderParams = `${PresentationError}:  Could not resolve jwk header params`,
   InvalidRequestObjectJwtSignature = `${PresentationError}: Could not verify request object jwt signature`,
   UnSupportedClientScheme = `${PresentationError}: Specified client identifier scheme is not supported`,
 }

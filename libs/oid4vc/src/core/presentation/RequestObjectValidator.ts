@@ -30,6 +30,8 @@ export class RequestObjectValidator {
         // request must not be signed when `client_id_scheme` is set to `redirect_uri`
         //https://openid.net/specs/openid-4-verifiable-presentations-1_0-20.html#section-5.7-3.2.1
         throw new OID4VCIServiceError(PresentationError.MisusedClientIdScheme);
+      case ClientIdScheme.PRE_REGISTERED:
+        return this.preRegisteredSchemeValidator(requestObject);
 
       default:
         throw new OID4VCIServiceError(
@@ -39,10 +41,18 @@ export class RequestObjectValidator {
   }
 
   redirectUriSchemeValidator(requestObject: RequestObject) {
-    if (requestObject.client_id !== requestObject.redirect_uri) {
+    if (
+      requestObject.redirect_uri &&
+      requestObject.redirect_uri !== requestObject.client_id
+    ) {
       throw new OID4VCIServiceError(PresentationError.MismatchedClientId);
     }
 
+    return requestObject;
+  }
+
+  preRegisteredSchemeValidator(requestObject: RequestObject) {
+    //TODO validate client metadata according to `pre-registered` scheme
     return requestObject;
   }
 
@@ -54,17 +64,17 @@ export class RequestObjectValidator {
       throw new OID4VCIServiceError(PresentationError.InvalidRequestObjectJwt);
     }
 
-    if (!header?.x5c || !header?.kid)
+    if (!header?.x5c || !header?.kid || !header.alg)
       throw new OID4VCIServiceError(
         PresentationError.MissingJwtRequiredHeaderParams
       );
-    const jwk = await this.createJWKFromX5C(header.x5c);
+    const jwk = await this.createJWKFromX5C(header.x5c, header.alg);
 
     let requestObject: RequestObject;
     try {
       const result = await jose.jwtVerify<RequestObject>(requestObjectJwt, jwk);
       requestObject = result.payload;
-    } catch (error) {
+    } catch (e) {
       throw new OID4VCIServiceError(
         PresentationError.InvalidRequestObjectJwtSignature
       );
@@ -94,18 +104,16 @@ export class RequestObjectValidator {
    * Create a JWK (JSON Web Key) from the X.509 certificate chain
    * @param x5cArray `x5c` from jwt header
    */
-  private async createJWKFromX5C(x5cArray: string[]) {
+  private async createJWKFromX5C(x5cArray: string[], alg: string) {
     // Convert x5c to PEM format
-    const pemCert = `-----BEGIN CERTIFICATE-----\n${x5cArray.join(
-      '\n'
-    )}\n-----END CERTIFICATE-----`;
+    const pemCert = `-----BEGIN CERTIFICATE-----\n${x5cArray[0]}\n-----END CERTIFICATE-----`;
 
     try {
       // Create JWK from X.509 certificate chain
-      return await jose.importX509(pemCert, 'pem');
-    } catch (error) {
+      return await jose.importX509(pemCert, alg);
+    } catch (e) {
       throw new OID4VCIServiceError(
-        PresentationError.UnResolvedJwKHeaderParams
+        PresentationError.UnResolvedJwkHeaderParams
       );
     }
   }
