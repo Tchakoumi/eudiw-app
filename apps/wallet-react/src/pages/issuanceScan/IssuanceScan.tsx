@@ -3,7 +3,7 @@ import { OID4VCIService } from '@datev/oid4vc';
 import back from '@iconify/icons-fluent/arrow-left-48-filled';
 import { Icon } from '@iconify/react';
 import { Box, IconButton, Tooltip } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingScanDetails from '../../components/scan-details/LoadingScanDetails';
 import Scanner from '../../components/scanner/Scanner';
@@ -17,25 +17,6 @@ export default function IssuanceScan() {
     useState<boolean>(false);
 
   const OIDVCI = new OID4VCIService(eventBus);
-
-  const [permissionStatus, setPermissionStatus] =
-    useState<PermissionState>('prompt');
-
-  const checkCameraPermission = async () => {
-    try {
-      const cameraPermission = await navigator.permissions.query({
-        name: 'camera' as PermissionName,
-      });
-      setPermissionStatus(cameraPermission.state);
-      return cameraPermission.state;
-    } catch (error) {
-      console.error('Error checking camera permission:', error);
-    }
-  };
-
-  useEffect(() => {
-    checkCameraPermission();
-  }, [permissionStatus]);
 
   function resolveCredentialOffer(result: string) {
     setIsDetailsDialogOpen(true);
