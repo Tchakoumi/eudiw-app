@@ -5,9 +5,14 @@ interface ScanMenuProps {
   anchorEl: HTMLElement | null;
   closeMenu: () => void;
 }
+
+interface IScanMenuItem {
+  route: string;
+  title: string;
+}
 export default function ScanMenu({ anchorEl, closeMenu }: ScanMenuProps) {
   const push = useNavigate();
-  const tt = [
+  const scanMenuItems: IScanMenuItem[] = [
     { route: '/issuance-scan', title: 'Issuance' },
     { route: '/presentation-scan', title: 'Presentation' },
   ];
@@ -16,12 +21,14 @@ export default function ScanMenu({ anchorEl, closeMenu }: ScanMenuProps) {
       anchorEl={anchorEl}
       open={!!anchorEl}
       onClose={closeMenu}
-      transformOrigin={{
-        horizontal: 15.195,
-        vertical: 220,
-      }}
       elevation={0}
       sx={{
+        '& .MuiPaper-root': {
+          bottom: '200px !important',
+          left: '50% !important',
+          transform: 'translate(-50%, -50%) !important',
+          height: 'fit-content',
+        },
         '& .MuiBackdrop-root': {
           backgroundColor: '#0000002B',
         },
@@ -35,7 +42,7 @@ export default function ScanMenu({ anchorEl, closeMenu }: ScanMenuProps) {
           Select scan reason
         </Typography>
         <MenuList disablePadding dense>
-          {tt.map(({ route, title }, index) => (
+          {scanMenuItems.map(({ route, title }, index) => (
             <MenuItem autoFocus key={index} onClick={() => push(route)}>
               {title}
             </MenuItem>
