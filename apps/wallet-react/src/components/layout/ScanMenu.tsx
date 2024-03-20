@@ -43,7 +43,11 @@ export default function ScanMenu({ anchorEl, closeMenu }: ScanMenuProps) {
         </Typography>
         <MenuList disablePadding dense>
           {scanMenuItems.map(({ route, title }, index) => (
-            <MenuItem autoFocus key={index} onClick={() => push(route)}>
+            <MenuItem
+              autoFocus={index === 0}
+              key={index}
+              onClick={() => push(route)}
+            >
               {title}
             </MenuItem>
           ))}
