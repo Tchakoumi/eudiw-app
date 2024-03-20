@@ -1,3 +1,4 @@
+import { JWTPayload } from 'jose';
 import { PresentationDefinition } from '../PresentationExchange.types';
 import {
   ClientMetadata,
@@ -29,11 +30,7 @@ export interface RequestObject extends AuthorizationRequestCommonPayload {
   response_uri?: string;
 }
 
-export interface ResolvedRequestObject
-  extends Omit<
-    RequestObject,
-    'client_metadata_uri' | 'presentation_definition_uri'
-  > {
+export interface ResolvedRequestObject extends RequestObject {
   client_metadata?: ResolvedClientMetadata;
   presentation_definition: PresentationDefinition;
 }
@@ -43,7 +40,7 @@ export interface AuthorizationRequestCommonPayload
   request?: string;
   request_uri?: string;
 }
-export interface RequestCommonPayload {
+export interface RequestCommonPayload extends JWTPayload {
   scope?: string;
   response_type?: ResponseType | string;
   client_id?: string;

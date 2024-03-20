@@ -21,5 +21,6 @@ export interface ClientMetadata {
   [x: string]: unknown; // Index signature for other properties
 }
 
-export interface ResolvedClientMetadata
-  extends Omit<ClientMetadata, 'jwks_uri'> {}
+export interface ResolvedClientMetadata extends ClientMetadata {
+  jwks: JWKSet;
+}
