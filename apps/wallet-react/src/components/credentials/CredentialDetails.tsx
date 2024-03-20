@@ -1,18 +1,26 @@
+import { eventBus } from '@datev/event-bus';
+import {
+  DisplayCredential,
+  OID4VCIService,
+  OID4VCIServiceEventChannel,
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@datev/oid4vc';
 import { Box, Button, Dialog, Divider } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
 import { useEffect, useState } from 'react';
-import { IVerifiableCredential } from '../../types/credentials.types';
+import {
+  IDisplayClaimValues,
+  IVcData,
+  IVerifiableCredential,
+} from '../../types/credentials.types';
+import { removeUnderscoresFromWord } from '../../utils/common';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
 import CredentialCard from './CredentialCard';
 import CredentialDetailLine from './CredentialDetailLine';
 
-export interface IVerifiableCredentialDetails extends IVerifiableCredential {
-  claims: IVcData;
-}
-
-type IDisplayClaimValues = Record<string, boolean>;
-type IVcData = Record<string, string>;
+const OIDVCI = new OID4VCIService(eventBus);
 
 export default function CredentialDetails({
   isDialogOpen,
@@ -25,29 +33,31 @@ export default function CredentialDetails({
   selectedCredential?: IVerifiableCredential;
   deleteVC: () => void;
 }) {
-  // TODO: FUNCTION WILL GET THE DETAILS OF A CREDENTIAL WHEN GIVEN A credential_id
-  function getCredentialDetails(credential_id: string): IVcData {
-    return {
-      'Phone number': 'Hans Schreiner',
-      'email address': 'hans.schreiner@datev.com',
-      address: 'Johannessgase #626',
-    };
-  }
   const [vcData, setVcData] = useState<IVcData>({});
   const [canDisplayClaimValue, setCanDisplayClaimValue] = useState<
     Record<string, boolean>
   >({});
   useEffect(() => {
-    const vcData = getCredentialDetails(
-      selectedCredential ? selectedCredential.id : ''
-    );
-    setVcData(vcData);
-    const claimValuesDisplayStatus: IDisplayClaimValues = {};
-    Object.keys(vcData).forEach((key) => {
-      claimValuesDisplayStatus[key] = false;
-    });
-    setCanDisplayClaimValue(claimValuesDisplayStatus);
-  }, [selectedCredential]);
+    if (isDialogOpen && selectedCredential && selectedCredential.id) {
+      OIDVCI.retrieveCredentialDetails(selectedCredential.id);
+      eventBus.once(
+        OID4VCIServiceEventChannel.RetrieveCredentialDetails,
+        (data: ServiceResponse<DisplayCredential>) => {
+          if (data.status === ServiceResponseStatus.Success) {
+            setVcData(data.payload.claims as IVcData);
+            const claimValuesDisplayStatus: IDisplayClaimValues = {};
+            Object.keys(data.payload.claims as IVcData).forEach((key) => {
+              claimValuesDisplayStatus[key] = false;
+            });
+            setCanDisplayClaimValue(claimValuesDisplayStatus);
+          } else {
+            //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
+            alert(data.payload);
+          }
+        }
+      );
+    }
+  }, [isDialogOpen, selectedCredential]);
 
   function handleShowAllValues() {
     const claimValuesDisplayStatus: IDisplayClaimValues = {};
@@ -120,7 +130,7 @@ export default function CredentialDetails({
               {Object.keys(vcData).map((claimKey, index) => (
                 <CredentialDetailLine
                   key={index}
-                  title={claimKey}
+                  title={removeUnderscoresFromWord(claimKey)}
                   value={vcData[claimKey as keyof typeof vcData]}
                   handleShowValue={() => handleShowClaimValue(claimKey)}
                   showClaimValue={

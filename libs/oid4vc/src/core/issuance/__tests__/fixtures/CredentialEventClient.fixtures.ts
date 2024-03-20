@@ -10,7 +10,7 @@ export const sdJwtProcessedCredentialObjRef1: SdJwtProcessedCredential = {
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
     logo: undefined,
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     claims: {},
   },
 };
@@ -21,7 +21,7 @@ export const sdJwtProcessedCredentialObjRef3: SdJwtProcessedCredential = {
   display: {
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     claims: {
       given_name: 'Henry',
       family_name: 'Silverstone',
@@ -35,13 +35,13 @@ export const credentialHeaderObjRef1: DisplayCredential[] = [
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
     logo: undefined,
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 1,
   },
   {
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 2,
   },
 ];
@@ -51,7 +51,7 @@ export const credentialHeaderObjRef2: DisplayCredential[] = [
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
     logo: undefined,
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 1,
   },
 ];
@@ -60,7 +60,7 @@ export const credentialContentObjRef2: DisplayCredential = {
   title: 'Identity Credential',
   issuer: 'trial.authlete.net',
   logo: undefined,
-  issued_at: 1708613098,
+  issued_at: 1708613098000,
   id: 1,
   claims: {},
 };
@@ -70,14 +70,14 @@ export const credentialContentObjRef1: DisplayCredential[] = [
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
     logo: undefined,
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 1,
     claims: {},
   },
   {
     title: 'Identity Credential',
     issuer: 'trial.authlete.net',
-    issued_at: 1708613098,
+    issued_at: 1708613098000,
     id: 2,
     claims: {
       given_name: 'Henry',
@@ -90,7 +90,7 @@ export const credentialContentObjRef1: DisplayCredential[] = [
 export const credentialContentObjRef3: DisplayCredential = {
   title: 'Identity Credential',
   issuer: 'trial.authlete.net',
-  issued_at: 1708613098,
+  issued_at: 1708613098000,
   id: 1,
   claims: {
     given_name: 'Henry',
