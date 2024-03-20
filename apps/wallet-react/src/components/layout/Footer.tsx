@@ -8,16 +8,20 @@ import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import line from '../../assets/line.png';
 import { useTheme } from '../../utils/theme';
+import { useState } from 'react';
+import ScanMenu from './ScanMenu';
 
 interface INavElements {
   icon: IconifyIcon;
   title: string;
   route: string;
   isMain?: boolean;
+  handleClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
   const location = useLocation();
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const NAV_ELEMENTS: INavElements[] = [
     {
       icon: location.pathname === '/' ? homeFilled : home,
@@ -29,6 +33,7 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
       title: 'QR Code',
       isMain: true,
       route: '/scan',
+      handleClick: (e) => setMenuAnchor(e.currentTarget),
     },
     {
       icon: location.pathname === '/credentials' ? walletFilled : wallet,
@@ -40,77 +45,84 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
   const theme = useTheme();
   const push = useNavigate();
   return (
-    <Box
-      sx={{
-        position: 'relative',
-        display: 'grid',
-        gridTemplateColumns: new Array(NAV_ELEMENTS.length)
-          .fill('1fr')
-          .join(' '),
-        columnGap: 2,
-        padding: '12.5px 21px',
-      }}
-    >
-      {showArrow && (
-        <img
-          src={line}
-          alt="line"
-          style={{
-            position: 'absolute',
-            top: '-80px',
-            left: '51%',
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
-      )}
-      {NAV_ELEMENTS.map(({ icon, title, isMain, route }, index) => (
-        <Box
-          key={index}
-          sx={{
-            display: 'grid',
-            rowGap: 0.5,
-            justifyItems: 'center',
-            position: 'relative',
-          }}
-        >
-          <Tooltip arrow title={title}>
-            <IconButton
-              onClick={() => push(route)}
-              size={isMain ? 'large' : 'medium'}
-              sx={{
-                width: 'fit-content',
-                position: isMain ? 'absolute' : 'relative',
-                left: isMain ? '50%' : 'none',
-                transform: isMain ? 'translate(-50%, -50%)' : 'none',
-                backgroundColor: isMain
-                  ? theme.palette.primary.main
-                  : 'initial',
-                border: isMain ? '7px solid #F5F7F9' : 'none',
-                '&:hover': {
-                  backgroundColor: isMain
-                    ? theme.palette.primary.main
-                    : 'initial',
-                },
-              }}
-            >
-              <Icon icon={icon} fontSize={24} />
-            </IconButton>
-          </Tooltip>
-          <Typography
-            sx={{
-              fontWeight:
-                location.pathname === route ||
-                (route === '/scan' && location.pathname === '/credential-types')
-                  ? 700
-                  : 400,
-              alignSelf: 'end',
+    <>
+      <ScanMenu anchorEl={menuAnchor} closeMenu={() => setMenuAnchor(null)} />
+      <Box
+        sx={{
+          position: 'relative',
+          display: 'grid',
+          gridTemplateColumns: new Array(NAV_ELEMENTS.length)
+            .fill('1fr')
+            .join(' '),
+          columnGap: 2,
+          padding: '12.5px 21px',
+        }}
+      >
+        {showArrow && (
+          <img
+            src={line}
+            alt="line"
+            style={{
+              position: 'absolute',
+              top: '-80px',
+              left: '51%',
+              transform: 'translate(-50%, -50%)',
             }}
-            variant="subtitle2"
-          >
-            {title}
-          </Typography>
-        </Box>
-      ))}
-    </Box>
+          />
+        )}
+        {NAV_ELEMENTS.map(
+          ({ icon, title, isMain, route, handleClick }, index) => (
+            <Box
+              key={index}
+              sx={{
+                display: 'grid',
+                rowGap: 0.5,
+                justifyItems: 'center',
+                position: 'relative',
+              }}
+              onClick={handleClick ? (e) => handleClick(e) : () => null}
+            >
+              <Tooltip arrow title={title}>
+                <IconButton
+                  onClick={() => (handleClick ? null : push(route))}
+                  size={isMain ? 'large' : 'medium'}
+                  sx={{
+                    width: 'fit-content',
+                    position: isMain ? 'absolute' : 'relative',
+                    left: isMain ? '50%' : 'none',
+                    transform: isMain ? 'translate(-50%, -50%)' : 'none',
+                    backgroundColor: isMain
+                      ? theme.palette.primary.main
+                      : 'initial',
+                    border: isMain ? '7px solid #F5F7F9' : 'none',
+                    '&:hover': {
+                      backgroundColor: isMain
+                        ? theme.palette.primary.main
+                        : 'initial',
+                    },
+                  }}
+                >
+                  <Icon icon={icon} fontSize={24} />
+                </IconButton>
+              </Tooltip>
+              <Typography
+                sx={{
+                  fontWeight:
+                    location.pathname === route ||
+                    (route === '/scan' &&
+                      location.pathname === '/credential-types')
+                      ? 700
+                      : 400,
+                  alignSelf: 'end',
+                }}
+                variant="subtitle2"
+              >
+                {title}
+              </Typography>
+            </Box>
+          )
+        )}
+      </Box>
+    </>
   );
 }
