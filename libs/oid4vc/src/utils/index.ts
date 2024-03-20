@@ -20,3 +20,14 @@ export const composeUrl = (baseUrl: string, path: string): string => {
 export const currentTimestampInSecs = (): number => {
   return Math.floor(new Date().getTime() / 1000);
 };
+
+/**
+ * Checks if a string is DNS name
+ * @param domain DNS name
+ * @returns boolean indicating if the `domain` is valid
+ */
+export const isValidDNSName = (domain: string) => {
+  const dnsNameRegex =
+    /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  return dnsNameRegex.test(domain);
+};
