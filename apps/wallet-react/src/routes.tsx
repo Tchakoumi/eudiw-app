@@ -17,7 +17,7 @@ export const routes: IRoute[] = [
   },
   {
     element: <IssuanceScan />,
-    path: '/scan',
+    path: '/issuance-scan',
   },
   {
     element: <CredentialTypes />,

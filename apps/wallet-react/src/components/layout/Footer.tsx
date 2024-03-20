@@ -32,7 +32,7 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
       icon: qr,
       title: 'QR Code',
       isMain: true,
-      route: '/scan',
+      route: '/issuance-scan',
       handleClick: (e) => setMenuAnchor(e.currentTarget),
     },
     {
@@ -109,7 +109,7 @@ export default function Footer({ showArrow = true }: { showArrow?: boolean }) {
                 sx={{
                   fontWeight:
                     location.pathname === route ||
-                    (route === '/scan' &&
+                    (route === '/issuance-scan' &&
                       location.pathname === '/credential-types')
                       ? 700
                       : 400,
