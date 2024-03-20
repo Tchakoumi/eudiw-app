@@ -1,4 +1,3 @@
-import * as jose from 'jose';
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
 import {
@@ -10,13 +9,17 @@ import {
   ResolvedRequestObject,
 } from '../../lib/types';
 import { HttpUtil } from '../../utils';
+import { RequestObjectValidator } from './RequestObjectValidator';
 
 export class RequestObjectResolver {
+  private readonly requestObjectValidator: RequestObjectValidator;
   /**
    * Constructor.
    * @param httpUtil the service HTTP client
    */
-  public constructor(private httpUtil: HttpUtil) {}
+  public constructor(private readonly httpUtil: HttpUtil) {
+    this.requestObjectValidator = new RequestObjectValidator();
+  }
 
   async resolveRequestObject(requestObjectUri: string) {
     const parsedRequestObject = await this.parsedRequestObjectUri(
@@ -66,13 +69,19 @@ export class RequestObjectResolver {
 
     let parsedRequestObject: RequestObject = {};
     if (request) {
-      parsedRequestObject = this.resolveRequestObjectJwt(request);
+      parsedRequestObject = await this.resolveRequestObjectJwt(request);
     } else if (requestUri) {
       parsedRequestObject = await this.fetchRequestObject(requestUri);
     } else {
+      //authorization request is not signed for `redirect_uri` scheme
       for (const [key, value] of params.entries()) {
         Object.assign(parsedRequestObject, { [key]: value });
       }
+
+      parsedRequestObject =
+        this.requestObjectValidator.redirectUriSchemeValidator(
+          parsedRequestObject
+        );
     }
 
     if (
@@ -84,14 +93,6 @@ export class RequestObjectResolver {
     }
 
     return parsedRequestObject;
-  }
-
-  private resolveRequestObjectJwt(request: string) {
-    try {
-      return jose.decodeJwt<RequestObject>(request);
-    } catch (e) {
-      throw new OID4VCIServiceError(PresentationError.InvalidRequestObjectJwt);
-    }
   }
 
   async fetchRequestObject(requestUri: string) {
@@ -149,5 +150,9 @@ export class RequestObjectResolver {
     }
 
     return response.successBody;
+  }
+
+  private resolveRequestObjectJwt(requestObjectJwt: string) {
+    return this.requestObjectValidator.validate(requestObjectJwt);
   }
 }
