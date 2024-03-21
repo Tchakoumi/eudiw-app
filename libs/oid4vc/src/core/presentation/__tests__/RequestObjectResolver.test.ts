@@ -65,7 +65,10 @@ describe('RequestObjectResolver', () => {
     const requestObject = await requestObjectResolver.resolveRequestObject(
       encodedRequestObjectUri
     );
-    const expectedRequestObject = { ...resolvedRequestObject };
+    const expectedRequestObject = {
+      ...resolvedRequestObject,
+      client_id_scheme: ClientIdScheme.REDIRECT_URI,
+    };
     delete expectedRequestObject['redirect_uri'];
     expect(requestObject).toStrictEqual(expectedRequestObject);
   });

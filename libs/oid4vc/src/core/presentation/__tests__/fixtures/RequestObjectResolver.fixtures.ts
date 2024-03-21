@@ -159,7 +159,7 @@ export const presentationDefinitionValue: PresentationDefinition = {
 export const resolvedRequestObject: ResolvedRequestObject = {
   redirect_uri:
     'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
-  client_id_scheme: ClientIdScheme.REDIRECT_URI,
+  client_id_scheme: ClientIdScheme.PRE_REGISTERED,
   client_metadata: resolvedClientMetadata,
   presentation_definition: presentationDefinitionValue,
   response_type: 'vp_token',
