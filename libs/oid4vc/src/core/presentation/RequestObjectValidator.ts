@@ -124,7 +124,7 @@ export class RequestObjectValidator {
   async x509SanDnsSchemeValidator(requestObjectJwt: string) {
     const header = this.decodeRequestHeaderJwt(requestObjectJwt);
 
-    if (!header?.x5c || !header?.kid || !header.alg)
+    if (!header?.x5c || !header.alg)
       throw new OID4VCIServiceError(
         PresentationError.MissingJwtRequiredHeaderParams
       );
@@ -186,7 +186,7 @@ export class RequestObjectValidator {
       return await jose.importX509(pemCert, alg);
     } catch (e) {
       throw new OID4VCIServiceError(
-        PresentationError.UnResolvedJwkHeaderParams
+        PresentationError.InvalidJwkHeaderParams
       );
     }
   }

@@ -4,6 +4,7 @@ import { HttpUtil } from '../../../utils';
 import { RequestObjectValidator } from '../RequestObjectValidator';
 import {
   TEST_JWK_KID,
+  X5C_CERTIFICATE,
   resolvedRequestObject,
   signRequestPayload,
 } from './fixtures';
@@ -97,7 +98,7 @@ describe('RequestObjectValidator', () => {
     ).rejects.toThrow(PresentationError.MismatchedClientId);
   });
 
-  it('should throw invalid jwt signature exception', async () => {
+  it('should throw invalid request object jwt signature exception (pre-registered)', async () => {
     const { signedJwt } = await signRequestPayload({
       ...resolvedRequestObject,
       client_metadata: {
@@ -116,6 +117,46 @@ describe('RequestObjectValidator', () => {
       },
       client_id_scheme: ClientIdScheme.PRE_REGISTERED,
     });
+
+    await expect(requestObjectValidator.validate(signedJwt)).rejects.toThrow(
+      PresentationError.InvalidRequestObjectJwtSignature
+    );
+  });
+
+  it('should throw missing jwt required header params exception', async () => {
+    const { signedJwt } = await signRequestPayload({
+      ...resolvedRequestObject,
+      client_id_scheme: ClientIdScheme.X509_SAN_DNS,
+    });
+
+    await expect(requestObjectValidator.validate(signedJwt)).rejects.toThrow(
+      PresentationError.MissingJwtRequiredHeaderParams
+    );
+  });
+
+  it('should throw invalid jwk header params exception', async () => {
+    const { signedJwt } = await signRequestPayload(
+      {
+        ...resolvedRequestObject,
+        client_id_scheme: ClientIdScheme.X509_SAN_DNS,
+      },
+      { alg: 'ES256', x5c: ['Invalid-certificate'] }
+    );
+
+    await expect(requestObjectValidator.validate(signedJwt)).rejects.toThrow(
+      PresentationError.InvalidJwkHeaderParams
+    );
+  });
+
+  it('should throw invalid request object jwt signature exception (x509_san_dns)', async () => {
+    const { signedJwt } = await signRequestPayload(
+      {
+        ...resolvedRequestObject,
+        client_id_scheme: ClientIdScheme.X509_SAN_DNS,
+      },
+      // The certificate is a valid one but not correspond to the keypair used to sign with
+      { alg: 'ES256', x5c: [X5C_CERTIFICATE] }
+    );
 
     await expect(requestObjectValidator.validate(signedJwt)).rejects.toThrow(
       PresentationError.InvalidRequestObjectJwtSignature
