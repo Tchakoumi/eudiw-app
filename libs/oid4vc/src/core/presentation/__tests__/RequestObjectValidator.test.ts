@@ -2,7 +2,11 @@ import { PresentationError } from '../../../lib/errors/Presentation.errors';
 import { ClientIdScheme } from '../../../lib/types';
 import { HttpUtil } from '../../../utils';
 import { RequestObjectValidator } from '../RequestObjectValidator';
-import { TEST_JWK_KID, resolvedRequestObject, signRequestPayload } from './fixtures';
+import {
+  TEST_JWK_KID,
+  resolvedRequestObject,
+  signRequestPayload,
+} from './fixtures';
 
 describe('RequestObjectValidator', () => {
   const httpUtil = new HttpUtil();
@@ -91,5 +95,30 @@ describe('RequestObjectValidator', () => {
         client_id_scheme: ClientIdScheme.REDIRECT_URI,
       })
     ).rejects.toThrow(PresentationError.MismatchedClientId);
+  });
+
+  it('should throw invalid jwt signature exception', async () => {
+    const { signedJwt } = await signRequestPayload({
+      ...resolvedRequestObject,
+      client_metadata: {
+        ...resolvedRequestObject.client_metadata,
+        jwks: {
+          keys: [
+            {
+              alg: 'RS256',
+              kty: 'RSA',
+              n: 'invalid-jwt-key-header',
+              e: 'AQAB',
+              kid: TEST_JWK_KID,
+            },
+          ],
+        },
+      },
+      client_id_scheme: ClientIdScheme.PRE_REGISTERED,
+    });
+
+    await expect(requestObjectValidator.validate(signedJwt)).rejects.toThrow(
+      PresentationError.InvalidRequestObjectJwtSignature
+    );
   });
 });
