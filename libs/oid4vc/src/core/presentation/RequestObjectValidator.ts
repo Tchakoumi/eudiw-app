@@ -1,7 +1,7 @@
 import * as jose from 'jose';
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
-import { ClientIdScheme, RequestObject } from '../../lib/types';
+import { ClientIdScheme, JWKSet, RequestObject } from '../../lib/types';
 import { HttpUtil, isValidDNSName } from '../../utils';
 import { ClientMetadataResolver } from './ClientMetadataResolver';
 
@@ -23,22 +23,36 @@ export class RequestObjectValidator {
    * @returns a valid decode request object
    */
   async validate(requestObjectJwt: string) {
-    let requestObject = this.decodeRequestJwt(requestObjectJwt);
+    const requestObject = this.decodeRequestJwt(requestObjectJwt);
     if (!requestObject.redirect_uri && !requestObject.response_uri) {
       throw new OID4VCIServiceError(PresentationError.MissingResponseParams);
     }
 
-    requestObject = await this.resolveRequestClientMetadata(requestObject);
+    const resolvedRequestObject = await this.resolveRequestClientMetadata(
+      requestObject
+    );
 
     switch (requestObject.client_id_scheme) {
-      case ClientIdScheme.X509_SAN_DNS:
-        return this.x509SanDnsSchemeValidator(requestObjectJwt);
-      case ClientIdScheme.REDIRECT_URI:
+      case ClientIdScheme.X509_SAN_DNS: {
+        await this.x509SanDnsSchemeValidator(requestObjectJwt);
+        return resolvedRequestObject;
+      }
+      case ClientIdScheme.REDIRECT_URI: {
         // request must not be signed when `client_id_scheme` is set to `redirect_uri`
         //https://openid.net/specs/openid-4-verifiable-presentations-1_0-20.html#section-5.7-3.2.1
         throw new OID4VCIServiceError(PresentationError.MisusedClientIdScheme);
-      case ClientIdScheme.PRE_REGISTERED:
-        return this.preRegisteredSchemeValidator(requestObject);
+      }
+      case ClientIdScheme.PRE_REGISTERED: {
+        const jwks = resolvedRequestObject.client_metadata?.jwks;
+        if (!jwks) {
+          throw new OID4VCIServiceError(
+            PresentationError.MissingRequiredParams
+          );
+        }
+
+        await this.preRegisteredSchemeValidator(requestObjectJwt, jwks);
+        return resolvedRequestObject;
+      }
 
       default:
         throw new OID4VCIServiceError(
@@ -47,9 +61,7 @@ export class RequestObjectValidator {
     }
   }
 
-  private async resolveRequestClientMetadata(
-    requestObject: RequestObject & jose.JWTPayload
-  ) {
+  private async resolveRequestClientMetadata(requestObject: RequestObject) {
     const clientMetadataOrUri =
       requestObject.client_metadata || requestObject.client_metadata_uri;
     if (clientMetadataOrUri) {
@@ -77,18 +89,40 @@ export class RequestObjectValidator {
     return this.resolveRequestClientMetadata(requestObject);
   }
 
-  preRegisteredSchemeValidator(requestObject: RequestObject) {
-    //TODO validate client metadata according to `pre-registered` scheme
-    return requestObject;
+  async preRegisteredSchemeValidator(requestObjectJwt: string, jwks: JWKSet) {
+    const header = this.decodeRequestHeaderJwt(requestObjectJwt);
+
+    const jwk = jwks.keys.find((_) => _.kid === header.kid);
+    if (!jwk) {
+      throw new OID4VCIServiceError(
+        PresentationError.UnResolvedJwkHeaderParams
+      );
+    }
+
+    let importedJwk: jose.KeyLike | Uint8Array;
+    try {
+      importedJwk = await jose.importJWK(jwk);
+    } catch (e) {
+      throw new OID4VCIServiceError(
+        PresentationError.InvalidClientMetadataJwks
+      );
+    }
+
+    try {
+      const result = await jose.jwtVerify<RequestObject>(
+        requestObjectJwt,
+        importedJwk
+      );
+      return result.payload as RequestObject;
+    } catch (e) {
+      throw new OID4VCIServiceError(
+        PresentationError.InvalidRequestObjectJwtSignature
+      );
+    }
   }
 
   async x509SanDnsSchemeValidator(requestObjectJwt: string) {
-    let header: jose.ProtectedHeaderParameters;
-    try {
-      header = jose.decodeProtectedHeader(requestObjectJwt);
-    } catch (e) {
-      throw new OID4VCIServiceError(PresentationError.InvalidRequestObjectJwt);
-    }
+    const header = this.decodeRequestHeaderJwt(requestObjectJwt);
 
     if (!header?.x5c || !header?.kid || !header.alg)
       throw new OID4VCIServiceError(
@@ -121,6 +155,19 @@ export class RequestObjectValidator {
   private decodeRequestJwt(requestObjectJwt: string) {
     try {
       return jose.decodeJwt<RequestObject>(requestObjectJwt);
+    } catch (e) {
+      throw new OID4VCIServiceError(PresentationError.InvalidRequestObjectJwt);
+    }
+  }
+
+  /**
+   * Decodes a request object jwt protected header
+   * @param requestObjectJwt Request object encryted in jwt
+   * @returns
+   */
+  private decodeRequestHeaderJwt(requestObjectJwt: string) {
+    try {
+      return jose.decodeProtectedHeader(requestObjectJwt);
     } catch (e) {
       throw new OID4VCIServiceError(PresentationError.InvalidRequestObjectJwt);
     }

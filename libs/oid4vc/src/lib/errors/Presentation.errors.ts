@@ -3,6 +3,7 @@ export enum PresentationError {
   UnResolvedRequestObject = `${PresentationError}: Could not resolve request  object`,
   UnResolvedClientMetadata = `${PresentationError}: Could not resolve client metadata`,
   UnResolvedClientMetadataJwk = `${PresentationError}: Could not resolve client metadata jwks`,
+  InvalidClientMetadataJwks = `${PresentationError}: Could not import public key from client metadata jwks`,
   UnResolvedPresentationDefinition = `${PresentationError}: Could not resolve presentation definition`,
   MissingQueryString = `${PresentationError}: Missing query string`,
   MissingRequiredParams = `${PresentationError}: Missing required params`,
