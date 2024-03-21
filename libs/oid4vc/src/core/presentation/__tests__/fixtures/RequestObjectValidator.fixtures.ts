@@ -19,15 +19,3 @@ export async function signRequestPayload<T extends jose.JWTPayload>(
   const signedJwt = await jwt.sign(keypair.privateKey);
   return { signedJwt };
 }
-
-export function pemToCertificate(pem: string) {
-  const str = pem
-    .slice(
-      pem.indexOf('-----BEGIN PUBLIC KEY-----\n') + 1,
-      pem.indexOf('-----END PUBLIC KEY-----\n')
-    )
-    .split('\n');
-  str.shift();
-  str.pop();
-  return str;
-}
