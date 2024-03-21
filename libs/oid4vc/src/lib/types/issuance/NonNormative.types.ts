@@ -5,9 +5,9 @@ export enum ServiceResponseStatus {
   Error = 'error',
 }
 
-export interface ServiceResponse {
+export interface ServiceResponse<T = unknown> {
   status: ServiceResponseStatus;
-  payload: unknown;
+  payload: T;
 }
 
 export interface CredentialRequestParams {

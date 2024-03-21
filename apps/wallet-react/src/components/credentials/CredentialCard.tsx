@@ -1,8 +1,16 @@
 import { Box, Typography } from '@mui/material';
+import AuthleteLogo from '../../assets/authlete-logo.png';
 import { IVerifiableCredential } from '../../types/credentials.types';
+import { capitalize } from '../../utils/common';
+
+function presentDate(date: Date) {
+  return `${date.toDateString().split(' ').slice(1).join(' ')} ${
+    date.toTimeString().split(' ')[0]
+  }`;
+}
 
 export default function CredentialCard({
-  credential: { issuer, logo, title },
+  credential: { issuer, logo, title, issued_at },
   openDetails,
 }: {
   credential: IVerifiableCredential;
@@ -27,7 +35,24 @@ export default function CredentialCard({
         },
       }}
     >
-      <img src={logo} height={35} alt="authlete logo" />
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          columnGap: 1,
+          alignItems: 'start',
+          justifyItems: 'end',
+        }}
+      >
+        <img src={logo ?? AuthleteLogo} height={35} alt="authlete logo" />
+        {
+          <Typography
+            sx={{ fontSize: '14px', lineHeight: '21px', color: 'grey' }}
+          >
+            {issued_at ? presentDate(new Date(issued_at)) : 'N/A'}
+          </Typography>
+        }
+      </Box>
       <Box sx={{ display: 'grid', rowGap: '3px' }}>
         <Typography
           sx={{
@@ -35,9 +60,17 @@ export default function CredentialCard({
             fontSize: '16px',
             lineHeight: '24px',
           }}
-        >{`${title}`}</Typography>
+        >
+          {title ?? 'N/A'}
+        </Typography>
         <Typography sx={{ fontSize: '14px', lineHeight: '21px' }}>
-          {issuer}
+          {issuer
+            ? issuer
+                .split('.')
+                .slice(0, 2)
+                .map((_) => capitalize(_))
+                .join(' ')
+            : 'N/A'}
         </Typography>
       </Box>
     </Box>

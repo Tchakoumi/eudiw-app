@@ -1,77 +1,106 @@
+import { eventBus } from '@datev/event-bus';
+import {
+  OID4VCIService,
+  OID4VCIServiceEventChannel,
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@datev/oid4vc';
 import { Alert, Box, Snackbar } from '@mui/material';
 import Scrollbars from 'rc-scrollbars';
-import { useEffect, useState } from 'react';
-import AuthleteLogo from '../../assets/authlete-logo.png';
-import { IVerifiableCredential } from '../../types/credentials.types';
+import { useEffect, useMemo, useState } from 'react';
 import ConfirmDeleteVCDialog from '../../components/credentials/ConfirmDeleteVCDialog';
 import CredentialCard from '../../components/credentials/CredentialCard';
-import CredentialCardSkeleton from '../../components/credentials/CredentialCardSkeleton';
 import CredentialDetails from '../../components/credentials/CredentialDetails';
 import NoCredentials from '../../components/credentials/NoCredentials';
 import Footer from '../../components/layout/Footer';
 import Header from '../../components/layout/Header';
+import { IVerifiableCredential } from '../../types/credentials.types';
 
 export default function Credentials() {
+  const OIDVCI: OID4VCIService = useMemo(
+    () => new OID4VCIService(eventBus),
+    []
+  );
+
   const [credentials, setCredentials] = useState<IVerifiableCredential[]>([]);
-  const [isLoadingCredentials, setIsLoadingCredentials] =
-    useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>();
 
   useEffect(() => {
-    setIsLoadingCredentials(true);
-    setTimeout(() => {
-      setCredentials([
-        {
-          id: '123123',
-          issuer: 'Trial Authlete',
-          logo: AuthleteLogo,
-          subtitle: 'Hello world',
-          title: 'E-ID Hans Schreiner',
-        },
-      ]);
-      setIsLoadingCredentials(false);
-    }, 3000);
-  }, []);
+    OIDVCI.retrieveCredentialHeaders();
+    eventBus.once(
+      OID4VCIServiceEventChannel.RetrieveCredentialHeaders,
+      (data: ServiceResponse) => {
+        if (data.status === ServiceResponseStatus.Success)
+          setCredentials(data.payload as IVerifiableCredential[]);
+        else alert(data.payload);
+      }
+    );
+
+    return () => {
+      // Clean up event listener
+      eventBus.off(
+        OID4VCIServiceEventChannel.RetrieveCredentialHeaders,
+        (data: ServiceResponse) => {
+          setCredentials(data.payload as IVerifiableCredential[]);
+        }
+      );
+    };
+  }, [OIDVCI, snackbarMessage]);
 
   const [selectedCredential, setSelectedCredential] =
     useState<IVerifiableCredential>();
   const [isConfirmDeleteVCDialogOpen, setIsConfirmDeleteVCDialogOpen] =
     useState<boolean>(false);
 
-  const [showDeleteSnackbar, setShowDeleteSnackbar] = useState<boolean>(false);
+  function deleteVC(selectedVCID: number) {
+    OIDVCI.deleteCredential(selectedVCID as number);
+    eventBus.once(
+      OID4VCIServiceEventChannel.DeleteCredential,
+      (data: ServiceResponse<string>) => {
+        if (data.status === ServiceResponseStatus.Success) {
+          setSnackbarMessage(data.payload);
+          setIsConfirmDeleteVCDialogOpen(false);
+          setSelectedCredential(undefined);
+        } else alert(data.payload);
+      }
+    );
+  }
 
   return (
     <>
       <Snackbar
-        open={showDeleteSnackbar}
+        open={!!snackbarMessage}
         autoHideDuration={6000}
-        onClose={() => setShowDeleteSnackbar(false)}
+        onClose={() => setSnackbarMessage(undefined)}
       >
         <Alert
-          onClose={() => setShowDeleteSnackbar(false)}
+          onClose={() => setSnackbarMessage(undefined)}
           severity="success"
           variant="filled"
           sx={{ width: '100%' }}
         >
-          Credential removed
+          {snackbarMessage}
         </Alert>
       </Snackbar>
-      <CredentialDetails
-        closeDialog={() => setSelectedCredential(undefined)}
-        isDialogOpen={!!selectedCredential && !isConfirmDeleteVCDialogOpen}
-        selectedCredential={selectedCredential}
-        deleteVC={() => {
-          setIsConfirmDeleteVCDialogOpen(true);
-        }}
-      />
-      <ConfirmDeleteVCDialog
-        closeDialog={() => setIsConfirmDeleteVCDialogOpen(false)}
-        confirmDelete={() => {
-          setIsConfirmDeleteVCDialogOpen(false);
-          setSelectedCredential(undefined);
-          setShowDeleteSnackbar(true);
-        }}
-        isDialogOpen={isConfirmDeleteVCDialogOpen}
-      />
+      {selectedCredential && (
+        <>
+          (
+          <CredentialDetails
+            closeDialog={() => setSelectedCredential(undefined)}
+            isDialogOpen={!isConfirmDeleteVCDialogOpen}
+            selectedCredential={selectedCredential}
+            deleteVC={() => {
+              setIsConfirmDeleteVCDialogOpen(true);
+            }}
+          />
+          <ConfirmDeleteVCDialog
+            closeDialog={() => setIsConfirmDeleteVCDialogOpen(false)}
+            confirmDelete={() => deleteVC(selectedCredential.id as number)}
+            isDialogOpen={isConfirmDeleteVCDialogOpen}
+          />
+          )
+        </>
+      )}
       <Box
         sx={{
           height: '100%',
@@ -90,14 +119,10 @@ export default function Credentials() {
                 alignContent: 'start',
               }}
             >
-              {isLoadingCredentials ? (
-                [...new Array(4)].map((_, index) => (
-                  <CredentialCardSkeleton key={index} />
-                ))
-              ) : credentials.length === 0 ? (
+              {credentials.length === 0 ? (
                 <NoCredentials />
               ) : (
-                <Box>
+                <Box sx={{ display: 'grid', rowGap: 1 }}>
                   {credentials.map((credential, index) => (
                     <CredentialCard
                       credential={credential}

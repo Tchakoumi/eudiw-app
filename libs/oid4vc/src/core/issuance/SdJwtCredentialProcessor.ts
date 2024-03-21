@@ -1,7 +1,7 @@
+import { StorageFactory, StoreRecord } from '@datev/storage';
 import sdjwt from '@hopae/sd-jwt';
 import * as jose from 'jose';
 
-import { StorageFactory, StoreRecord } from '@datev/storage';
 import { OID4VCIServiceError } from '../../lib/errors';
 
 import {
@@ -123,7 +123,7 @@ export class SdJwtCredentialProcessor {
       encoded: credential,
       display: {
         ...displayCredentialStarter,
-        issued_at: claims['iat'] as number,
+        issued_at: (claims['iat'] as number) * 1000,
         claims: disclosed,
       },
     };
