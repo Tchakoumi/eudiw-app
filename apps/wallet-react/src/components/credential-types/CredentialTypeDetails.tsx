@@ -115,20 +115,33 @@ export default function CredentialTypeDetails({
             }}
           >
             <Scrollbars autoHide universal>
-              <Box
-                sx={{
-                  display: 'grid',
-                  rowGap: '14px',
-                  maxHeight: '100%',
-                  alignContent: 'start',
-                  overflow: 'auto',
-                }}
-              >
-                {credntialTypeClaims.map((claim, index) => (
-                  <Typography sx={{ fontSize: '14px' }} key={index}>
-                    {claim}
-                  </Typography>
-                ))}
+              <Box sx={{ display: 'grid', rowGap: 1 }}>
+                <Typography variant="h5">
+                  Here's the digital identity info
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    rowGap: '4px',
+                    maxHeight: '100%',
+                    alignContent: 'start',
+                    overflow: 'auto',
+                  }}
+                >
+                  {credntialTypeClaims.map((claim, index) => (
+                    <Typography
+                      sx={{
+                        fontSize: '14px',
+                        padding: 1,
+                        backgroundColor: `#000000${index % 2 ? '07' : '10'}`,
+                        borderRadius: '4px',
+                      }}
+                      key={index}
+                    >
+                      {claim}
+                    </Typography>
+                  ))}
+                </Box>
               </Box>
             </Scrollbars>
 

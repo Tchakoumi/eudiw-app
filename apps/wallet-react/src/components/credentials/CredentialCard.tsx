@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import AuthleteLogo from '../../assets/authlete-logo.png';
 import { IVerifiableCredential } from '../../types/credentials.types';
-import { capitalize } from '../../utils/common';
+import { capitalizeEveryWord, domainToClearString } from '../../utils/common';
 
 function presentDate(date: Date) {
   return `${date.toDateString().split(' ').slice(1).join(' ')} ${
@@ -64,13 +64,7 @@ export default function CredentialCard({
           {title ?? 'N/A'}
         </Typography>
         <Typography sx={{ fontSize: '14px', lineHeight: '21px' }}>
-          {issuer
-            ? issuer
-                .split('.')
-                .slice(0, 2)
-                .map((_) => capitalize(_))
-                .join(' ')
-            : 'N/A'}
+          {issuer ? capitalizeEveryWord(domainToClearString(issuer)) : 'N/A'}
         </Typography>
       </Box>
     </Box>

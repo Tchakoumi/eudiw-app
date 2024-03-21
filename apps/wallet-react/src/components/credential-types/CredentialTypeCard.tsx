@@ -1,5 +1,6 @@
-import { Box, Typography, capitalize } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import AuthleteLogo from '../../assets/authlete-logo.png';
+import { capitalizeEveryWord, domainToClearString } from '../../utils/common';
 
 export default function CredentialTypeCard({
   type,
@@ -41,12 +42,7 @@ export default function CredentialTypeCard({
           }}
         >{`${displayName}`}</Typography>
         <Typography sx={{ fontSize: '14px', lineHeight: '21px' }}>
-          {issuer
-            .split('//')[1]
-            .split('.')
-            .slice(0, 2)
-            .map((_) => capitalize(_))
-            .join(' ')}
+          {capitalizeEveryWord(domainToClearString(issuer.split('//')[1]))}
         </Typography>
       </Box>
     </Box>
