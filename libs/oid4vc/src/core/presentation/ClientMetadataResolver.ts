@@ -17,20 +17,18 @@ export class ClientMetadataResolver {
   async resolveClientMetadataOrUri(
     clientMetadataOrUri: ClientMetadata | string
   ) {
-    let clientMetadata: ResolvedClientMetadata = { jwks: { keys: [] } };
     if (typeof clientMetadataOrUri === 'string') {
-      clientMetadata = await this.resolveClientMetadata(clientMetadataOrUri);
+      return this.resolveClientMetadata(clientMetadataOrUri);
     } else {
       if (clientMetadataOrUri.jwks_uri) {
         const jwks = await this.resolveClientMetadataJwks(
           clientMetadataOrUri.jwks_uri
         );
-        clientMetadata = { ...clientMetadataOrUri, jwks };
+        clientMetadataOrUri = { ...clientMetadataOrUri, jwks };
         delete clientMetadataOrUri.jwks_uri;
       }
+      return clientMetadataOrUri;
     }
-
-    return clientMetadata;
   }
 
   async resolveClientMetadata(clientMetadatUri: string) {

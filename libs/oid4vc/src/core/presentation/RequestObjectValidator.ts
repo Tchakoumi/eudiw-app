@@ -44,9 +44,9 @@ export class RequestObjectValidator {
       }
       case ClientIdScheme.PRE_REGISTERED: {
         const jwks = resolvedRequestObject.client_metadata?.jwks;
-        if (!jwks) {
+        if (!jwks || jwks.keys.length < 1) {
           throw new OID4VCIServiceError(
-            PresentationError.MissingRequiredParams
+            PresentationError.UnResolvedClientMetadataJwk
           );
         }
 
@@ -56,7 +56,7 @@ export class RequestObjectValidator {
 
       default:
         throw new OID4VCIServiceError(
-          PresentationError.InvalidRequestObjectJwt
+          PresentationError.UnSupportedClientScheme
         );
     }
   }
@@ -95,7 +95,7 @@ export class RequestObjectValidator {
     const jwk = jwks.keys.find((_) => _.kid === header.kid);
     if (!jwk) {
       throw new OID4VCIServiceError(
-        PresentationError.UnResolvedJwkHeaderParams
+        PresentationError.UnResolvedClientMetadataJwk
       );
     }
 
