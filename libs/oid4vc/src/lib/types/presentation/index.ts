@@ -5,4 +5,3 @@ export * from './PresentationExchange.types';
 export * from './RequestClientMetadata.types';
 export * from './SubmissionRequirement.types';
 export * from './v1_0_20';
-

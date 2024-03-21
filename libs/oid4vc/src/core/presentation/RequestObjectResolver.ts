@@ -3,7 +3,7 @@ import { PresentationError } from '../../lib/errors/Presentation.errors';
 import {
   PresentationDefinition,
   RequestObject,
-  ResolvedRequestObject
+  ResolvedRequestObject,
 } from '../../lib/types';
 import { HttpUtil } from '../../utils';
 import { RequestObjectValidator } from './RequestObjectValidator';

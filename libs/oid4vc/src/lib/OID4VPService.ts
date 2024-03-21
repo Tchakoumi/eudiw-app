@@ -10,6 +10,7 @@ export class OID4VPService implements OID4VPInterface {
   }
 
   async resolveRequestObject(requestObjectUri: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const requestObject = await this.requestObjetResolver.resolveRequestObject(
       requestObjectUri
     );

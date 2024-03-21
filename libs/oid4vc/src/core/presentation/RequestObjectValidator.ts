@@ -185,9 +185,7 @@ export class RequestObjectValidator {
       // Create JWK from X.509 certificate chain
       return await jose.importX509(pemCert, alg);
     } catch (e) {
-      throw new OID4VCIServiceError(
-        PresentationError.InvalidJwkHeaderParams
-      );
+      throw new OID4VCIServiceError(PresentationError.InvalidJwkHeaderParams);
     }
   }
 }
