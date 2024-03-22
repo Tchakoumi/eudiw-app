@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
-import { OID4VCIServiceError } from './errors';
 import { OID4VCIService } from './OID4VCIService';
+import { OID4VCIServiceError } from './errors';
 
 export class OID4VCService {
   private readonly oid4vciService: OID4VCIService;
