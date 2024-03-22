@@ -32,19 +32,6 @@ export class DIFPresentationExchangeService {
           const credential = record.value as SdJwtProcessedCredential;
           const credentialClaims = credential.display.claims;
 
-          console.log(
-            'match: ',
-            credentialClaims?.['id'],
-            'with: ',
-            descriptor.id
-          );
-          console.log(
-            'match: ',
-            credentialClaims?.['name'],
-            'with: ',
-            descriptor.name
-          );
-
           // Check that at least one of the compared values is not undefined before comparing
           const idMatch =
             credentialClaims?.['id'] !== undefined &&
@@ -56,7 +43,6 @@ export class DIFPresentationExchangeService {
             credentialClaims['name'] === descriptor.name;
 
           if (idMatch || nameMatch) {
-            console.log('actual match: ', credential.display);
             return [credential.display];
           }
         }
@@ -66,7 +52,6 @@ export class DIFPresentationExchangeService {
       matchedCredentials.push(...matchesForInputDescriptor);
     });
 
-    console.log('matchedCredentials', matchedCredentials);
     return matchedCredentials;
   }
 }
