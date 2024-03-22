@@ -1,40 +1,37 @@
 import EventEmitter from 'eventemitter3';
 import { OID4VCIServiceError } from './errors';
-import {
-  IDeriveOID4VCFlow,
-  OID4VCFlow,
-  OID4VCServiceEventChannel,
-} from './types';
+import { OID4VCIService } from './OID4VCIService';
 
 export class OID4VCService {
+  private readonly oid4vciService: OID4VCIService;
   /**
    * OpenID for VC service
    * @param eventBus
    */
-  public constructor(private eventBus: EventEmitter) {}
+  public constructor(eventBus: EventEmitter) {
+    this.oid4vciService = new OID4VCIService(eventBus);
+  }
 
-  deriveOID4VCFlow(encodedUri: string) {
-    const url = new URL(encodedUri);
+  resolveOID4VCUri(oid4vcUri: string) {
+    const url = new URL(oid4vcUri);
     if (!url.search) {
-      throw new OID4VCIServiceError('encoded uri is missing query params');
+      throw new OID4VCIServiceError('oid4vc uri is missing query params');
     }
 
     const params = new URLSearchParams(url.search);
-    let oidvcFlow: IDeriveOID4VCFlow;
-    if (
-      !params.has('credential_offer') &&
-      !params.has('credential_offer_uri')
-    ) {
-      oidvcFlow = { encodedUri, flow: OID4VCFlow.Presentation };
+    if (params.has('credential_offer') || params.has('credential_offer_uri')) {
+      return this.oid4vciService.resolveCredentialOffer({
+        credentialOffer: oid4vcUri,
+      });
     } else if (
-      !params.has('request') &&
-      !params.has('request_uri') &&
-      !params.has('presentation_definition_uri')
+      params.has('request') ||
+      params.has('request_uri') ||
+      params.has('presentation_definition_uri')
     ) {
-      oidvcFlow = { encodedUri, flow: OID4VCFlow.Presentation };
-    } else
-      throw new OID4VCIServiceError('unresolved flow: missing required params');
-
-    this.eventBus.emit(OID4VCServiceEventChannel.DeriveOID4VCFlow, oidvcFlow);
+      //TODO call the presentation starter flow here
+      throw new OID4VCIServiceError('oid4vp is not supported yet');
+    } else {
+      throw new OID4VCIServiceError('unsupported or invalid oid4vc uri');
+    }
   }
 }
