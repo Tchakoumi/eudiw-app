@@ -1,31 +1,30 @@
-# Nginx CORS
+# Nginx CORS Proxy
 
-This project sets up an Nginx server as a reverse proxy to add `Access-Control-Allow-Origin: '*'` to all responses, resolving common CORS issues in frontend development.
+This project provides a solution to common CORS issues encountered in frontend development by setting up an Nginx server as a reverse proxy. It adds `Access-Control-Allow-Origin: '*'` to all responses, allowing cross-origin requests.
 
 ## Usage
 
 ### Docker
 
-Use the following Docker commands to run the server:
+You can run the server using Docker. Here are the commands you need:
+
+1. Build the Docker image:
 
 ```bash
 $ docker build -t nginx-proxy:latest .
+```
 
-or pull 
-
+Alternatively, you can pull the image from the repository:
+```bash
 $ docker pull ghcr.io/adorsys/nginx-proxy:latest
+```
+Run the Docker image:
+```bash
+$ $ docker run --rm -it -p 80:80 nginx-proxy:latest
+```
+### Accessing the Server
 
-$ docker run --rm -it -p 80:80 nginx-proxy:latest
+Once the server is running, you can access it by entering one of the following URLs into your browser:
 
-
-
-To access locally, open your browser and enter either of the following URLs:
-
-- [http://localhost/cors/https://trial.authlete.net/.well-known/openid-credential-issuer](http://localhost/cors/https://trial.authlete.net/.well-known/openid-credential-issuer)
-- [http://localhost/cors/https://www.google.com/](http://localhost/cors/https://www.google.com/)
-
-Online :
-
-http://16.16.171.114:8001/cors/https://trial.authlete.net/.well-known/openid-credential-issuer
-
-http://16.16.171.114:8001/cors/https://www.google.com/
+- https://proxy.solutions.adorsys.com/cors/https://jsonplaceholder.typicode.com/todos
+- https://proxy.solutions.adorsys.com/cors/https://trial.authlete.net/.well-known/openid-credential-issuer
