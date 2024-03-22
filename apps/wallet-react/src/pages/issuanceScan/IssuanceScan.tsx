@@ -1,6 +1,5 @@
 import { eventBus } from '@datev/event-bus';
 import {
-  OID4VCIService,
   OID4VCIServiceEventChannel,
   ServiceResponse,
   ServiceResponseStatus,
@@ -20,13 +19,13 @@ export default function IssuanceScan() {
   const [scanResult, setScanResult] = useState<string>('');
   const [isLoadingDialogOpen, setIsLoadingDialogOpen] =
     useState<boolean>(false);
-
-  const OIDVCI = new OID4VCIService(eventBus);
+  const [isPresentationDetailsDialogOpen, setIsPresentationDetailsDialogOpen] =
+    useState<boolean>(false);
 
   function resolveCredentialOffer(result: string) {
     setIsLoadingDialogOpen(true);
     setScanResult(result);
-    OIDVCI.resolveCredentialOffer({ credentialOffer: result });
+    //TODO: integrate service that figures out which scan(issuance/presentation) is made
   }
 
   function credentialOfferListener() {
@@ -40,11 +39,22 @@ export default function IssuanceScan() {
     );
   }
 
+  function presentationDetailsListener() {
+    //TODO: integrate listening of event that holds presentation details here
+    setTimeout(() => {
+      setIsLoadingDialogOpen(false);
+      setIsPresentationDetailsDialogOpen(true);
+    }, 3000);
+  }
+
   return (
     <>
       <LoadingScanDetails
         isDialogOpen={!!scanResult && isLoadingDialogOpen}
-        resultListener={credentialOfferListener}
+        resultListener={() => {
+          presentationDetailsListener();
+          credentialOfferListener();
+        }}
       />
 
       <Box
