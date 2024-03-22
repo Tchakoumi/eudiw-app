@@ -4,18 +4,27 @@ import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@datev/oid4vc';
-import { Box, CircularProgress, Dialog, Typography } from '@mui/material';
-import { useEffect } from 'react';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Typography,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import wallet from '../../assets/illu-wallet.png';
 import DialogTransition from '../layout/DialogTransition';
 
 export default function LoadingScanDetails({
   isDialogOpen,
+  closeDialog,
 }: {
   isDialogOpen: boolean;
+  closeDialog: () => void;
 }) {
   const push = useNavigate();
+  const [scanError, setScanError] = useState<string>('');
 
   useEffect(() => {
     if (isDialogOpen) {
@@ -26,6 +35,7 @@ export default function LoadingScanDetails({
             push('/credential-types');
           else {
             //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
+            setScanError(data.payload as string);
             alert(data.payload);
           }
         }
@@ -37,7 +47,6 @@ export default function LoadingScanDetails({
     <Dialog
       fullScreen
       open={isDialogOpen}
-      onClose={() => null}
       TransitionComponent={DialogTransition}
     >
       <Box
@@ -70,9 +79,20 @@ export default function LoadingScanDetails({
             }}
           />
         </Box>
-        <Typography sx={{ fontSize: '16px', textAlign: 'center' }}>
-          Just a moment while we make a secure connection...
-        </Typography>
+        {scanError ? (
+          <Box sx={{ display: 'grid', justifyItems: 'center', rowGap: 2 }}>
+            <Typography>
+              No supported offers found, please scan again!!!
+            </Typography>
+            <Button onClick={closeDialog} variant="contained" color="primary">
+              Scan again
+            </Button>
+          </Box>
+        ) : (
+          <Typography sx={{ fontSize: '16px', textAlign: 'center' }}>
+            Just a moment while we make a secure connection...
+          </Typography>
+        )}
       </Box>
     </Dialog>
   );

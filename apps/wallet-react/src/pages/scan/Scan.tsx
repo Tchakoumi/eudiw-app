@@ -67,6 +67,10 @@ export default function Scan() {
     <>
       <LoadingScanDetails
         isDialogOpen={!!connectionString && isDetailsDialogOpen}
+        closeDialog={() => {
+          setConnectionString('');
+          setIsDetailsDialogOpen(false);
+        }}
       />
 
       <CameraAccessDialog
