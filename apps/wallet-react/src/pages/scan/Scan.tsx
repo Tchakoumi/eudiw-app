@@ -13,7 +13,7 @@ import LoadingScanDetails from '../../components/scan-details/LoadingScanDetails
 import Scanner from '../../components/scanner/Scanner';
 import { useTheme } from '../../utils/theme';
 
-export default function IssuanceScan() {
+export default function Scan() {
   const theme = useTheme();
   const push = useNavigate();
   const [scanResult, setScanResult] = useState<string>('');
