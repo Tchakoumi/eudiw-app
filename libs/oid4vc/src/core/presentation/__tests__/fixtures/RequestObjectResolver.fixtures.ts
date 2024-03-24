@@ -4,10 +4,12 @@ import {
   JWKSet,
   Optionality,
   PresentationDefinition,
+  PresentationExchange,
   RequestObject,
   ResolvedClientMetadata,
   ResolvedRequestObject,
   ResponseMode,
+  SdJwtProcessedCredential,
 } from '../../../../lib/types';
 
 export const encodedRequestUri = `haip://?client_id=verifier.ssi.tir.budru.de&request_uri=https://verifier.ssi.tir.budru.de/presentation/authorization-request?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190%26crossDevice%3Dtrue`;
@@ -173,3 +175,53 @@ export const resolvedRequestObject: ResolvedRequestObject = {
 };
 
 export const requestObjectJwtWithClientMetadata = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNwb25zZV91cmkiOiJodHRwczovL3ZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUvcHJlc2VudGF0aW9uL2F1dGhvcml6YXRpb24tcmVzcG9uc2U_aWQ9Mjc3ZDBmYjUtZWY0Yi00Y2ZmLTkzZjAtMDg2YWYzNmY5MTkwIiwiY2xpZW50X2lkX3NjaGVtZSI6InJlZGlyZWN0X3VyaSIsInJlc3BvbnNlX3R5cGUiOiJ2cF90b2tlbiIsInByZXNlbnRhdGlvbl9kZWZpbml0aW9uX3VyaSI6Imh0dHBzOi8vdmVyaWZpZXIuc3NpLnRpci5idWRydS5kZS9wcmVzZW50YXRpb24vZGVmaW5pdGlvbj9pZD0yNzdkMGZiNS1lZjRiLTRjZmYtOTNmMC0wODZhZjM2ZjkxOTAiLCJzdGF0ZSI6IjI3N2QwZmI1LWVmNGItNGNmZi05M2YwLTA4NmFmMzZmOTE5MCIsIm5vbmNlIjoibExEMW8zTDZxSmRhelZjZkN3M3NoaCIsImNsaWVudF9pZCI6InZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUiLCJyZXNwb25zZV9tb2RlIjoiZGlyZWN0X3Bvc3QiLCJjbGllbnRfbWV0YWRhdGEiOnsiandrc191cmkiOiJodHRwczovL3ZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUvcHJlc2VudGF0aW9uL2p3a3MuanNvbiIsImF1dGhvcml6YXRpb25fZW5jcnlwdGVkX3Jlc3BvbnNlX2FsZyI6IkVDREgtRVMiLCJhdXRob3JpemF0aW9uX2VuY3J5cHRlZF9yZXNwb25zZV9lbmMiOiJBMTI4Q0JDLUhTMjU2IiwiaWRfdG9rZW5fZW5jcnlwdGVkX3Jlc3BvbnNlX2FsZyI6IlJTQS1PQUVQLTI1NiIsImlkX3Rva2VuX2VuY3J5cHRlZF9yZXNwb25zZV9lbmMiOiJBMTI4Q0JDLUhTMjU2Iiwic3ViamVjdF9zeW50YXhfdHlwZXNfc3VwcG9ydGVkIjpbInVybjppZXRmOnBhcmFtczpvYXV0aDpqd2stdGh1bWJwcmludCJdLCJpZF90b2tlbl9zaWduZWRfcmVzcG9uc2VfYWxnIjoiUlMyNTYifX0.zkceQS0OVEP1ZzkUtD_WJ4FCewOeK1OViNBUG-7eIe4`;
+
+export const sdJwtProcessedCredentialObjRef1: SdJwtProcessedCredential = {
+  encoded:
+    'eyJraWQiOiJKMUZ3SlA4N0M2LVFOX1dTSU9tSkFRYzZuNUNRX2JaZGFGSjVHRG5XMVJrIiwidHlwIjoidmMrc2Qtand0IiwiYWxnIjoiRVMyNTYifQ.eyJfc2QiOlsiMWM5ZUpBTzNEVm1NOTBMOU9xWjRoaWVudHFGaVQ0U1ZueUV2SzIxTzdRQSIsIjY5N3ZyRnRSNUFkWWMwTlg4cFBwNUN2WkN3V196d3VPTGxBV1dDM2c0c00iLCI2dENSazJjWUdqSDlLRmlidmlCYnNrUzdUem5qcW5Lb0Vab1MycFMtWENVIiwiRGFadVhKM3FtR2p1OFlvdkkyNFZGUnBhUzMyREFMV1RQd2RzVXQwcUtvWSIsIkhVRnRMaTFRR2p0XzUxVjlkcmlNYzJISjdaSTQ1WkNGRXFSTUloNUdjUEUiLCJJWjliSWNDSUtuaEYyOFZGQnM4TlNQUk5rWlU5cTBFT01hRW1ySE9FRVp3IiwiUzNqYk9VWS1RWUllVVlwZEsyXzVUZnZURUdJZ3B0VU9vTDJhRE5HdU5WcyIsIlc5SDUtU2FWRV91RnBNYWdXNi1ULThCWGRaS1gzUUpzeUVBd3VtOE9PUEEiXSwidmN0IjoiaHR0cHM6Ly9jcmVkZW50aWFscy5leGFtcGxlLmNvbS9pZGVudGl0eV9jcmVkZW50aWFsIiwiX3NkX2FsZyI6InNoYS0yNTYiLCJpc3MiOiJodHRwczovL3RyaWFsLmF1dGhsZXRlLm5ldCIsImNuZiI6eyJqd2siOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsImtpZCI6Ik5QSG44V0RWbUtHeGdiY25QSzdHMjRWa0V2UDQ3LS1lS2h3R1hiU3A0bWMiLCJ4IjoiNkZISllzSTBieTkxWFNsbERTSE1OUzIwUmx3NkxyUE5tUEFSN2phZGVGcyIsInkiOiJnSmlIQ0RQMWpiQUtfczVpSXRDN1J0S1Y4SHg1UmxMRG9QX21FYVdmZTl3In19LCJpYXQiOjE3MDg2MTMwOTh9.IXG7_24Rf8YVu1lM_altOUb5cLKkkMPNuRH0ya8ZFcZfIIhEcujSORNht5Zs82ROiF87yY0voud1q-oMruxzkg~WyJRQU1SMnY5ZmtXQ1VyV2pTOTBqMnZ3Iiwic3ViIiwiMTAwNCJd~WyIxT1BqMzlVZFloSmU0SlV0NHFUREpBIiwiZ2l2ZW5fbmFtZSIsIkluZ2EiXQ~WyJXYUpNUExEVFJQWU5WZVZhMzRzREdRIiwiZmFtaWx5X25hbWUiLCJTaWx2ZXJzdG9uZSJd~WyJPWkdsYWJMSXRwZGNwZFBTdlNRWmxnIiwiYmlydGhkYXRlIiwiMTk5MS0xMS0wNiJd~',
+  display: {
+    title: '6d96f2bf-f25e-40e6-972d-d9d0a542f252',
+    issuer: 'trial.authlete.net',
+    issued_at: 1708613098,
+    claims: {
+      id: '6d96f2bf-f25e-40e6-972d-d9d0a542f252',
+      given_name: 'Henry',
+      family_name: 'Silverstone',
+      birthdate: '1991-11-06',
+    },
+  },
+};
+
+export const sdJwtProcessedCredentialObjRef2: SdJwtProcessedCredential = {
+  encoded:
+    'eyJraWQiOiJKMUZ3SlA4N0M2LVFOX1dTSU9tSkFRYzZuNUNRX2JaZGFGSjVHRG5XMVJrIiwidHlwIjoidmMrc2Qtand0IiwiYWxnIjoiRVMyNTYifQ.eyJfc2QiOlsiMWM5ZUpBTzNEVm1NOTBMOU9xWjRoaWVudHFGaVQ0U1ZueUV2SzIxTzdRQSIsIjY5N3ZyRnRSNUFkWWMwTlg4cFBwNUN2WkN3V196d3VPTGxBV1dDM2c0c00iLCI2dENSazJjWUdqSDlLRmlidmlCYnNrUzdUem5qcW5Lb0Vab1MycFMtWENVIiwiRGFadVhKM3FtR2p1OFlvdkkyNFZGUnBhUzMyREFMV1RQd2RzVXQwcUtvWSIsIkhVRnRMaTFRR2p0XzUxVjlkcmlNYzJISjdaSTQ1WkNGRXFSTUloNUdjUEUiLCJJWjliSWNDSUtuaEYyOFZGQnM4TlNQUk5rWlU5cTBFT01hRW1ySE9FRVp3IiwiUzNqYk9VWS1RWUllVVlwZEsyXzVUZnZURUdJZ3B0VU9vTDJhRE5HdU5WcyIsIlc5SDUtU2FWRV91RnBNYWdXNi1ULThCWGRaS1gzUUpzeUVBd3VtOE9PUEEiXSwidmN0IjoiaHR0cHM6Ly9jcmVkZW50aWFscy5leGFtcGxlLmNvbS9pZGVudGl0eV9jcmVkZW50aWFsIiwiX3NkX2FsZyI6InNoYS0yNTYiLCJpc3MiOiJodHRwczovL3RyaWFsLmF1dGhsZXRlLm5ldCIsImNuZiI6eyJqd2siOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsImtpZCI6Ik5QSG44V0RWbUtHeGdiY25QSzdHMjRWa0V2UDQ3LS1lS2h3R1hiU3A0bWMiLCJ4IjoiNkZISllzSTBieTkxWFNsbERTSE1OUzIwUmx3NkxyUE5tUEFSN2phZGVGcyIsInkiOiJnSmlIQ0RQMWpiQUtfczVpSXRDN1J0S1Y4SHg1UmxMRG9QX21FYVdmZTl3In19LCJpYXQiOjE3MDg2MTMwOTh9.IXG7_24Rf8YVu1lM_altOUb5cLKkkMPNuRH0ya8ZFcZfIIhEcujSORNht5Zs82ROiF87yY0voud1q-oMruxzkg~WyJRQU1SMnY5ZmtXQ1VyV2pTOTBqMnZ3Iiwic3ViIiwiMTAwNCJd~WyIxT1BqMzlVZFloSmU0SlV0NHFUREpBIiwiZ2l2ZW5fbmFtZSIsIkluZ2EiXQ~WyJXYUpNUExEVFJQWU5WZVZhMzRzREdRIiwiZmFtaWx5X25hbWUiLCJTaWx2ZXJzdG9uZSJd~WyJPWkdsYWJMSXRwZGNwZFBTdlNRWmxnIiwiYmlydGhkYXRlIiwiMTk5MS0xMS0wNiJd~',
+  display: {
+    title: '6d96f2bf-f25e-40e6-972d-d9d0a542f253',
+    issuer: 'trial.authlete.net',
+    issued_at: 1708613098,
+    claims: {
+      id: '6d96f2bf-f25e-40e6-972d-d9d0a542f253',
+      given_name: 'Henry',
+      family_name: 'Silverstone',
+      birthdate: '1991-11-06',
+    },
+  },
+};
+
+export const resolvedPresentationExchange: PresentationExchange = {
+  resolvedRequestObject: noClientMetadataResolvedRequestObject,
+  credentialsForRequest: [
+    {
+      title: '6d96f2bf-f25e-40e6-972d-d9d0a542f252',
+      issuer: 'trial.authlete.net',
+      issued_at: 1708613098,
+      claims: {
+        id: '6d96f2bf-f25e-40e6-972d-d9d0a542f252',
+        given_name: 'Henry',
+        family_name: 'Silverstone',
+        birthdate: '1991-11-06',
+      },
+      id: 1,
+    },
+  ],
+};

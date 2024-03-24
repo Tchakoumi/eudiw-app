@@ -6,17 +6,42 @@ import {
   ClientMetadata,
   JWKSet,
   PresentationDefinition,
+  PresentationExchange,
   RequestObject,
   ResolvedRequestObject,
 } from '../../lib/types';
 import { HttpUtil } from '../../utils';
+import { DBConnection } from '../../database/DBConnection';
+import { DIFPresentationExchangeService } from './DifPresentationExchangeService';
 
 export class RequestObjectResolver {
+  private readonly DIFPresentationExchangeService: DIFPresentationExchangeService;
   /**
    * Constructor.
    * @param httpUtil the service HTTP client
    */
-  public constructor(private httpUtil: HttpUtil) {}
+  public constructor(private httpUtil: HttpUtil) {
+    const storage = DBConnection.getStorage();
+    this.DIFPresentationExchangeService = new DIFPresentationExchangeService(
+      storage
+    );
+  }
+
+  async getCredentialsForRequest(requestObjectUri: string) {
+    const requestObject = await this.resolveRequestObject(requestObjectUri);
+
+    const matchedCredentials =
+      await this.DIFPresentationExchangeService.processRequestObject(
+        requestObject
+      );
+
+    const presentationExchange: PresentationExchange = {
+      resolvedRequestObject: requestObject,
+      credentialsForRequest: matchedCredentials,
+    };
+
+    return presentationExchange;
+  }
 
   async resolveRequestObject(requestObjectUri: string) {
     const parsedRequestObject = await this.parsedRequestObjectUri(
