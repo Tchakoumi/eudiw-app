@@ -32,7 +32,10 @@ export default function Credentials() {
       (data: ServiceResponse) => {
         if (data.status === ServiceResponseStatus.Success)
           setCredentials(data.payload as IVerifiableCredential[]);
-        else alert(data.payload);
+        else {
+          //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
+          alert(data.payload);
+        }
       }
     );
 
@@ -61,7 +64,10 @@ export default function Credentials() {
           setSnackbarMessage(data.payload);
           setIsConfirmDeleteVCDialogOpen(false);
           setSelectedCredential(undefined);
-        } else alert(data.payload);
+        } else {
+          //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
+          alert(data.payload);
+        }
       }
     );
   }

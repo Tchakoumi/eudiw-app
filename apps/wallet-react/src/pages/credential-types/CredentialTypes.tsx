@@ -13,12 +13,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CredentialTypeCard from '../../components/credential-types/CredentialTypeCard';
 import CredentialTypeDetails from '../../components/credential-types/CredentialTypeDetails';
+import NoOffer from '../../components/credential-types/NoOffer';
+import BackTitleBar from '../../components/layout/BackTitleBar';
+import Footer from '../../components/layout/Footer';
 import {
   ICredentialCard,
   ISupportedCredential,
 } from '../../types/credentials.types';
-import BackTitleBar from '../../components/layout/BackTitleBar';
-import Footer from '../../components/layout/Footer';
 import { getVCClaims, getVCSDJWTOffers } from '../../utils/credentialType.util';
 
 export default function CredentialTypes() {
@@ -31,15 +32,34 @@ export default function CredentialTypes() {
     eventBus.once(
       OID4VCIServiceEventChannel.ProcessCredentialOffer,
       (data: ServiceResponse) => {
-        if (data.status === ServiceResponseStatus.Success)
+        if (data.status === ServiceResponseStatus.Success) {
           setResolvedCredentialOffer(data.payload as ResolvedCredentialOffer);
-        else alert(data.payload);
+        } else {
+          //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
+          alert(data.payload);
+        }
       }
     );
   }, []);
 
   const [selectedCredentialType, setSelectedCredentialType] =
     useState<ICredentialCard>();
+
+  const [vcSdJwtOffers, setVcSdJwtOffers] = useState<ICredentialCard[]>([]);
+
+  useEffect(() => {
+    if (
+      resolvedCredentialOffer &&
+      resolvedCredentialOffer.discoveryMetadata &&
+      resolvedCredentialOffer.discoveryMetadata.credentialIssuerMetadata
+    )
+      setVcSdJwtOffers(
+        getVCSDJWTOffers(
+          resolvedCredentialOffer.discoveryMetadata
+            .credentialIssuerMetadata as CredentialIssuerMetadata<CredentialSupportedSdJwtVc>
+        )
+      );
+  }, [resolvedCredentialOffer]);
 
   return (
     <Box
@@ -72,23 +92,19 @@ export default function CredentialTypes() {
           height: '100%',
         }}
       >
-        <Scrollbars universal autoHide>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateRows: 'auto auto 1fr',
-              rowGap: 1,
-              padding: '12px',
-            }}
-          >
-            {resolvedCredentialOffer &&
-              resolvedCredentialOffer.discoveryMetadata &&
-              resolvedCredentialOffer.discoveryMetadata
-                .credentialIssuerMetadata &&
-              getVCSDJWTOffers(
-                resolvedCredentialOffer.discoveryMetadata
-                  .credentialIssuerMetadata as CredentialIssuerMetadata<CredentialSupportedSdJwtVc>
-              ).map((card, index) => {
+        {vcSdJwtOffers.length === 0 ? (
+          <NoOffer />
+        ) : (
+          <Scrollbars universal autoHide>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateRows: 'auto auto 1fr',
+                rowGap: 1,
+                padding: '12px',
+              }}
+            >
+              {vcSdJwtOffers.map((card, index) => {
                 const {
                   type,
                   issuer,
@@ -110,8 +126,9 @@ export default function CredentialTypes() {
                   />
                 );
               })}
-          </Box>
-        </Scrollbars>
+            </Box>
+          </Scrollbars>
+        )}
       </Box>
       <Footer showArrow={false} />
     </Box>
