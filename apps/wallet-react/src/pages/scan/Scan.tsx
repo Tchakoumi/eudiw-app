@@ -16,6 +16,7 @@ import { useTheme } from '../../utils/theme';
 export default function Scan() {
   const theme = useTheme();
   const push = useNavigate();
+  const [scanError, setScanError] = useState<string>('');
   const [scanResult, setScanResult] = useState<string>('');
   const [isLoadingDialogOpen, setIsLoadingDialogOpen] =
     useState<boolean>(false);
@@ -34,7 +35,11 @@ export default function Scan() {
       (data: ServiceResponse) => {
         if (data.status === ServiceResponseStatus.Success)
           push('/credential-types');
-        else alert(data.payload);
+        else {
+          setScanError(data.payload as string);
+          //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
+          alert(data.payload);
+        }
       }
     );
   }
@@ -55,6 +60,11 @@ export default function Scan() {
           presentationDetailsListener();
           credentialOfferListener();
         }}
+        closeDialog={() => {
+          setScanResult('');
+          setIsLoadingDialogOpen(false);
+        }}
+        scanError={scanError}
       />
 
       <Box
