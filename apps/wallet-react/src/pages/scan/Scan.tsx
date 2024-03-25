@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import LoadingScanDetails from '../../components/scan-details/LoadingScanDetails';
 import Scanner from '../../components/scanner/Scanner';
 import { useTheme } from '../../utils/theme';
+import ContentDialog from '../../components/presentation/ContentDialog';
 
 export default function Scan() {
   const theme = useTheme();
@@ -20,9 +21,8 @@ export default function Scan() {
   const [scanResult, setScanResult] = useState<string>('');
   const [isLoadingDialogOpen, setIsLoadingDialogOpen] =
     useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isPresentationDetailsDialogOpen, setIsPresentationDetailsDialogOpen] =
-    useState<boolean>(false);
+    useState<boolean>(true);
 
   function resolveCredentialOffer(result: string) {
     setIsLoadingDialogOpen(true);
@@ -66,6 +66,11 @@ export default function Scan() {
           setIsLoadingDialogOpen(false);
         }}
         scanError={scanError}
+      />
+
+      <ContentDialog
+        isDialogOpen={isPresentationDetailsDialogOpen}
+        closeDialog={() => setIsPresentationDetailsDialogOpen(false)}
       />
 
       <Box
