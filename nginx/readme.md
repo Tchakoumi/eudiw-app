@@ -25,6 +25,6 @@ $ $ docker run --rm -it -p 80:80 nginx-proxy:latest
 ### Accessing the Server
 
 Once the server is running, you can access it by entering one of the following URLs into your browser:
-
+- https://proxy.solutions.adorsys.com
 - https://proxy.solutions.adorsys.com/cors/https://jsonplaceholder.typicode.com/todos
 - https://proxy.solutions.adorsys.com/cors/https://trial.authlete.net/.well-known/openid-credential-issuer
