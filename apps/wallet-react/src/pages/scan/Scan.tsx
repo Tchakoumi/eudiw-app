@@ -20,6 +20,7 @@ export default function Scan() {
   const [scanResult, setScanResult] = useState<string>('');
   const [isLoadingDialogOpen, setIsLoadingDialogOpen] =
     useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isPresentationDetailsDialogOpen, setIsPresentationDetailsDialogOpen] =
     useState<boolean>(false);
 
