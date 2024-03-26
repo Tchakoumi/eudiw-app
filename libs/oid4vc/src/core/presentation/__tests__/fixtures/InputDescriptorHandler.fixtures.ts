@@ -63,6 +63,19 @@ export const presentationDef2: PresentationDefinition = {
   ],
 };
 
+export const presentationDef3: PresentationDefinition = {
+  id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  input_descriptors: [
+    {
+      id: '6d96f2bf-f25e-40e6-972d-d9d0a542f252',
+      format: {
+        'vc+sd-jwt': {},
+      },
+      constraints: {},
+    },
+  ],
+};
+
 export const presentationDefWithOptionalField1: PresentationDefinition = {
   id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
   input_descriptors: [
@@ -83,8 +96,12 @@ export const presentationDefWithOptionalField1: PresentationDefinition = {
           },
           {
             path: ['$.given_name'],
+          },
+          {
+            path: ['$.birthdate'],
             filter: {
               type: 'string',
+              format: 'date',
             },
           },
         ],

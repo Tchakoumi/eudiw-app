@@ -7,6 +7,7 @@ import {
   pdFilteredCredentials,
   presentationDef1,
   presentationDef2,
+  presentationDef3,
   presentationDefWithOptionalField1,
 } from './fixtures';
 
@@ -45,8 +46,18 @@ describe('InputDescriptionHandler', () => {
     expect(filteredCredentials).toStrictEqual(
       pdFilteredCredentials.map((credentiial) => ({
         ...credentiial,
-        disclosures: { ...credentiial.disclosures, vct: undefined },
+        disclosures: {
+          ...credentiial.disclosures,
+          birthdate: '1991-11-06',
+          vct: undefined,
+        },
       }))
     );
+  });
+
+  it('should not retrieve matching credential without fields property', async () => {
+    await expect(
+      inputDescriptionEvaluator.handle(presentationDef3)
+    ).rejects.toThrow();
   });
 });

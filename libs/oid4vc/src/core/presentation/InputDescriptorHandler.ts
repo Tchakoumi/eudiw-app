@@ -13,6 +13,8 @@ import sdJwt from '@hopae/sd-jwt';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { JSONPath } from 'jsonpath-plus';
+import { OID4VCIServiceError } from '../../lib/errors';
+import { PresentationError } from '../../lib/errors/Presentation.errors';
 
 /**
  * This class is responsible for implementing the DIF Presentation Exchange
@@ -48,8 +50,13 @@ export class InputDescriptorHandler {
 
       for (const inputDescriptor of presentationDefinition.input_descriptors) {
         let selectedClaims = {};
-        const fields = inputDescriptor.constraints.fields ?? [];
-
+        if (!inputDescriptor.constraints.fields?.length) {
+          throw new OID4VCIServiceError(
+            PresentationError.MissingConstraintField
+          );
+        }
+        
+        const fields = inputDescriptor.constraints.fields;
         for (const field of fields) {
           const { path: paths, filter } = field;
           const matchingValues = paths.reduce<Array<unknown>>(

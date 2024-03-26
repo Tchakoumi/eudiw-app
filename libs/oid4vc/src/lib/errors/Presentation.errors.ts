@@ -15,4 +15,5 @@ export enum PresentationError {
   InvalidJwkHeaderParams = `${PresentationError}: Could not import from jwk header params`,
   InvalidRequestObjectJwtSignature = `${PresentationError}: Could not verify request object jwt signature`,
   UnSupportedClientScheme = `${PresentationError}: Specified client identifier scheme is not supported`,
+  MissingConstraintField = `${PresentationError}: input descriptor constraint is missing the fields property`
 }
