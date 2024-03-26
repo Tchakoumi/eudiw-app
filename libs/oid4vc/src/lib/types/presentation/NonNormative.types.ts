@@ -1,5 +1,4 @@
-import { SdJwtProcessedCredential } from '../issuance';
-import { SdJwtDisclosure } from './SdJwt.types';
+import { DisplayCredential } from '../issuance';
 import { PresentationDefinition } from './pex_v2';
 
 export interface CredentialsForRequest {
@@ -8,10 +7,10 @@ export interface CredentialsForRequest {
 }
 
 export interface SdJwtMatchingCredential {
-  credential: SdJwtProcessedCredential;
+  credential: DisplayCredential;
 
   /**
    * These are the claims to be disclosed to the verifier
    */
-  disclosures: Array<SdJwtDisclosure>;
+  disclosures: Record<string, string>;
 }

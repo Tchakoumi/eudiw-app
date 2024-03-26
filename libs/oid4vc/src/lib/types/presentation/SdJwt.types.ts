@@ -17,7 +17,7 @@ export interface SdJwtDisclosure {
   digest: string;
 }
 
-type JsonValue =
+export type JsonValue =
   | string
   | number
   | boolean
