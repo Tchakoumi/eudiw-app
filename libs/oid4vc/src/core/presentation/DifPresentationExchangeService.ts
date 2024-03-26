@@ -24,7 +24,7 @@ export class DIFPresentationExchangeService {
 
     const { input_descriptors } = resolvedRequestObject.presentation_definition;
 
-    let matchedCredentials: DisplayCredential[] = [];
+    const matchedCredentials: DisplayCredential[] = [];
 
     input_descriptors.forEach((descriptor) => {
       const matchesForInputDescriptor = records.flatMap((record) => {

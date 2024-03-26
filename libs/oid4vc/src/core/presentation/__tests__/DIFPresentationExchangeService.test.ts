@@ -1,5 +1,5 @@
-import { DBConnection } from 'libs/oid4vc/src/database/DBConnection';
-import { DIFPresentationExchangeService } from '../DifPresentationExchangeService';
+import { DBConnection } from '../../../database/DBConnection';
+import { credentialStoreName } from '../../../database/schema';
 import { SdJwtCredentialProcessor } from '../../issuance/SdJwtCredentialProcessor';
 import {
   credentialContentMatch,
@@ -10,7 +10,7 @@ import {
   sdJwtProcessedCredentialObjRef20,
   sdJwtProcessedCredentialObjRef30,
 } from '../../presentation/__tests__/fixtures/DIFPresentationExchangeService.fixtures';
-import { credentialStoreName } from 'libs/oid4vc/src/database/schema';
+import { DIFPresentationExchangeService } from '../DifPresentationExchangeService';
 const UNIT_TEST_TIMEOUT = 30000;
 
 describe('DIFPresentationExchangeService', () => {

@@ -1,7 +1,4 @@
-import {
-  ResponseMode,
-  ClientIdScheme,
-} from '../../../lib/types';
+import { ResponseMode, ClientIdScheme } from '../../../lib/types';
 import { PresentationError } from '../../../lib/errors/Presentation.errors';
 import { HttpUtil } from '../../../utils/HttpUtil';
 import { RequestObjectResolver } from '../RequestObjectResolver';

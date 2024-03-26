@@ -55,7 +55,7 @@ export class InputDescriptorHandler {
             PresentationError.MissingConstraintField
           );
         }
-        
+
         const fields = inputDescriptor.constraints.fields;
         for (const field of fields) {
           const { path: paths, filter } = field;

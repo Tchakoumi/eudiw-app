@@ -1,14 +1,12 @@
 import {
+  ClientIdScheme,
   DisplayCredential,
   JWKSet,
-  SdJwtProcessedCredential,
-} from 'libs/oid4vc/src/lib/types/issuance';
-import {
   PresentationDefinition,
   ResolvedClientMetadata,
-  ResponseMode,
-  ClientIdScheme,
   ResolvedRequestObject,
+  ResponseMode,
+  SdJwtProcessedCredential,
 } from '../../../../lib/types';
 
 export const sdJwtProcessedCredentialObjRef10: SdJwtProcessedCredential = {
