@@ -3,16 +3,17 @@ import AuthleteLogo from '../../assets/authlete-logo.png';
 import { IVerifiableCredential } from '../../types/credentials.types';
 import { capitalizeEveryWord, domainToClearString } from '../../utils/common';
 
+interface PresentationCredentialCardProps {
+  credential: IVerifiableCredential;
+  selectVc: () => void;
+}
 export default function PresentationCredentialCard({
   credential: { issuer, logo, title },
-  openDetails,
-}: {
-  credential: IVerifiableCredential;
-  openDetails?: () => void;
-}) {
+  selectVc,
+}: PresentationCredentialCardProps) {
   return (
     <Box
-      onClick={() => (openDetails ? openDetails() : null)}
+      onClick={selectVc}
       sx={{
         background: '#FFFFFF',
         padding: '12px',

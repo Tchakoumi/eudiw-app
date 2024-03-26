@@ -1,7 +1,10 @@
-import { Box, Dialog, Typography } from '@mui/material';
+import { Box, Dialog } from '@mui/material';
+import { useState } from 'react';
 import { IVerifiableCredential } from '../../types/credentials.types';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
+import ConsentFooter from './ConsentFooter';
+import ConsentHeader from './ConsentHeader';
 import PresentationCredentialCard from './PresentationCredentialCard';
 
 interface ContentDialogProps {
@@ -26,6 +29,9 @@ export default function ContentDialog({
       title: 'Identity Credential',
     },
   ];
+
+  const [selectedVc, setSelectedVc] = useState<number | null>(null);
+
   return (
     <Dialog
       fullScreen
@@ -46,45 +52,18 @@ export default function ContentDialog({
             rowGap: 3,
           }}
         >
-          <Box
-            sx={{
-              display: 'grid',
-              justifyItems: 'center',
-            }}
-          >
-            <Typography variant="h3">Select a credential</Typography>
-            <Typography variant="body2">to present to Datev eG</Typography>
-          </Box>
+          <ConsentHeader service="Datev eG" />
 
           <Box sx={{ display: 'grid', rowGap: 1, alignContent: 'start' }}>
             {credentials.map((credential, index) => (
-              <PresentationCredentialCard credential={credential} key={index} />
+              <PresentationCredentialCard
+                selectVc={() => setSelectedVc(credential.id as number)}
+                credential={credential}
+                key={index}
+              />
             ))}
           </Box>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'auto 1fr',
-              justifyItems: 'end',
-            }}
-          >
-            <Typography
-              component="a"
-              href="#"
-              sx={{ textDecoration: 'none', fontSize: '12px' }}
-              variant="body2"
-            >
-              Privacy policy
-            </Typography>
-            <Typography
-              component="a"
-              href="#"
-              sx={{ textDecoration: 'none', fontSize: '12px' }}
-              variant="body2"
-            >
-              Conditions of use
-            </Typography>
-          </Box>
+          <ConsentFooter />
         </Box>
       </Box>
     </Dialog>
