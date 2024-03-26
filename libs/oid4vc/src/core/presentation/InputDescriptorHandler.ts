@@ -62,8 +62,9 @@ export class InputDescriptorHandler {
             ],
             []
           );
+
           if (matchingValues.length) {
-            let validatedValue = matchingValues[0];
+            let validatedValue: unknown;
             if (filter) {
               const validate = ajv.compile(filter);
               for (const value of matchingValues) {
@@ -76,13 +77,12 @@ export class InputDescriptorHandler {
               if (!field.optional && !validatedValue) {
                 break;
               }
-            }
+            } else validatedValue = matchingValues[0];
 
-            const [claim, claimValue] = Object.entries(sdJwtPayload).find(
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              ([_, value]) => validatedValue === value
-            ) as [string, unknown];
-            selectedClaims = { ...selectedClaims, [claim]: claimValue };
+            const claim = paths[0].split('.').pop();
+            if (claim) {
+              selectedClaims = { ...selectedClaims, [claim]: validatedValue };
+            }
           }
         }
 
