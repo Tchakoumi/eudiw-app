@@ -10,6 +10,7 @@ import {
   OID4VCIServiceEventChannel,
 } from './types/OID4VCIInterface';
 
+import { OID4VCIServiceError } from './errors';
 import {
   GrantType,
   ResolvedCredentialOffer,
@@ -118,6 +119,10 @@ export class OID4VCIService implements OID4VCIInterface {
     this.credentialEventClient
       .retrieveCredentialDetails(id)
       .then((result) => {
+        if (!result)
+          throw new OID4VCIServiceError(
+            'No credential found for the provided ID'
+          );
         const response: ServiceResponse = {
           status: ServiceResponseStatus.Success,
           payload: result,
