@@ -1,6 +1,6 @@
 import { JWKSet } from '../issuance';
 import { VPFormat } from './Format.types';
-import { ResponseType } from './v1_0_20/ResponseType.types';
+import { ResponseType } from './ResponseEnum.types';
 
 export interface ClientMetadata {
   client_id?: string;

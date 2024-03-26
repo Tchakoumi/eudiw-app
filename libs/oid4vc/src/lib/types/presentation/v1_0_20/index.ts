@@ -1,2 +1,2 @@
 export * from './RequestObject.types';
-export * from './ResponseType.types';
+export * from '../ResponseEnum.types';

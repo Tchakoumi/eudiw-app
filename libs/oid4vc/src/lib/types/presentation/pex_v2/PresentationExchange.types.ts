@@ -1,4 +1,4 @@
-import { VPFormat } from './Format.types';
+import { VPFormat } from '../Format.types';
 import { InputDescriptor } from './InputDescriptor.types';
 import { SubmissionRequirement } from './SubmissionRequirement.types';
 

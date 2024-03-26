@@ -1,10 +1,10 @@
 import { JWTPayload } from 'jose';
-import { PresentationDefinition } from '../PresentationExchange.types';
+import { PresentationDefinition } from '../pex_v2';
 import {
   ClientMetadata,
   ResolvedClientMetadata,
-} from '../RequestClientMetadata.types';
-import { ResponseMode } from './ResponseType.types';
+} from '../ClientMetadata.types';
+import { ResponseMode } from '../ResponseEnum.types';
 
 export enum ClientIdScheme {
   PRE_REGISTERED = 'pre-registered',
