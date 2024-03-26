@@ -57,4 +57,5 @@ export interface Field {
   filter?: Filter;
   predicate?: Optionality;
   name?: string;
+  optional?: boolean;
 }

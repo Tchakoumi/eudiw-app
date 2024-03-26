@@ -4,6 +4,7 @@ import {
   credentialStoreName,
 } from '../../database/schema';
 import {
+  Field,
   PresentationDefinition,
   SdJwtProcessedCredential,
 } from '../../lib/types';
@@ -18,7 +19,7 @@ import { JSONPath } from 'jsonpath-plus';
  * https://identity.foundation/presentation-exchange/spec/v2.0.0/
  * Handles the flow of demand and submission of proofs from a Holder to a Verifier.
  */
-export class InputDescriptorEvaluator {
+export class InputDescriptorHandler {
   public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {}
 
   async evaluate(presentationDefinition: PresentationDefinition) {
@@ -44,30 +45,48 @@ export class InputDescriptorEvaluator {
           // TODO! Handle array elements (?)
         }
       }
-      console.log({ sdJwtPayload });
 
       for (const inputDescriptor of presentationDefinition.input_descriptors) {
         const fields = inputDescriptor.constraints.fields ?? [];
+        const evaluateResults: {
+          field: Field;
+          value?: unknown;
+        }[] = [];
+
         for (const field of fields) {
-          const { path, filter } = field;
-          const matchValues = JSONPath({
-            path: path.join('.'),
-            json: sdJwtPayload,
-          });
-          console.log({ path, matchValues });
-          if (matchValues.length > 0) {
+          const { path: paths, filter } = field;
+          const matchingValues = paths.reduce<Array<Record<string, unknown>>>(
+            (values, path) => [
+              ...values,
+              ...JSONPath({
+                path: path,
+                json: sdJwtPayload,
+              }),
+            ],
+            []
+          );
+          if (matchingValues.length) {
             if (filter) {
+              let validatedValue: unknown;
               const validate = ajv.compile(filter);
-              // Validate against constraints
-              for (const value of matchValues) {
+              for (const value of matchingValues) {
+                // Validate against constraints
                 const isValid = validate(value);
-                if (isValid) {
-                  filteredCredentials.push(credential as SdJwtProcessedCredential);
-                }
+                if (isValid) validatedValue = value;
               }
-            } else filteredCredentials.push(credential as SdJwtProcessedCredential);
+              // Stop validation if the field is required but no matching
+              // value could be validated
+              if (!field.optional && !validatedValue) {
+                break;
+              }
+
+              evaluateResults.push({ field, value: validatedValue });
+            } else evaluateResults.push({ field, value: matchingValues[0] });
           }
         }
+
+        if (evaluateResults.length === fields.length)
+          filteredCredentials.push(credential as SdJwtProcessedCredential);
       }
     }
 
