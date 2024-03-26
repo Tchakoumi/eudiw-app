@@ -1,6 +1,6 @@
 import { JWKSet } from '../issuance';
 import { VPFormat } from './Format.types';
-import { ResponseType } from './v1_0_20/ResponseType.types';
+import { ResponseType } from './ResponseEnum.types';
 
 export interface ClientMetadata {
   client_id?: string;
@@ -21,5 +21,6 @@ export interface ClientMetadata {
   [x: string]: unknown; // Index signature for other properties
 }
 
-export interface ResolvedClientMetadata
-  extends Omit<ClientMetadata, 'jwks_uri'> {}
+export interface ResolvedClientMetadata extends ClientMetadata {
+  jwks: JWKSet;
+}

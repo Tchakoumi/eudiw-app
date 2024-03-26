@@ -1,4 +1,3 @@
-
 export interface OID4VPInterface {
   /**
    * Resolves the authentication request given as URI and

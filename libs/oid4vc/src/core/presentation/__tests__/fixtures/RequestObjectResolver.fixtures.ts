@@ -66,12 +66,10 @@ export const noClientMetadataResolvedRequestObject: ResolvedRequestObject = {
   response_mode: ResponseMode.DIRECT_POST,
 };
 
-export const encodedRequestObjectUri = `haip://?client_id=verifier.ssi.tir.budru.de&response_uri=https://verifier.ssi.tir.budru.de/presentation/authorization-response?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190&client_id_scheme=x509_san_dns&presentation_definition_uri=https://verifier.ssi.tir.budru.de/presentation/definition?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190&response_type=vp_token&state=277d0fb5-ef4b-4cff-93f0-086af36f9190&nonce=lLD1o3L6qJdazVcfCw3shh&response_mode=direct_post&client_metadata_uri=https://verifier.ssi.tir.budru.de/presentation/client-metadata.json`;
+export const encodedRequestObjectUri = `haip://?client_id=https://verifier.ssi.tir.budru.de/presentation/277d0fb5-ef4b-4cff-93f0-086af36f9190&client_id_scheme=redirect_uri&presentation_definition_uri=https://verifier.ssi.tir.budru.de/presentation/definition?id%3D277d0fb5-ef4b-4cff-93f0-086af36f9190&response_type=vp_token&state=277d0fb5-ef4b-4cff-93f0-086af36f9190&nonce=lLD1o3L6qJdazVcfCw3shh&response_mode=query&client_metadata_uri=https://verifier.ssi.tir.budru.de/presentation/client-metadata.json`;
 
 export const decodedRequestObject: RequestObject = {
-  response_uri:
-    'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
-  client_id_scheme: ClientIdScheme.X509_SAN_DNS,
+  client_id_scheme: ClientIdScheme.REDIRECT_URI,
   client_metadata_uri:
     'https://verifier.ssi.tir.budru.de/presentation/client-metadata.json',
   presentation_definition_uri:
@@ -79,20 +77,19 @@ export const decodedRequestObject: RequestObject = {
   response_type: 'vp_token',
   state: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
   nonce: 'lLD1o3L6qJdazVcfCw3shh',
-  client_id: 'verifier.ssi.tir.budru.de',
-  response_mode: ResponseMode.DIRECT_POST,
+  client_id:
+    'https://verifier.ssi.tir.budru.de/presentation/277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  response_mode: ResponseMode.QUERY,
 };
 
 export const clientMetadataValueJwks: JWKSet = {
   keys: [
     {
-      kty: 'EC',
-      use: 'enc',
-      crv: 'P-256',
+      kty: 'RSA',
+      n: 'tB0R8RdOhaRjVxT4Xh1cjhcyP1i-11KH2VuDtgMzCbhK5pdpNXtky8fTrc-k1-i2gDSG6eALlFmEmNSYJDRgYABHBosCFMomp4kP4X-AHPmpUHAMeFFsKdViGJvJBuJfoqyTbxmlpMxTC_2-CX3Yox18ZE_j_vc1ns91CVm7ZpLhjMJINlW1tQaQ1JCPNNic62cDTkKksUjeouRGf8Crni3CFr1qJ7ZTlhbI64itcdpOCOiCJS69Ud4B4O1jpuOUmAkaA0vj8QBMDU92ZLq3MOltLe60R_p1ns5XJqydVR_pSfDVajZmfrG_7nLslu4wh9nPS_mne_pkPb5erXAHzw',
+      e: 'AQAB',
+      alg: 'RS256',
       kid: '2483b80b-d9fc-46f0-8e10-358401c274fe',
-      x: 'koPQM9kfAg8jOk5dyQQy7pF2Pq_NFp2SFklouaXaLL0',
-      y: 'qapFx_2e-HGpJ7LnEqx2CX3dQqRFJWw-eDqbsYEZeYw',
-      alg: 'ECDH-ES',
     },
   ],
 };
@@ -118,7 +115,7 @@ export const resolvedClientMetadata: ResolvedClientMetadata = {
 };
 
 export const presentationDefinitionValue: PresentationDefinition = {
-  id: 'KVc4W0wsANjL',
+  id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
   input_descriptors: [
     {
       id: 'ProofOfResidence',
@@ -162,19 +159,18 @@ export const presentationDefinitionValue: PresentationDefinition = {
 };
 
 export const resolvedRequestObject: ResolvedRequestObject = {
-  response_uri:
+  redirect_uri:
     'https://verifier.ssi.tir.budru.de/presentation/authorization-response?id=277d0fb5-ef4b-4cff-93f0-086af36f9190',
-  client_id_scheme: ClientIdScheme.X509_SAN_DNS,
+  client_id_scheme: ClientIdScheme.PRE_REGISTERED,
   client_metadata: resolvedClientMetadata,
   presentation_definition: presentationDefinitionValue,
   response_type: 'vp_token',
   state: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
   nonce: 'lLD1o3L6qJdazVcfCw3shh',
-  client_id: 'verifier.ssi.tir.budru.de',
-  response_mode: ResponseMode.DIRECT_POST,
+  client_id:
+    'https://verifier.ssi.tir.budru.de/presentation/277d0fb5-ef4b-4cff-93f0-086af36f9190',
+  response_mode: ResponseMode.QUERY,
 };
-
-export const requestObjectJwtWithClientMetadata = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNwb25zZV91cmkiOiJodHRwczovL3ZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUvcHJlc2VudGF0aW9uL2F1dGhvcml6YXRpb24tcmVzcG9uc2U_aWQ9Mjc3ZDBmYjUtZWY0Yi00Y2ZmLTkzZjAtMDg2YWYzNmY5MTkwIiwiY2xpZW50X2lkX3NjaGVtZSI6InJlZGlyZWN0X3VyaSIsInJlc3BvbnNlX3R5cGUiOiJ2cF90b2tlbiIsInByZXNlbnRhdGlvbl9kZWZpbml0aW9uX3VyaSI6Imh0dHBzOi8vdmVyaWZpZXIuc3NpLnRpci5idWRydS5kZS9wcmVzZW50YXRpb24vZGVmaW5pdGlvbj9pZD0yNzdkMGZiNS1lZjRiLTRjZmYtOTNmMC0wODZhZjM2ZjkxOTAiLCJzdGF0ZSI6IjI3N2QwZmI1LWVmNGItNGNmZi05M2YwLTA4NmFmMzZmOTE5MCIsIm5vbmNlIjoibExEMW8zTDZxSmRhelZjZkN3M3NoaCIsImNsaWVudF9pZCI6InZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUiLCJyZXNwb25zZV9tb2RlIjoiZGlyZWN0X3Bvc3QiLCJjbGllbnRfbWV0YWRhdGEiOnsiandrc191cmkiOiJodHRwczovL3ZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUvcHJlc2VudGF0aW9uL2p3a3MuanNvbiIsImF1dGhvcml6YXRpb25fZW5jcnlwdGVkX3Jlc3BvbnNlX2FsZyI6IkVDREgtRVMiLCJhdXRob3JpemF0aW9uX2VuY3J5cHRlZF9yZXNwb25zZV9lbmMiOiJBMTI4Q0JDLUhTMjU2IiwiaWRfdG9rZW5fZW5jcnlwdGVkX3Jlc3BvbnNlX2FsZyI6IlJTQS1PQUVQLTI1NiIsImlkX3Rva2VuX2VuY3J5cHRlZF9yZXNwb25zZV9lbmMiOiJBMTI4Q0JDLUhTMjU2Iiwic3ViamVjdF9zeW50YXhfdHlwZXNfc3VwcG9ydGVkIjpbInVybjppZXRmOnBhcmFtczpvYXV0aDpqd2stdGh1bWJwcmludCJdLCJpZF90b2tlbl9zaWduZWRfcmVzcG9uc2VfYWxnIjoiUlMyNTYifX0.zkceQS0OVEP1ZzkUtD_WJ4FCewOeK1OViNBUG-7eIe4`;
 
 export const sdJwtProcessedCredentialObjRef1: SdJwtProcessedCredential = {
   encoded:
@@ -225,3 +221,6 @@ export const resolvedPresentationExchange: PresentationExchange = {
     },
   ],
 };
+export const requestObjectJwtWithClientMetadata = `eyJrdHkiOiJSU0EiLCJuIjoidEIwUjhSZE9oYVJqVnhUNFhoMWNqaGN5UDFpLTExS0gyVnVEdGdNekNiaEs1cGRwTlh0a3k4ZlRyYy1rMS1pMmdEU0c2ZUFMbEZtRW1OU1lKRFJnWUFCSEJvc0NGTW9tcDRrUDRYLUFIUG1wVUhBTWVGRnNLZFZpR0p2SkJ1SmZvcXlUYnhtbHBNeFRDXzItQ1gzWW94MThaRV9qX3ZjMW5zOTFDVm03WnBMaGpNSklObFcxdFFhUTFKQ1BOTmljNjJjRFRrS2tzVWplb3VSR2Y4Q3JuaTNDRnIxcUo3WlRsaGJJNjRpdGNkcE9DT2lDSlM2OVVkNEI0TzFqcHVPVW1Ba2FBMHZqOFFCTURVOTJaTHEzTU9sdExlNjBSX3AxbnM1WEpxeWRWUl9wU2ZEVmFqWm1mckdfN25Mc2x1NHdoOW5QU19tbmVfcGtQYjVlclhBSHp3IiwiZSI6IkFRQUIiLCJhbGciOiJSUzI1NiIsImtpZCI6IjI0ODNiODBiLWQ5ZmMtNDZmMC04ZTEwLTM1ODQwMWMyNzRmZSJ9.eyJyZWRpcmVjdF91cmkiOiJodHRwczovL3ZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUvcHJlc2VudGF0aW9uL2F1dGhvcml6YXRpb24tcmVzcG9uc2U_aWQ9Mjc3ZDBmYjUtZWY0Yi00Y2ZmLTkzZjAtMDg2YWYzNmY5MTkwIiwiY2xpZW50X2lkX3NjaGVtZSI6InByZS1yZWdpc3RlcmVkIiwicmVzcG9uc2VfdHlwZSI6InZwX3Rva2VuIiwicHJlc2VudGF0aW9uX2RlZmluaXRpb25fdXJpIjoiaHR0cHM6Ly92ZXJpZmllci5zc2kudGlyLmJ1ZHJ1LmRlL3ByZXNlbnRhdGlvbi9kZWZpbml0aW9uP2lkPTI3N2QwZmI1LWVmNGItNGNmZi05M2YwLTA4NmFmMzZmOTE5MCIsInN0YXRlIjoiMjc3ZDBmYjUtZWY0Yi00Y2ZmLTkzZjAtMDg2YWYzNmY5MTkwIiwibm9uY2UiOiJsTEQxbzNMNnFKZGF6VmNmQ3czc2hoIiwiY2xpZW50X2lkIjoidmVyaWZpZXIuZGF0YXRldi5kZSIsInJlc3BvbnNlX21vZGUiOiJmcmFnbWVudCIsImNsaWVudF9tZXRhZGF0YSI6eyJqd2tzX3VyaSI6Imh0dHBzOi8vdmVyaWZpZXIuc3NpLnRpci5idWRydS5kZS9wcmVzZW50YXRpb24vandrcy5qc29uIiwiYXV0aG9yaXphdGlvbl9lbmNyeXB0ZWRfcmVzcG9uc2VfYWxnIjoiRUNESC1FUyIsImF1dGhvcml6YXRpb25fZW5jcnlwdGVkX3Jlc3BvbnNlX2VuYyI6IkExMjhDQkMtSFMyNTYiLCJpZF90b2tlbl9lbmNyeXB0ZWRfcmVzcG9uc2VfYWxnIjoiUlNBLU9BRVAtMjU2IiwiaWRfdG9rZW5fZW5jcnlwdGVkX3Jlc3BvbnNlX2VuYyI6IkExMjhDQkMtSFMyNTYiLCJzdWJqZWN0X3N5bnRheF90eXBlc19zdXBwb3J0ZWQiOlsidXJuOmlldGY6cGFyYW1zOm9hdXRoOmp3ay10aHVtYnByaW50Il0sImlkX3Rva2VuX3NpZ25lZF9yZXNwb25zZV9hbGciOiJSUzI1NiJ9fQ.dYb62XTVjx1SZ0Wb29Liil0eao8JG5J90fyWn0_YcAGw8yHDcHmiOLbsLeBfH8jY2fB0ncyIx34IzX722dndruFc7zaObEcbDThZxId-h4tm5eaWW3UwFAGvegWhKi2ouNkZCJh1HimSDMgK8ft3FnExLA0Z8kfrlmLf67qIu3NiGFRTiU2Z5siJw0C8OFJJRNUw-30SJQpG_jZkEZd5UvQwNs_vq3NPjZxs5_KK7SzHE3hoBspB4F-ZVMgPH3q2y_sbgn-Uq1ymdXOguBR35jGcZeKn2qe2BqklaHEgvzXklq1Qc4U0tOf5Bx2XDg9jp2Mq0vM_t_5NdTPo9_1MPw`;
+
+export const requestObjectJwtWithInssufientParams = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWRfc2NoZW1lIjoicHJlLXJlZ2lzdGVyZWQiLCJyZXNwb25zZV90eXBlIjoidnBfdG9rZW4iLCJwcmVzZW50YXRpb25fZGVmaW5pdGlvbl91cmkiOiJodHRwczovL3ZlcmlmaWVyLnNzaS50aXIuYnVkcnUuZGUvcHJlc2VudGF0aW9uL2RlZmluaXRpb24_aWQ9Mjc3ZDBmYjUtZWY0Yi00Y2ZmLTkzZjAtMDg2YWYzNmY5MTkwIiwic3RhdGUiOiIyNzdkMGZiNS1lZjRiLTRjZmYtOTNmMC0wODZhZjM2ZjkxOTAiLCJub25jZSI6ImxMRDFvM0w2cUpkYXpWY2ZDdzNzaGgiLCJjbGllbnRfaWQiOiJ2ZXJpZmllci5kYXRhdGV2LmRlIiwicmVzcG9uc2VfbW9kZSI6ImZyYWdtZW50In0.AHo3sVhOcpMtvyeFedCTrXlu_LBi8CufpuoFXzizrs0`;

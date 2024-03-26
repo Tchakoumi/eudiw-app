@@ -1,7 +1,6 @@
 import {
+  ResponseMode,
   ClientIdScheme,
-  PresentationDefinition,
-  ResolvedRequestObject,
 } from '../../../lib/types';
 import { PresentationError } from '../../../lib/errors/Presentation.errors';
 import { HttpUtil } from '../../../utils/HttpUtil';
@@ -16,15 +15,16 @@ import {
   requestObjectJwt,
   requestObjectJwtWithClientMetadata,
   resolvedPresentationExchange,
+  requestObjectJwtWithInssufientParams,
   resolvedRequestObject,
   sdJwtProcessedCredentialObjRef1,
   sdJwtProcessedCredentialObjRef2,
 } from './fixtures/RequestObjectResolver.fixtures';
 
 import nock from 'nock';
-import { AsyncLocalStorage } from 'async_hooks';
-import { DBConnection } from 'libs/oid4vc/src/database/DBConnection';
+import { DBConnection } from '../../../database/DBConnection';
 import { SdJwtCredentialProcessor } from '../../issuance/SdJwtCredentialProcessor';
+
 const MOCK_URL = 'https://verifier.ssi.tir.budru.de';
 
 describe('RequestObjectResolver', () => {
@@ -101,8 +101,12 @@ describe('RequestObjectResolver', () => {
     const requestObject = await requestObjectResolver.resolveRequestObject(
       encodedRequestObjectUri
     );
-
-    expect(requestObject).toStrictEqual(resolvedRequestObject);
+    const expectedRequestObject = {
+      ...resolvedRequestObject,
+      client_id_scheme: ClientIdScheme.REDIRECT_URI,
+    };
+    delete expectedRequestObject['redirect_uri'];
+    expect(requestObject).toStrictEqual(expectedRequestObject);
   });
 
   it('should resolve request object containing client metadata', async () => {
@@ -112,17 +116,22 @@ describe('RequestObjectResolver', () => {
         id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
       })
       .reply(200, presentationDefinitionValue)
+      .get('/presentation/client-metadata.json')
+      .reply(200, clientMetadataValue)
       .get('/presentation/jwks.json')
       .reply(200, clientMetadataValueJwks);
 
     const requestObject = await requestObjectResolver.resolveRequestObject(
-      `haip://?client_id=verifier.ssi.tir.budru.de&request=${requestObjectJwtWithClientMetadata}`
+      `haip://?client_id=verifier.datatev.de&request=${requestObjectJwtWithClientMetadata}`
     );
 
-    expect(requestObject).toStrictEqual({
+    const expectedObject = {
       ...resolvedRequestObject,
-      client_id_scheme: ClientIdScheme.REDIRECT_URI,
-    });
+      client_id: 'verifier.datatev.de',
+      response_mode: ResponseMode.FRAGMENT,
+      client_id_scheme: ClientIdScheme.PRE_REGISTERED,
+    };
+    expect(requestObject).toStrictEqual(expectedObject);
   });
 
   it('should successfully resolve request object jwt (Passed By value)', async () => {
@@ -157,21 +166,11 @@ describe('RequestObjectResolver', () => {
       .query({
         id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
       })
-      .reply(200, presentationDefinitionValue)
-      .get('/presentation/client-metadata.json')
-      .reply(200, clientMetadataValue)
-      .get('/presentation/jwks.json')
-      .reply(200, clientMetadataValueJwks);
+      .reply(200, presentationDefinitionValue);
 
-    const url = new URL(encodedRequestObjectUri);
-    const params = new URLSearchParams(url.search);
-    params.delete('response_uri');
-    const newEncodedRequestObjectUri = new URL(
-      `${url.protocol}//?${params.toString()}`
-    );
     await expect(
       requestObjectResolver.resolveRequestObject(
-        newEncodedRequestObjectUri.href
+        `haip://?client_id=verifier.ssi.tir.budru.de&request=${requestObjectJwtWithInssufientParams}`
       )
     ).rejects.toThrow(PresentationError.MissingResponseParams);
   });
@@ -198,6 +197,10 @@ describe('RequestObjectResolver', () => {
         crossDevice: 'true',
       })
       .reply(200, requestObjectJwt)
+      .get('/presentation/client-metadata.json')
+      .reply(200, clientMetadataValue)
+      .get('/presentation/jwks.json')
+      .reply(200, clientMetadataValueJwks)
       .get('/presentation/definition')
       .query({
         id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',

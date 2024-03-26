@@ -1,8 +1,9 @@
-import { DisplayCredential } from '../issuance';
-import { VPFormat } from './Format.types';
+import { DisplayCredential } from '../../issuance';
+import { VPFormat } from '../Format.types';
+import { DescriptorMap } from './DescriptorMap.types';
 import { InputDescriptor } from './InputDescriptor.types';
 import { SubmissionRequirement } from './SubmissionRequirement.types';
-import { ResolvedRequestObject } from './v1_0_20/RequestObject.types';
+import { ResolvedRequestObject } from '../v1_0_20';
 
 export interface PresentationDefinition {
   id: string;
@@ -12,6 +13,12 @@ export interface PresentationDefinition {
   submission_requirements?: Array<SubmissionRequirement>;
   input_descriptors: Array<InputDescriptor>;
   frame?: object;
+}
+
+export interface PresentationSubmission {
+  id: string;
+  definition_id: string;
+  descriptor_map: Array<DescriptorMap>;
 }
 
 export interface PresentationExchange {

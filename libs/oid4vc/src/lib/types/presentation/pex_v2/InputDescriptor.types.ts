@@ -1,5 +1,5 @@
-import { Filter } from './Filter.types';
-import { VPFormat } from './Format.types';
+import { Filter } from '../Filter.types';
+import { VPFormat } from '../Format.types';
 
 export interface InputDescriptor {
   id: string;
