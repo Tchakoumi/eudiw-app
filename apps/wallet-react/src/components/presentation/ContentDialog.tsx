@@ -6,9 +6,10 @@ import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@datev/oid4vc';
-import { Box, Dialog } from '@mui/material';
+import { Box, Button, Dialog, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { IVcData, IVerifiableCredential } from '../../types/credentials.types';
+import { removeUnderscoresFromWord } from '../../utils/common';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
 import ConsentFooter from './ConsentFooter';
@@ -69,7 +70,14 @@ export default function ContentDialog({
         sx={{ height: '100%', display: 'grid', gridTemplateRows: 'auto 1fr' }}
       >
         <Box sx={{ borderBottom: '1px solid #D1D5DB' }}>
-          <BackTitleBar onBack={closeDialog} pageTitle="" />
+          <BackTitleBar
+            onBack={
+              selectedVcDetails
+                ? () => setSelectedVcDetails(undefined)
+                : closeDialog
+            }
+            pageTitle={selectedVcDetails ? 'Proof Details' : 'Proof Request'}
+          />
         </Box>
         <Box
           sx={{
@@ -82,7 +90,46 @@ export default function ContentDialog({
           <ConsentHeader service="Datev eG" />
 
           {selectedVcDetails ? (
-            'Hello world'
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateRows: 'auto 1fr auto',
+                rowGap: 1,
+              }}
+            >
+              <Typography variant="h5">
+                Datev eG is requesting the following credentials
+              </Typography>
+              <Box sx={{ display: 'grid', rowGap: 1, alignContent: 'start' }}>
+                {Object.keys(selectedVcDetails).map((key, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'grid',
+                      rowGap: 0.5,
+                      padding: 1,
+                      border: '1px solid #D1D5DB',
+                      borderRadius: '12px',
+                    }}
+                  >
+                    <Typography variant="body2">
+                      {removeUnderscoresFromWord(key)}
+                    </Typography>
+                    <Typography fontWeight={500}>
+                      {selectedVcDetails[key]}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+              <Box sx={{ display: 'grid', rowGap: 1 }}>
+                <Button color="primary" variant="contained">
+                  Share
+                </Button>
+                <Button color="inherit" variant="outlined">
+                  Decline
+                </Button>
+              </Box>
+            </Box>
           ) : (
             <Box sx={{ display: 'grid', rowGap: 1, alignContent: 'start' }}>
               {credentials.map((credential, index) => (
