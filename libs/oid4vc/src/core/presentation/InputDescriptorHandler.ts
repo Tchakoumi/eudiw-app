@@ -4,9 +4,9 @@ import {
   credentialStoreName,
 } from '../../database/schema';
 import {
-  Field,
+  DisplayCredential,
   PresentationDefinition,
-  SdJwtProcessedCredential,
+  SdJwtMatchingCredential,
 } from '../../lib/types';
 
 import sdJwt from '@hopae/sd-jwt';
@@ -22,14 +22,14 @@ import { JSONPath } from 'jsonpath-plus';
 export class InputDescriptorHandler {
   public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {}
 
-  async evaluate(presentationDefinition: PresentationDefinition) {
+  async handle(presentationDefinition: PresentationDefinition) {
     const credentials = await this.storage.findAll(credentialStoreName);
     // Initialize AJV instance
     const ajv = new Ajv();
     addFormats(ajv);
 
     // Filter credentials
-    const filteredCredentials: SdJwtProcessedCredential[] = [];
+    const filteredCredentials: SdJwtMatchingCredential[] = [];
 
     for (const { value: credential } of credentials) {
       // Decode SD-JWT encoded credential using @hopae/sd-jwt
@@ -47,15 +47,12 @@ export class InputDescriptorHandler {
       }
 
       for (const inputDescriptor of presentationDefinition.input_descriptors) {
+        let selectedClaims = {};
         const fields = inputDescriptor.constraints.fields ?? [];
-        const evaluateResults: {
-          field: Field;
-          value?: unknown;
-        }[] = [];
 
         for (const field of fields) {
           const { path: paths, filter } = field;
-          const matchingValues = paths.reduce<Array<Record<string, unknown>>>(
+          const matchingValues = paths.reduce<Array<unknown>>(
             (values, path) => [
               ...values,
               ...JSONPath({
@@ -66,8 +63,8 @@ export class InputDescriptorHandler {
             []
           );
           if (matchingValues.length) {
+            let validatedValue = matchingValues[0];
             if (filter) {
-              let validatedValue: unknown;
               const validate = ajv.compile(filter);
               for (const value of matchingValues) {
                 // Validate against constraints
@@ -79,14 +76,21 @@ export class InputDescriptorHandler {
               if (!field.optional && !validatedValue) {
                 break;
               }
+            }
 
-              evaluateResults.push({ field, value: validatedValue });
-            } else evaluateResults.push({ field, value: matchingValues[0] });
+            const [claim, claimValue] = Object.entries(sdJwtPayload).find(
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              ([_, value]) => validatedValue === value
+            ) as [string, unknown];
+            selectedClaims = { ...selectedClaims, [claim]: claimValue };
           }
         }
 
-        if (evaluateResults.length === fields.length)
-          filteredCredentials.push(credential as SdJwtProcessedCredential);
+        if (Object.keys(selectedClaims).length === fields.length)
+          filteredCredentials.push({
+            credential: credential.display as DisplayCredential,
+            disclosures: selectedClaims,
+          });
       }
     }
 
