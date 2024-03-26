@@ -96,7 +96,9 @@ export default function Scan() {
             </IconButton>
           </Tooltip>
         </Box>
-        <Scanner handleScanResult={resolveCredentialOffer} />
+        {!isPresentationDetailsDialogOpen && (
+          <Scanner handleScanResult={resolveCredentialOffer} />
+        )}
       </Box>
     </>
   );
