@@ -30,7 +30,7 @@ export default function ContentDialog({
     },
   ];
 
-  const [selectedVc, setSelectedVc] = useState<number | null>(null);
+  const [selectedVc, setSelectedVc] = useState<IVerifiableCredential>();
 
   return (
     <Dialog
@@ -57,7 +57,7 @@ export default function ContentDialog({
           <Box sx={{ display: 'grid', rowGap: 1, alignContent: 'start' }}>
             {credentials.map((credential, index) => (
               <PresentationCredentialCard
-                selectVc={() => setSelectedVc(credential.id as number)}
+                selectVc={() => setSelectedVc(credential)}
                 credential={credential}
                 key={index}
               />
