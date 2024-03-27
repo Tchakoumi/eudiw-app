@@ -10,12 +10,13 @@ import wallet from '../../assets/illu-wallet.png';
 import presenting from '../../assets/presenting.png';
 import DialogTransition from '../layout/DialogTransition';
 
+export type ScanUsage = 'issuance' | 'presentation';
 interface LoadingScanDetailsProps {
   isDialogOpen: boolean;
   resultListener: () => void;
   closeDialog: () => void;
   scanError: string;
-  usage?: 'issuance' | 'presentation';
+  usage?: ScanUsage;
 }
 export default function LoadingScanDetails({
   isDialogOpen,

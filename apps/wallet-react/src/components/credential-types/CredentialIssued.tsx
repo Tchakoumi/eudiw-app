@@ -1,11 +1,15 @@
 import { Box, Button, Typography } from '@mui/material';
 import check from '../../assets/check-circle-primary.png';
 import wallet from '../../assets/illu-wallet.png';
+import presenting from '../../assets/presenting.png';
+import { ScanUsage } from '../scan-details/LoadingScanDetails';
 
 export default function CredentialIssued({
   handleClose,
+  usage = 'issuance',
 }: {
   handleClose: () => void;
+  usage?: ScanUsage;
 }) {
   return (
     <Box
@@ -29,18 +33,20 @@ export default function CredentialIssued({
         <Box sx={{ display: 'grid', justifyItems: 'center', rowGap: '24px' }}>
           <img src={check} alt="check" height={39} width={39} />
           <img
-            src={wallet}
+            src={usage === 'issuance' ? wallet : presenting}
             alt="loading wallet"
-            height={141.95}
-            width={121.15}
+            height={usage === 'issuance' ? 141.95 : 195}
+            width={usage === 'issuance' ? 121.15 : 110.25}
           />
         </Box>
         <Typography sx={{ fontSize: '16px' }}>
-          Credential added to your wallet
+          {usage === 'issuance'
+            ? 'Credential added to your wallet'
+            : 'Information sent successfully'}
         </Typography>
       </Box>
       <Button variant="contained" color="primary" onClick={handleClose}>
-        Done
+        {usage === 'issuance' ? 'Done' : 'Go back home'}
       </Button>
     </Box>
   );
