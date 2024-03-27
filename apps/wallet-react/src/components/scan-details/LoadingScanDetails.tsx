@@ -7,19 +7,23 @@ import {
 } from '@mui/material';
 import { useEffect } from 'react';
 import wallet from '../../assets/illu-wallet.png';
+import presenting from '../../assets/presenting.png';
 import DialogTransition from '../layout/DialogTransition';
 
+interface LoadingScanDetailsProps {
+  isDialogOpen: boolean;
+  resultListener: () => void;
+  closeDialog: () => void;
+  scanError: string;
+  usage?: 'issuance' | 'presentation';
+}
 export default function LoadingScanDetails({
   isDialogOpen,
   resultListener,
   closeDialog,
   scanError,
-}: {
-  isDialogOpen: boolean;
-  resultListener: () => void;
-  closeDialog: () => void;
-  scanError: string;
-}) {
+  usage = 'issuance',
+}: LoadingScanDetailsProps) {
   useEffect(() => {
     if (isDialogOpen) resultListener();
   }, [isDialogOpen, resultListener]);
@@ -43,20 +47,20 @@ export default function LoadingScanDetails({
       >
         <Box sx={{ position: 'relative' }}>
           <img
-            src={wallet}
+            src={usage === 'issuance' ? wallet : presenting}
             alt="loading wallet"
-            height={141.95}
-            width={121.15}
+            height={usage === 'issuance' ? 141.95 : 195}
+            width={usage === 'issuance' ? 121.15 : 110.25}
           />
 
           <CircularProgress
-            thickness={2}
+            thickness={1}
             color="primary"
-            size={200}
+            size={usage === 'issuance' ? 200 : 250}
             sx={{
               position: 'absolute',
-              top: '-26px',
-              left: '-40px',
+              top: usage === 'issuance' ? '-26px' : '-30px',
+              left: usage === 'issuance' ? '-40px' : '-70px',
             }}
           />
         </Box>
@@ -71,9 +75,11 @@ export default function LoadingScanDetails({
           </Box>
         ) : (
           <Typography sx={{ fontSize: '16px', textAlign: 'center' }}>
-            Just a moment while we make a secure connection...
+            {usage === 'issuance'
+              ? `Just a moment while we make a secure connection...`
+              : 'Sending the information securely...'}
           </Typography>
-        )}{' '}
+        )}
       </Box>
     </Dialog>
   );
