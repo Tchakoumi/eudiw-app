@@ -1,45 +1,21 @@
-import { DBConnection } from '../../database/DBConnection';
 import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
 import {
   PresentationDefinition,
-  PresentationExchange,
   RequestObject,
   ResolvedRequestObject,
 } from '../../lib/types';
 import { HttpUtil } from '../../utils';
-import { DIFPresentationExchangeService } from './DifPresentationExchangeService';
 import { RequestObjectValidator } from './RequestObjectValidator';
 
 export class RequestObjectResolver {
   private readonly requestObjectValidator: RequestObjectValidator;
-  private readonly DIFPresentationExchangeService: DIFPresentationExchangeService;
   /**
    * Constructor.
    * @param httpUtil the service HTTP client
    */
   public constructor(private httpUtil: HttpUtil) {
-    const storage = DBConnection.getStorage();
     this.requestObjectValidator = new RequestObjectValidator(httpUtil);
-    this.DIFPresentationExchangeService = new DIFPresentationExchangeService(
-      storage
-    );
-  }
-
-  async getCredentialsForRequest(requestObjectUri: string) {
-    const requestObject = await this.resolveRequestObject(requestObjectUri);
-
-    const matchedCredentials =
-      await this.DIFPresentationExchangeService.processRequestObject(
-        requestObject
-      );
-
-    const presentationExchange: PresentationExchange = {
-      resolvedRequestObject: requestObject,
-      credentialsForRequest: matchedCredentials,
-    };
-
-    return presentationExchange;
   }
 
   async resolveRequestObject(requestObjectUri: string) {
