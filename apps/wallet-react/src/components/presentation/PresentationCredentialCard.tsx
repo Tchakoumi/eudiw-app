@@ -1,10 +1,10 @@
+import { DisplayCredential } from '@datev/oid4vc';
 import { Box, Typography } from '@mui/material';
 import AuthleteLogo from '../../assets/authlete-logo.png';
-import { IVerifiableCredential } from '../../types/credentials.types';
 import { capitalizeEveryWord, domainToClearString } from '../../utils/common';
 
 interface PresentationCredentialCardProps {
-  credential: IVerifiableCredential;
+  credential: DisplayCredential;
   selectVc: () => void;
 }
 export default function PresentationCredentialCard({
