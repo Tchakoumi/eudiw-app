@@ -16,4 +16,5 @@ export enum PresentationError {
   InvalidRequestObjectJwtSignature = `${PresentationError}: Could not verify request object jwt signature`,
   UnSupportedClientScheme = `${PresentationError}: Specified client identifier scheme is not supported`,
   MissingConstraintField = `${PresentationError}: input descriptor constraint is missing the fields property`,
+  UnsupportedSubmissionRequirements = `${PresentationError}: submission requirements is not supported`,
 }

@@ -1,13 +1,17 @@
 import { StorageFactory } from '@datev/storage';
 import {
-  DisplayCredential,
-  ResolvedRequestObject,
-  SdJwtProcessedCredential,
-} from '../../lib/types';
-import {
   OID4VCIServiceDBSchema,
   credentialStoreName,
 } from '../../database/schema';
+import { OID4VCIServiceError } from '../../lib/errors';
+import { PresentationError } from '../../lib/errors/Presentation.errors';
+import {
+  PresentationExchange,
+  SdJwtProcessedCredential,
+} from '../../lib/types';
+import { HttpUtil } from '../../utils';
+import { InputDescriptorHandler } from './InputDescriptorHandler';
+import { RequestObjectResolver } from './RequestObjectResolver';
 
 /**
  * This class is responsible for implementing the DIF Presentation Exchange
@@ -15,43 +19,55 @@ import {
  * Handles the flow of demand and submission of proofs from a Holder to a Verifier.
  */
 export class DIFPresentationExchangeService {
-  public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {}
+  private readonly requestObjectResolver: RequestObjectResolver;
+  private readonly inputDescriptorHandler: InputDescriptorHandler;
 
-  public async processRequestObject(
-    resolvedRequestObject: ResolvedRequestObject
-  ): Promise<DisplayCredential[]> {
-    const records = await this.storage.findAll(credentialStoreName);
+  /**
+   * DIF.PEX Constructor.
+   * @param httpUtil
+   * @param storage
+   */
+  public constructor(
+    private storage: StorageFactory<OID4VCIServiceDBSchema>,
+    httpUtil: HttpUtil
+  ) {
+    this.inputDescriptorHandler = new InputDescriptorHandler();
+    this.requestObjectResolver = new RequestObjectResolver(httpUtil);
+  }
 
-    const { input_descriptors } = resolvedRequestObject.presentation_definition;
+  async processRequestObject(requestObjectUri: string) {
+    const resolvedRequestObject =
+      await this.requestObjectResolver.resolveRequestObject(requestObjectUri);
 
-    const matchedCredentials: DisplayCredential[] = [];
+    const results = await this.storage.findAll(credentialStoreName);
+    const credentials = results.map((_) => _.value as SdJwtProcessedCredential);
 
-    input_descriptors.forEach((descriptor) => {
-      const matchesForInputDescriptor = records.flatMap((record) => {
-        if ('display' in record.value) {
-          const credential = record.value as SdJwtProcessedCredential;
-          const credentialClaims = credential.display.claims;
+    const {
+      presentation_definition: {
+        input_descriptors: inputDescriptors,
+        submission_requirements,
+      },
+    } = resolvedRequestObject;
 
-          // Check that at least one of the compared values is not undefined before comparing
-          const idMatch =
-            credentialClaims?.['id'] !== undefined &&
-            descriptor.id !== undefined &&
-            credentialClaims['id'] === descriptor.id;
-          const nameMatch =
-            credentialClaims?.['name'] !== undefined &&
-            descriptor.name !== undefined &&
-            credentialClaims['name'] === descriptor.name;
+    if (!inputDescriptors.length) {
+      throw new OID4VCIServiceError(PresentationError.MissingRequiredParams);
+    }
 
-          if (idMatch || nameMatch) {
-            return [credential.display];
-          }
-        }
-        return [];
-      });
+    if (submission_requirements) {
+      throw new OID4VCIServiceError(
+        PresentationError.UnsupportedSubmissionRequirements
+      );
+    }
+    const matchingCredentials = await this.inputDescriptorHandler.handle(
+      inputDescriptors,
+      credentials
+    );
 
-      matchedCredentials.push(...matchesForInputDescriptor);
-    });
+    const presentationExchange: PresentationExchange = {
+      resolvedRequestObject,
+      matchingCredentials,
+    };
 
-    return matchedCredentials;
+    return presentationExchange;
   }
 }
