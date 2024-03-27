@@ -8,13 +8,12 @@ import {
 import { DiscoveryMetadata, GrantType } from '../../../lib/types/issuance';
 import { CredentialRequester } from '../CredentialRequester';
 
+import { configClient, httpUtil } from '../../__tests__/fixtures';
 import {
-  configClient,
   credentialOfferObjectRef1,
   credentialResponseRef1,
   credentialResponseRef2,
   discoveryMetadataRef1,
-  httpUtil,
   jwksRef1,
   jwksRef2,
   tokenResponseRef1,

@@ -1,4 +1,4 @@
-import { ConfigClient } from '../../ConfigClient';
+import { ConfigClient } from '../ConfigClient';
 import { configData } from './fixtures';
 
 describe('ConfigClient', () => {

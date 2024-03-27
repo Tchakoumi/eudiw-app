@@ -12,16 +12,16 @@ import {
   TxCodeInputMode,
 } from '../../../lib/types/issuance';
 
+import { httpUtil } from '../../__tests__/fixtures';
 import {
-  httpUtil,
-  credentialOfferObjectRef1,
-  credentialIssuerMetadataRef1,
   authorizationServerMetadataRef1,
-  jwtIssuerMetadataRef1,
+  credentialIssuerMetadataRef1,
+  credentialOfferObjectRef1,
+  discoveryMetadataRef1,
   encodeCredentialOffer,
+  jwtIssuerMetadataRef1,
   nockReplyWithEmptyPayload,
   nockReplyWithMetadataRef1,
-  discoveryMetadataRef1,
 } from './fixtures';
 
 describe('CredentialOfferResolver', () => {
