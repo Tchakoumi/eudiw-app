@@ -24,7 +24,7 @@ export default function Scan() {
   const [isLoadingDialogOpen, setIsLoadingDialogOpen] =
     useState<boolean>(false);
   const [isPresentationDetailsDialogOpen, setIsPresentationDetailsDialogOpen] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   function resolveCredentialOffer(result: string) {
     setIsLoadingDialogOpen(true);
