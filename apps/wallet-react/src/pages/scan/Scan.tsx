@@ -1,6 +1,7 @@
 import { eventBus } from '@datev/event-bus';
 import {
   OID4VCIServiceEventChannel,
+  SdJwtMatchingCredential,
   ServiceResponse,
   ServiceResponseStatus,
 } from '@datev/oid4vc';
@@ -57,12 +58,21 @@ export default function Scan() {
     useState<boolean>(false);
   const [isDonePresenting, setIsDonePresenting] = useState<boolean>(false);
 
-  function fulfillProofRequest() {
+  //listen to result when proof is sent
+  function fulfillProofRequestListener() {
+    // TODO: CALL SERVICE LAYER TO LISTEN TO RESPONSE of sent proof
     setTimeout(() => {
       setScanResult('');
       setIsLoadingDialogOpen(false);
       setIsSendingProofRequest(false);
     }, 3000);
+  }
+
+  // send selectedVc to service layer to fulfull proof
+  function fulfillProofRequest(selectedVc: SdJwtMatchingCredential) {
+    //TODO: CALL API HERE TO SUBMIT selectedVc to service layer
+    setIsDonePresenting(true);
+    setIsSendingProofRequest(true);
   }
 
   return (
@@ -73,7 +83,7 @@ export default function Scan() {
         }
         resultListener={() => {
           if (isSendingProofRequest) {
-            fulfillProofRequest();
+            fulfillProofRequestListener();
           } else {
             presentationDetailsListener();
             credentialOfferListener();
@@ -92,10 +102,7 @@ export default function Scan() {
         isDialogOpen={isPresentationDetailsDialogOpen}
         closeDialog={() => setIsPresentationDetailsDialogOpen(false)}
         isDone={isDonePresenting}
-        confirmRequest={() => {
-          setIsDonePresenting(true);
-          setIsSendingProofRequest(true);
-        }}
+        confirmRequest={fulfillProofRequest}
       />
 
       <Box
