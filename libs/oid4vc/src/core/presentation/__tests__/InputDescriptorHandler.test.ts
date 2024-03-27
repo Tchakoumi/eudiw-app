@@ -1,3 +1,4 @@
+import { SdJwtProcessedCredential } from '../../../lib/types';
 import { DBConnection } from '../../../database/DBConnection';
 import { credentialStoreName } from '../../../database/schema';
 import { SdJwtCredentialProcessor } from '../../issuance/SdJwtCredentialProcessor';
@@ -13,11 +14,16 @@ import {
 
 describe('InputDescriptionHandler', () => {
   const storage = DBConnection.getStorage();
-  const inputDescriptionEvaluator = new InputDescriptorHandler(storage);
   const processor = new SdJwtCredentialProcessor(storage);
+  const inputDescriptionEvaluator = new InputDescriptorHandler();
+
+  const credentials: SdJwtProcessedCredential[] = [];
 
   beforeAll(async () => {
-    await processor.storeCredential(sdJwtProcessedCredentialObjRef3);
+    const credential = await processor.storeCredential(
+      sdJwtProcessedCredentialObjRef3
+    );
+    credentials.push(credential);
   });
 
   afterAll(() => {
@@ -26,13 +32,15 @@ describe('InputDescriptionHandler', () => {
 
   it('should successfully retrieve matching credetial for presentation definition', async () => {
     let filteredCredentials = await inputDescriptionEvaluator.handle(
-      presentationDef1
+      presentationDef1.input_descriptors,
+      credentials
     );
 
     expect(filteredCredentials).toStrictEqual(pdFilteredCredentials);
 
     filteredCredentials = await inputDescriptionEvaluator.handle(
-      presentationDef2
+      presentationDef2.input_descriptors,
+      credentials
     );
 
     expect(filteredCredentials).toStrictEqual([]);
@@ -40,7 +48,8 @@ describe('InputDescriptionHandler', () => {
 
   it('should not successfully retrieve matching credential with optional field', async () => {
     const filteredCredentials = await inputDescriptionEvaluator.handle(
-      presentationDefWithOptionalField1
+      presentationDefWithOptionalField1.input_descriptors,
+      credentials
     );
 
     expect(filteredCredentials).toStrictEqual(
@@ -57,7 +66,10 @@ describe('InputDescriptionHandler', () => {
 
   it('should not retrieve matching credential without fields property', async () => {
     await expect(
-      inputDescriptionEvaluator.handle(presentationDef3)
+      inputDescriptionEvaluator.handle(
+        presentationDef3.input_descriptors,
+        credentials
+      )
     ).rejects.toThrow();
   });
 });

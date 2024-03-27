@@ -1,12 +1,8 @@
-import { StorageFactory } from '@datev/storage';
-import {
-  OID4VCIServiceDBSchema,
-  credentialStoreName,
-} from '../../database/schema';
 import {
   DisplayCredential,
-  PresentationDefinition,
+  InputDescriptor,
   SdJwtMatchingCredential,
+  SdJwtProcessedCredential,
 } from '../../lib/types';
 
 import sdJwt from '@hopae/sd-jwt';
@@ -17,15 +13,17 @@ import { OID4VCIServiceError } from '../../lib/errors';
 import { PresentationError } from '../../lib/errors/Presentation.errors';
 
 /**
- * This class is responsible for implementing the DIF Presentation Exchange
- * https://identity.foundation/presentation-exchange/spec/v2.0.0/
- * Handles the flow of demand and submission of proofs from a Holder to a Verifier.
+ * Input descriptor validation class
+ *
+ * https://identity.foundation/presentation-exchange/spec/v2.0.0/#presentation-definition
  */
 export class InputDescriptorHandler {
-  public constructor(private storage: StorageFactory<OID4VCIServiceDBSchema>) {}
+  public constructor() {}
 
-  async handle(presentationDefinition: PresentationDefinition) {
-    const credentials = await this.storage.findAll(credentialStoreName);
+  async handle(
+    inputDescriptors: InputDescriptor[],
+    credentials: SdJwtProcessedCredential[]
+  ) {
     // Initialize AJV instance
     const ajv = new Ajv();
     addFormats(ajv);
@@ -33,7 +31,7 @@ export class InputDescriptorHandler {
     // Filter credentials
     const filteredCredentials: SdJwtMatchingCredential[] = [];
 
-    for (const { value: credential } of credentials) {
+    for (const credential of credentials) {
       // Decode SD-JWT encoded credential using @hopae/sd-jwt
       const decodeSDJwtCredential = sdJwt.decode(credential.encoded as string);
       const claims: Record<string, unknown> =
@@ -48,7 +46,7 @@ export class InputDescriptorHandler {
         }
       }
 
-      for (const inputDescriptor of presentationDefinition.input_descriptors) {
+      for (const inputDescriptor of inputDescriptors) {
         let selectedClaims = {};
         if (!inputDescriptor.constraints.fields?.length) {
           throw new OID4VCIServiceError(
