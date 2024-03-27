@@ -12,6 +12,7 @@ import { IVcData, IVerifiableCredential } from '../../types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
+import ClaimCard from './ClaimCard';
 import ConsentFooter from './ConsentFooter';
 import ConsentHeader from './ConsentHeader';
 import PresentationCredentialCard from './PresentationCredentialCard';
@@ -42,6 +43,7 @@ export default function ContentDialog({
 
   const [selectedVc, setSelectedVc] = useState<IVerifiableCredential>();
   const [selectedVcDetails, setSelectedVcDetails] = useState<IVcData>();
+  const callingService = 'Datev eG';
 
   useEffect(() => {
     if (selectedVc) {
@@ -87,7 +89,7 @@ export default function ContentDialog({
             rowGap: 3,
           }}
         >
-          <ConsentHeader service="Datev eG" />
+          <ConsentHeader service={callingService} />
 
           {selectedVcDetails ? (
             <Box
@@ -98,27 +100,23 @@ export default function ContentDialog({
               }}
             >
               <Typography variant="h5">
-                Datev eG is requesting the following credentials
+                {`${callingService} is requesting the following credentials`}
               </Typography>
-              <Box sx={{ display: 'grid', rowGap: 1, alignContent: 'start' }}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  rowGap: 1,
+                  alignContent: 'start',
+                }}
+              >
                 {Object.keys(selectedVcDetails).map((key, index) => (
-                  <Box
+                  <ClaimCard
                     key={index}
-                    sx={{
-                      display: 'grid',
-                      rowGap: 0.5,
-                      padding: 1,
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '12px',
+                    {...{
+                      title: removeUnderscoresFromWord(key),
+                      value: selectedVcDetails[key],
                     }}
-                  >
-                    <Typography variant="body2">
-                      {removeUnderscoresFromWord(key)}
-                    </Typography>
-                    <Typography fontWeight={500}>
-                      {selectedVcDetails[key]}
-                    </Typography>
-                  </Box>
+                  />
                 ))}
               </Box>
               <Box sx={{ display: 'grid', rowGap: 1 }}>
