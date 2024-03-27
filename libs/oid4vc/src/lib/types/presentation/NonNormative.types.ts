@@ -6,11 +6,12 @@ export interface PresentationExchange {
   resolvedRequestObject: ResolvedRequestObject;
 }
 
+export type DisclosureRecord = Record<string, string | number | boolean>;
 export interface SdJwtMatchingCredential {
   credential: DisplayCredential;
 
   /**
    * These are the claims to be disclosed to the verifier
    */
-  disclosures: Record<string, string | number | boolean>;
+  disclosures: DisclosureRecord;
 }
