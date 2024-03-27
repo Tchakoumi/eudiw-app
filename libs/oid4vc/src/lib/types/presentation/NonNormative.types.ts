@@ -1,9 +1,9 @@
 import { DisplayCredential } from '../issuance';
-import { PresentationDefinition } from './pex_v2';
+import { ResolvedRequestObject } from './v1_0_20';
 
-export interface CredentialsForRequest {
+export interface PresentationExchange {
   matchingCredentials: SdJwtMatchingCredential[];
-  presentationDefinition: PresentationDefinition;
+  resolvedRequestObject: ResolvedRequestObject;
 }
 
 export interface SdJwtMatchingCredential {
