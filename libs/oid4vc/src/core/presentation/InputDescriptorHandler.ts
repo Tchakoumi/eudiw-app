@@ -46,8 +46,10 @@ export class InputDescriptorHandler {
         }
       }
 
+      let allSelectedClaims = {};
       for (const inputDescriptor of inputDescriptors) {
         let selectedClaims = {};
+
         if (!inputDescriptor.constraints.fields?.length) {
           throw new OID4VCIServiceError(
             PresentationError.MissingConstraintField
@@ -84,6 +86,7 @@ export class InputDescriptorHandler {
               }
             } else validatedValue = matchingValues[0];
 
+            //FIXME: find a better way to get key name from path
             const claim = paths[0].split('.').pop();
             if (claim) {
               selectedClaims = { ...selectedClaims, [claim]: validatedValue };
@@ -91,12 +94,24 @@ export class InputDescriptorHandler {
           }
         }
 
-        if (Object.keys(selectedClaims).length === fields.length)
-          filteredCredentials.push({
-            credential: credential.display as DisplayCredential,
-            disclosures: selectedClaims,
-          });
+        //if all input descriptor fields are not made stop
+        // as all input descriptor must be satisfied
+        if (Object.keys(selectedClaims).length !== fields.length) {
+          break;
+        }
+        allSelectedClaims = { ...allSelectedClaims, ...selectedClaims };
       }
+
+      const numberOfExpectedClaims = inputDescriptors.reduce(
+        (numferOfClaims, { constraints: { fields } }) =>
+          numferOfClaims + (fields?.length ?? 0),
+        0
+      );
+      if (Object.keys(allSelectedClaims).length === numberOfExpectedClaims)
+        filteredCredentials.push({
+          credential: credential.display as DisplayCredential,
+          disclosures: allSelectedClaims,
+        });
     }
 
     return filteredCredentials;
