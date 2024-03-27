@@ -8,8 +8,10 @@ import {
 } from '@datev/oid4vc';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { IVcData, IVerifiableCredential } from '../../types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
+import DoneProcessing from '../credential-types/DoneProcessing';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
 import ClaimCard from './ClaimCard';
@@ -21,11 +23,13 @@ interface ContentDialogProps {
   isDialogOpen: boolean;
   closeDialog: () => void;
   confirmRequest: () => void;
+  isDone: boolean;
 }
 export default function ContentDialog({
   isDialogOpen,
   closeDialog,
   confirmRequest,
+  isDone: isDonePresenting,
 }: ContentDialogProps) {
   const OIDVCI = useMemo(() => new OID4VCIService(eventBus), []);
   const credentials: IVerifiableCredential[] = [
@@ -70,90 +74,102 @@ export default function ContentDialog({
     confirmRequest();
   }
 
+  const push = useNavigate();
+
   return (
     <Dialog
       fullScreen
       open={isDialogOpen}
       TransitionComponent={DialogTransition}
     >
-      <Box
-        sx={{ height: '100%', display: 'grid', gridTemplateRows: 'auto 1fr' }}
-      >
-        <Box sx={{ borderBottom: '1px solid #D1D5DB' }}>
-          <BackTitleBar
-            onBack={
-              selectedVcDetails
-                ? () => setSelectedVcDetails(undefined)
-                : closeDialog
-            }
-            pageTitle={selectedVcDetails ? 'Proof Details' : 'Proof Request'}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: 'grid',
-            padding: '20px 30px',
-            gridTemplateRows: 'auto 1fr auto',
-            rowGap: 3,
+      {isDonePresenting ? (
+        <DoneProcessing
+          usage="presentation"
+          handleClose={() => {
+            closeDialog();
+            push('/');
           }}
+        />
+      ) : (
+        <Box
+          sx={{ height: '100%', display: 'grid', gridTemplateRows: 'auto 1fr' }}
         >
-          <ConsentHeader service={callingService} />
+          <Box sx={{ borderBottom: '1px solid #D1D5DB' }}>
+            <BackTitleBar
+              onBack={
+                selectedVcDetails
+                  ? () => setSelectedVcDetails(undefined)
+                  : closeDialog
+              }
+              pageTitle={selectedVcDetails ? 'Proof Details' : 'Proof Request'}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: 'grid',
+              padding: '20px 30px',
+              gridTemplateRows: 'auto 1fr auto',
+              rowGap: 3,
+            }}
+          >
+            <ConsentHeader service={callingService} />
 
-          {selectedVcDetails ? (
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateRows: 'auto 1fr auto',
-                rowGap: 1,
-              }}
-            >
-              <Typography variant="h5">
-                {`${callingService} is requesting the following credentials`}
-              </Typography>
+            {selectedVcDetails ? (
               <Box
                 sx={{
                   display: 'grid',
+                  gridTemplateRows: 'auto 1fr auto',
                   rowGap: 1,
-                  alignContent: 'start',
                 }}
               >
-                {Object.keys(selectedVcDetails).map((key, index) => (
-                  <ClaimCard
+                <Typography variant="h5">
+                  {`${callingService} is requesting the following credentials`}
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    rowGap: 1,
+                    alignContent: 'start',
+                  }}
+                >
+                  {Object.keys(selectedVcDetails).map((key, index) => (
+                    <ClaimCard
+                      key={index}
+                      {...{
+                        title: removeUnderscoresFromWord(key),
+                        value: selectedVcDetails[key],
+                      }}
+                    />
+                  ))}
+                </Box>
+                <Box sx={{ display: 'grid', rowGap: 1 }}>
+                  <Button color="primary" variant="contained" onClick={confirm}>
+                    Share
+                  </Button>
+                  <Button
+                    color="inherit"
+                    variant="outlined"
+                    onClick={closeDialog}
+                  >
+                    Decline
+                  </Button>
+                </Box>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'grid', rowGap: 1, alignContent: 'start' }}>
+                {credentials.map((credential, index) => (
+                  <PresentationCredentialCard
+                    selectVc={() => setSelectedVc(credential)}
+                    credential={credential}
                     key={index}
-                    {...{
-                      title: removeUnderscoresFromWord(key),
-                      value: selectedVcDetails[key],
-                    }}
                   />
                 ))}
               </Box>
-              <Box sx={{ display: 'grid', rowGap: 1 }}>
-                <Button color="primary" variant="contained" onClick={confirm}>
-                  Share
-                </Button>
-                <Button
-                  color="inherit"
-                  variant="outlined"
-                  onClick={closeDialog}
-                >
-                  Decline
-                </Button>
-              </Box>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'grid', rowGap: 1, alignContent: 'start' }}>
-              {credentials.map((credential, index) => (
-                <PresentationCredentialCard
-                  selectVc={() => setSelectedVc(credential)}
-                  credential={credential}
-                  key={index}
-                />
-              ))}
-            </Box>
-          )}
-          <ConsentFooter />
+            )}
+            <ConsentFooter />
+          </Box>
         </Box>
-      </Box>
+      )}
     </Dialog>
   );
 }

@@ -55,13 +55,13 @@ export default function Scan() {
 
   const [isSendingProofRequest, setIsSendingProofRequest] =
     useState<boolean>(false);
+  const [isDonePresenting, setIsDonePresenting] = useState<boolean>(false);
 
   function fulfillProofRequest() {
     setTimeout(() => {
       setScanResult('');
       setIsLoadingDialogOpen(false);
       setIsSendingProofRequest(false);
-      setIsPresentationDetailsDialogOpen(false);
     }, 3000);
   }
 
@@ -91,7 +91,11 @@ export default function Scan() {
       <ContentDialog
         isDialogOpen={isPresentationDetailsDialogOpen}
         closeDialog={() => setIsPresentationDetailsDialogOpen(false)}
-        confirmRequest={() => setIsSendingProofRequest(true)}
+        isDone={isDonePresenting}
+        confirmRequest={() => {
+          setIsDonePresenting(true);
+          setIsSendingProofRequest(true);
+        }}
       />
 
       <Box
