@@ -1,6 +1,7 @@
 import { eventBus } from '@datev/event-bus';
 import {
   OID4VCIServiceEventChannel,
+  PresentationExchange,
   SdJwtMatchingCredential,
   ServiceResponse,
   ServiceResponseStatus,
@@ -46,9 +47,38 @@ export default function Scan() {
     );
   }
 
+  // TODO: remove this when integration is done
+  const staticProofRequest: PresentationExchange = {
+    matchingCredentials: [
+      {
+        credential: {
+          id: 2,
+          issued_at: 1710426888000,
+          claims: {
+            given_name: 'Inga',
+            family_name: 'Silverstone',
+          },
+          issuer: 'trial.authlete.net',
+          title: 'Identity Credential',
+        },
+        disclosures: {
+          given_name: 'Inga',
+        },
+      },
+    ],
+    resolvedRequestObject: {
+      presentation_definition: {
+        id: '2',
+        input_descriptors: [],
+      },
+    },
+  };
+  const [proofRequest, setProofRequest] =
+    useState<PresentationExchange>(staticProofRequest);
   function presentationDetailsListener() {
     //TODO: integrate listening of event that holds presentation details here
     setTimeout(() => {
+      setProofRequest(staticProofRequest);
       setIsLoadingDialogOpen(false);
       setIsPresentationDetailsDialogOpen(true);
     }, 3000);
@@ -98,12 +128,15 @@ export default function Scan() {
         scanError={scanError}
       />
 
-      <ContentDialog
-        isDialogOpen={isPresentationDetailsDialogOpen}
-        closeDialog={() => setIsPresentationDetailsDialogOpen(false)}
-        isDone={isDonePresenting}
-        confirmRequest={fulfillProofRequest}
-      />
+      {proofRequest && (
+        <ContentDialog
+          isDialogOpen={isPresentationDetailsDialogOpen}
+          closeDialog={() => setIsPresentationDetailsDialogOpen(false)}
+          isDone={isDonePresenting}
+          proofRequest={proofRequest}
+          confirmRequest={fulfillProofRequest}
+        />
+      )}
 
       <Box
         sx={{

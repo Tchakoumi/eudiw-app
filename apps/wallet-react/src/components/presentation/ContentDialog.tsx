@@ -20,40 +20,15 @@ interface ContentDialogProps {
   closeDialog: () => void;
   confirmRequest: (selectedVc: SdJwtMatchingCredential) => void;
   isDone: boolean;
+  proofRequest: PresentationExchange;
 }
 export default function ContentDialog({
   isDialogOpen,
   closeDialog,
   confirmRequest,
+  proofRequest,
   isDone: isDonePresenting,
 }: ContentDialogProps) {
-  // TODO: INTEGRATE THE RESPONSE FROM THE SCAN HERE
-  const proofRequest: PresentationExchange = {
-    matchingCredentials: [
-      {
-        credential: {
-          id: 2,
-          issued_at: 1710426888000,
-          claims: {
-            given_name: 'Inga',
-            family_name: 'Silverstone',
-          },
-          issuer: 'trial.authlete.net',
-          title: 'Identity Credential',
-        },
-        disclosures: {
-          given_name: 'Inga',
-        },
-      },
-    ],
-    resolvedRequestObject: {
-      presentation_definition: {
-        id: '2',
-        input_descriptors: [],
-      },
-    },
-  };
-
   const [selectedVc, setSelectedVc] = useState<SdJwtMatchingCredential>();
   const callingService = 'Datev eG';
 
