@@ -12,5 +12,5 @@ export interface SdJwtMatchingCredential {
   /**
    * These are the claims to be disclosed to the verifier
    */
-  disclosures: Record<string, string>;
+  disclosures: Record<string, string | number | boolean>;
 }
