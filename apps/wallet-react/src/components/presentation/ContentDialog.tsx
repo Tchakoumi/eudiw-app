@@ -1,15 +1,11 @@
-import { eventBus } from '@datev/event-bus';
 import {
-  DisplayCredential,
-  OID4VCIService,
-  OID4VCIServiceEventChannel,
-  ServiceResponse,
-  ServiceResponseStatus,
+  DisclosureRecord,
+  PresentationExchange,
+  SdJwtMatchingCredential,
 } from '@datev/oid4vc';
 import { Box, Button, Dialog, Typography } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IVcData, IVerifiableCredential } from '../../types/credentials.types';
 import { removeUnderscoresFromWord } from '../../utils/common';
 import DoneProcessing from '../credential-types/DoneProcessing';
 import BackTitleBar from '../layout/BackTitleBar';
@@ -22,7 +18,7 @@ import PresentationCredentialCard from './PresentationCredentialCard';
 interface ContentDialogProps {
   isDialogOpen: boolean;
   closeDialog: () => void;
-  confirmRequest: () => void;
+  confirmRequest: (selectedVc: SdJwtMatchingCredential) => void;
   isDone: boolean;
 }
 export default function ContentDialog({
@@ -31,47 +27,39 @@ export default function ContentDialog({
   confirmRequest,
   isDone: isDonePresenting,
 }: ContentDialogProps) {
-  const OIDVCI = useMemo(() => new OID4VCIService(eventBus), []);
-  const credentials: IVerifiableCredential[] = [
-    {
-      id: 3,
-      issued_at: new Date().getMilliseconds(),
-      issuer: 'Authlete.com',
-      title: 'Identity Credential',
+  // TODO: INTEGRATE THE RESPONSE FROM THE SCAN HERE
+  const proofRequest: PresentationExchange = {
+    matchingCredentials: [
+      {
+        credential: {
+          id: 2,
+          issued_at: 1710426888000,
+          claims: {
+            given_name: 'Inga',
+            family_name: 'Silverstone',
+          },
+          issuer: 'trial.authlete.net',
+          title: 'Identity Credential',
+        },
+        disclosures: {
+          given_name: 'Inga',
+        },
+      },
+    ],
+    resolvedRequestObject: {
+      presentation_definition: {
+        id: '2',
+        input_descriptors: [],
+      },
     },
-    {
-      id: 2,
-      issued_at: new Date().getMilliseconds(),
-      issuer: 'Authlete.com',
-      title: 'Identity Credential',
-    },
-  ];
+  };
 
-  const [selectedVc, setSelectedVc] = useState<IVerifiableCredential>();
-  const [selectedVcDetails, setSelectedVcDetails] = useState<IVcData>();
+  const [selectedVc, setSelectedVc] = useState<SdJwtMatchingCredential>();
   const callingService = 'Datev eG';
 
-  useEffect(() => {
-    if (selectedVc) {
-      OIDVCI.retrieveCredentialDetails(selectedVc.id as number);
-      eventBus.on(
-        OID4VCIServiceEventChannel.RetrieveCredentialDetails,
-        (data: ServiceResponse<DisplayCredential>) => {
-          if (data.status === ServiceResponseStatus.Success) {
-            setSelectedVcDetails(data.payload.claims as IVcData);
-          } else {
-            //TODO: REPLACE WITH PROPER ERROR NOTIFICATION METHOD
-            alert(data.payload);
-          }
-        }
-      );
-    }
-  }, [OIDVCI, selectedVc]);
-
-  function confirm() {
+  function confirm(selectedVc: SdJwtMatchingCredential) {
     setSelectedVc(undefined);
-    setSelectedVcDetails(undefined);
-    confirmRequest();
+    confirmRequest(selectedVc);
   }
 
   const push = useNavigate();
@@ -96,12 +84,8 @@ export default function ContentDialog({
         >
           <Box sx={{ borderBottom: '1px solid #D1D5DB' }}>
             <BackTitleBar
-              onBack={
-                selectedVcDetails
-                  ? () => setSelectedVcDetails(undefined)
-                  : closeDialog
-              }
-              pageTitle={selectedVcDetails ? 'Proof Details' : 'Proof Request'}
+              onBack={selectedVc ? () => setSelectedVc(undefined) : closeDialog}
+              pageTitle={selectedVc ? 'Proof Details' : 'Proof Request'}
             />
           </Box>
           <Box
@@ -114,7 +98,7 @@ export default function ContentDialog({
           >
             <ConsentHeader service={callingService} />
 
-            {selectedVcDetails ? (
+            {selectedVc ? (
               <Box
                 sx={{
                   display: 'grid',
@@ -132,18 +116,27 @@ export default function ContentDialog({
                     alignContent: 'start',
                   }}
                 >
-                  {Object.keys(selectedVcDetails).map((key, index) => (
-                    <ClaimCard
-                      key={index}
-                      {...{
-                        title: removeUnderscoresFromWord(key),
-                        value: selectedVcDetails[key],
-                      }}
-                    />
-                  ))}
+                  {Object.keys(selectedVc.disclosures as DisclosureRecord).map(
+                    (key, index) => (
+                      <ClaimCard
+                        key={index}
+                        {...{
+                          title: removeUnderscoresFromWord(key),
+                          value: (selectedVc.disclosures as DisclosureRecord)[
+                            key
+                          ] as string,
+                        }}
+                      />
+                    )
+                  )}
                 </Box>
                 <Box sx={{ display: 'grid', rowGap: 1 }}>
-                  <Button color="primary" variant="contained" onClick={confirm}>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    disabled={!selectedVc}
+                    onClick={() => confirm(selectedVc)}
+                  >
                     Share
                   </Button>
                   <Button
@@ -157,10 +150,10 @@ export default function ContentDialog({
               </Box>
             ) : (
               <Box sx={{ display: 'grid', rowGap: 1, alignContent: 'start' }}>
-                {credentials.map((credential, index) => (
+                {proofRequest.matchingCredentials.map((credential, index) => (
                   <PresentationCredentialCard
                     selectVc={() => setSelectedVc(credential)}
-                    credential={credential}
+                    credential={credential.credential}
                     key={index}
                   />
                 ))}
