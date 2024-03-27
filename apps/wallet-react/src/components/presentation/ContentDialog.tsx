@@ -20,10 +20,12 @@ import PresentationCredentialCard from './PresentationCredentialCard';
 interface ContentDialogProps {
   isDialogOpen: boolean;
   closeDialog: () => void;
+  confirmRequest: () => void;
 }
 export default function ContentDialog({
   isDialogOpen,
   closeDialog,
+  confirmRequest,
 }: ContentDialogProps) {
   const OIDVCI = useMemo(() => new OID4VCIService(eventBus), []);
   const credentials: IVerifiableCredential[] = [
@@ -61,6 +63,12 @@ export default function ContentDialog({
       );
     }
   }, [OIDVCI, selectedVc]);
+
+  function confirm() {
+    setSelectedVc(undefined);
+    setSelectedVcDetails(undefined);
+    confirmRequest();
+  }
 
   return (
     <Dialog
@@ -120,10 +128,14 @@ export default function ContentDialog({
                 ))}
               </Box>
               <Box sx={{ display: 'grid', rowGap: 1 }}>
-                <Button color="primary" variant="contained">
+                <Button color="primary" variant="contained" onClick={confirm}>
                   Share
                 </Button>
-                <Button color="inherit" variant="outlined">
+                <Button
+                  color="inherit"
+                  variant="outlined"
+                  onClick={closeDialog}
+                >
                   Decline
                 </Button>
               </Box>

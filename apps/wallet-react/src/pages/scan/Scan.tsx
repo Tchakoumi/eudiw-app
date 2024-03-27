@@ -9,10 +9,10 @@ import { Icon } from '@iconify/react';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ContentDialog from '../../components/presentation/ContentDialog';
 import LoadingScanDetails from '../../components/scan-details/LoadingScanDetails';
 import Scanner from '../../components/scanner/Scanner';
 import { useTheme } from '../../utils/theme';
-import ContentDialog from '../../components/presentation/ContentDialog';
 
 export default function Scan() {
   const theme = useTheme();
@@ -53,24 +53,45 @@ export default function Scan() {
     }, 3000);
   }
 
+  const [isSendingProofRequest, setIsSendingProofRequest] =
+    useState<boolean>(false);
+
+  function fulfillProofRequest() {
+    setTimeout(() => {
+      setScanResult('');
+      setIsLoadingDialogOpen(false);
+      setIsSendingProofRequest(false);
+      setIsPresentationDetailsDialogOpen(false);
+    }, 3000);
+  }
+
   return (
     <>
       <LoadingScanDetails
-        isDialogOpen={!!scanResult && isLoadingDialogOpen}
+        isDialogOpen={
+          (!!scanResult && isLoadingDialogOpen) || isSendingProofRequest
+        }
         resultListener={() => {
-          presentationDetailsListener();
-          credentialOfferListener();
+          if (isSendingProofRequest) {
+            fulfillProofRequest();
+          } else {
+            presentationDetailsListener();
+            credentialOfferListener();
+          }
         }}
         closeDialog={() => {
           setScanResult('');
           setIsLoadingDialogOpen(false);
+          setIsSendingProofRequest(false);
         }}
+        usage={isSendingProofRequest ? 'presentation' : 'issuance'}
         scanError={scanError}
       />
 
       <ContentDialog
         isDialogOpen={isPresentationDetailsDialogOpen}
         closeDialog={() => setIsPresentationDetailsDialogOpen(false)}
+        confirmRequest={() => setIsSendingProofRequest(true)}
       />
 
       <Box
