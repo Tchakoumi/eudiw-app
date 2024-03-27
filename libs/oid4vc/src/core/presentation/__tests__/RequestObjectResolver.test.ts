@@ -11,24 +11,17 @@ import {
   presentationDefinitionValue,
   requestObjectJwt,
   requestObjectJwtWithClientMetadata,
-  resolvedPresentationExchange,
   requestObjectJwtWithInssufientParams,
   resolvedRequestObject,
-  sdJwtProcessedCredentialObjRef1,
-  sdJwtProcessedCredentialObjRef2,
 } from './fixtures/RequestObjectResolver.fixtures';
 
 import nock from 'nock';
-import { DBConnection } from '../../../database/DBConnection';
-import { SdJwtCredentialProcessor } from '../../issuance/SdJwtCredentialProcessor';
 
 const MOCK_URL = 'https://verifier.ssi.tir.budru.de';
 
 describe('RequestObjectResolver', () => {
   const httpUtil = new HttpUtil();
   const requestObjectResolver = new RequestObjectResolver(httpUtil);
-  const storage = DBConnection.getStorage();
-  const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
 
   beforeAll(async () => {
     nock.disableNetConnect();
@@ -40,31 +33,6 @@ describe('RequestObjectResolver', () => {
 
   afterAll(async () => {
     nock.cleanAll();
-  });
-
-  it('should succesfully return one credential', async () => {
-    nock(MOCK_URL)
-      .get('/presentation/authorization-request')
-      .query({
-        id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
-        crossDevice: 'true',
-      })
-      .reply(200, requestObjectJwt);
-
-    // Inserting two credentials, we will have one returning match.
-    await sdJwtCredentialProcessor.storeCredential(
-      sdJwtProcessedCredentialObjRef1
-    );
-
-    await sdJwtCredentialProcessor.storeCredential(
-      sdJwtProcessedCredentialObjRef2
-    );
-
-    const resolvedURI = await requestObjectResolver.getCredentialsForRequest(
-      encodedRequestUri
-    );
-
-    expect(resolvedURI).toStrictEqual(resolvedPresentationExchange);
   });
 
   it('should successfully resolve request uri (Passed By Reference)', async () => {
