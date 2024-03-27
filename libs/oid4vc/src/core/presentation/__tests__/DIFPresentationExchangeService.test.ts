@@ -1,107 +1,59 @@
 import { DBConnection } from '../../../database/DBConnection';
 import { credentialStoreName } from '../../../database/schema';
+import { HttpUtil } from '../../../utils';
 import { SdJwtCredentialProcessor } from '../../issuance/SdJwtCredentialProcessor';
 import {
-  credentialContentMatch,
-  credentialContentMatch2,
-  resolvedRequestObject1,
-  resolvedRequestObject2,
-  sdJwtProcessedCredentialObjRef10,
-  sdJwtProcessedCredentialObjRef20,
-  sdJwtProcessedCredentialObjRef30,
-} from '../../presentation/__tests__/fixtures/DIFPresentationExchangeService.fixtures';
+  clientMetadataValueJwks1,
+  encodedRequestObjectUri,
+  presentationDefinitionValue1,
+  presentationExchangeObject,
+  resolvedClientMetadata1,
+  sdJwtProcessedCredentialObjRef10
+} from '../../presentation/__tests__/fixtures';
 import { DIFPresentationExchangeService } from '../DifPresentationExchangeService';
 const UNIT_TEST_TIMEOUT = 30000;
 
+import nock from 'nock';
+const MOCK_URL = 'https://verifier.ssi.tir.budru.de';
+
 describe('DIFPresentationExchangeService', () => {
+  const httpUtil = new HttpUtil();
   const storage = DBConnection.getStorage();
-  const difPresentationExchangeService: DIFPresentationExchangeService =
-    new DIFPresentationExchangeService(storage);
-  const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
+  const processor = new SdJwtCredentialProcessor(storage);
+  const pex = new DIFPresentationExchangeService(storage, httpUtil);
+
+  beforeAll(async () => {
+    nock.disableNetConnect();
+    await processor.storeCredential(sdJwtProcessedCredentialObjRef10);
+  });
 
   afterEach(async () => {
+    nock.cleanAll();
+  });
+
+  afterAll(async () => {
+    nock.cleanAll();
     await storage.clear(credentialStoreName);
   });
 
   it(
-    'should successfully insert two credentials and retrieve one.',
+    'should successfully  process request object.',
     async () => {
-      await sdJwtCredentialProcessor.storeCredential(
-        sdJwtProcessedCredentialObjRef10
+      nock(MOCK_URL)
+        .get('/presentation/definition')
+        .query({
+          id: '277d0fb5-ef4b-4cff-93f0-086af36f9190',
+        })
+        .reply(200, presentationDefinitionValue1)
+        .get('/presentation/client-metadata.json')
+        .reply(200, resolvedClientMetadata1)
+        .get('/presentation/jwks.json')
+        .reply(200, clientMetadataValueJwks1);
+
+      const presentationExchange = await pex.processRequestObject(
+        encodedRequestObjectUri
       );
-
-      const storedCredential = await sdJwtCredentialProcessor.storeCredential(
-        sdJwtProcessedCredentialObjRef20
-      );
-
-      // Dynamically adjust the expected payload with the correct id
-      const expectedPayload = {
-        ...credentialContentMatch,
-        id: storedCredential.display.id,
-      };
-
-      const credentialContentMatchResponse =
-        await difPresentationExchangeService.processRequestObject(
-          resolvedRequestObject1
-        );
-
-      expect(expectedPayload).toEqual(credentialContentMatchResponse[0]);
-    },
-    UNIT_TEST_TIMEOUT
-  );
-
-  it(
-    'should successfully insert two credentials and retrieve two.',
-    async () => {
-      const difPresentationExchangeService: DIFPresentationExchangeService =
-        new DIFPresentationExchangeService(storage);
-      const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
-
-      const storedCredential1 = await sdJwtCredentialProcessor.storeCredential(
-        sdJwtProcessedCredentialObjRef30
-      );
-
-      const storedCredential2 = await sdJwtCredentialProcessor.storeCredential(
-        sdJwtProcessedCredentialObjRef20
-      );
-
-      // Dynamically adjust the expected payload with the correct id
-      const expectedPayload = [
-        { ...credentialContentMatch2[0], id: storedCredential2.display.id },
-        { ...credentialContentMatch2[1], id: storedCredential1.display.id },
-      ];
-
-      const credentialContentMatchResponse =
-        await difPresentationExchangeService.processRequestObject(
-          resolvedRequestObject1
-        );
-
-      expect(expectedPayload).toEqual(credentialContentMatchResponse);
-    },
-    UNIT_TEST_TIMEOUT
-  );
-
-  it(
-    'should successfully insert two credentials and retrieve none.',
-    async () => {
-      const difPresentationExchangeService: DIFPresentationExchangeService =
-        new DIFPresentationExchangeService(storage);
-      const sdJwtCredentialProcessor = new SdJwtCredentialProcessor(storage);
-
-      await sdJwtCredentialProcessor.storeCredential(
-        sdJwtProcessedCredentialObjRef10
-      );
-
-      await sdJwtCredentialProcessor.storeCredential(
-        sdJwtProcessedCredentialObjRef20
-      );
-
-      const credentialContentMatchResponse =
-        await difPresentationExchangeService.processRequestObject(
-          resolvedRequestObject2
-        );
-
-      expect([]).toEqual(credentialContentMatchResponse);
+      expect(presentationExchange).toEqual(presentationExchangeObject);
     },
     UNIT_TEST_TIMEOUT
   );
