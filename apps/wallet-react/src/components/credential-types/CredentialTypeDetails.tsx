@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { ICredentialCard } from '../../types/credentials.types';
 import BackTitleBar from '../layout/BackTitleBar';
 import DialogTransition from '../layout/DialogTransition';
-import CredentialIssued from './CredentialIssued';
+import DoneProcessing from './DoneProcessing';
 import CredentialTypeCard from './CredentialTypeCard';
 import WaitingCredential from './WaitingCredential';
 
@@ -73,7 +73,7 @@ export default function CredentialTypeDetails({
       TransitionComponent={DialogTransition}
     >
       {isDoneIssuing ? (
-        <CredentialIssued
+        <DoneProcessing
           handleClose={() => {
             close();
             push('/credentials');

@@ -4,7 +4,7 @@ import wallet from '../../assets/illu-wallet.png';
 import presenting from '../../assets/presenting.png';
 import { ScanUsage } from '../scan-details/LoadingScanDetails';
 
-export default function CredentialIssued({
+export default function DoneProcessing({
   handleClose,
   usage = 'issuance',
 }: {
