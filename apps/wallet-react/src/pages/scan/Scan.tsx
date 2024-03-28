@@ -81,11 +81,16 @@ export default function Scan() {
     useState<PresentationExchange>(staticProofRequest);
   function presentationDetailsListener() {
     //TODO: integrate listening of event that holds presentation details here
-    setTimeout(() => {
-      setProofRequest(staticProofRequest);
-      setIsLoadingDialogOpen(false);
-      setIsPresentationDetailsDialogOpen(true);
-    }, 3000);
+    eventBus.once(
+      OID4VCServiceEventChannel.PresentationWorking,
+      (data: ServiceResponse) => {
+        if (data.status === ServiceResponseStatus.Success) {
+          setProofRequest(staticProofRequest);
+          setIsLoadingDialogOpen(false);
+          setIsPresentationDetailsDialogOpen(true);
+        }
+      }
+    );
   }
 
   const [isSendingProofRequest, setIsSendingProofRequest] =
@@ -113,8 +118,8 @@ export default function Scan() {
     eventBus.once(
       OID4VCServiceEventChannel.ResolveOID4VCUri,
       (data: ServiceResponse) => {
-        if (data.status === ServiceResponseStatus.Error)
-          closeLoadingScanDialog();
+        if (data.status === ServiceResponseStatus.Error) alert(data.payload);
+        push('/');
       }
     );
   }
