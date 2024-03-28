@@ -129,13 +129,17 @@ export default function Credentials() {
                 <NoCredentials />
               ) : (
                 <Box sx={{ display: 'grid', rowGap: 1 }}>
-                  {credentials.map((credential, index) => (
-                    <CredentialCard
-                      credential={credential}
-                      key={index}
-                      openDetails={() => setSelectedCredential(credential)}
-                    />
-                  ))}
+                  {credentials
+                    .sort((a, b) =>
+                      (a.issued_at as number) < (b.issued_at as number) ? 1 : -1
+                    )
+                    .map((credential, index) => (
+                      <CredentialCard
+                        credential={credential}
+                        key={index}
+                        openDetails={() => setSelectedCredential(credential)}
+                      />
+                    ))}
                 </Box>
               )}
             </Box>
