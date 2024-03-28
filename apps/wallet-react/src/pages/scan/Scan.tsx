@@ -2,6 +2,7 @@ import { eventBus } from '@datev/event-bus';
 import {
   OID4VCIServiceEventChannel,
   OID4VCService,
+  OID4VCServiceEventChannel,
   PresentationExchange,
   SdJwtMatchingCredential,
   ServiceResponse,
@@ -108,6 +109,22 @@ export default function Scan() {
     setIsSendingProofRequest(true);
   }
 
+  function wrongQrListener() {
+    eventBus.once(
+      OID4VCServiceEventChannel.ResolveOID4VCUri,
+      (data: ServiceResponse) => {
+        if (data.status === ServiceResponseStatus.Error)
+          closeLoadingScanDialog();
+      }
+    );
+  }
+
+  function closeLoadingScanDialog() {
+    setScanResult('');
+    setIsLoadingDialogOpen(false);
+    setIsSendingProofRequest(false);
+  }
+
   return (
     <>
       <LoadingScanDetails
@@ -118,15 +135,12 @@ export default function Scan() {
           if (isSendingProofRequest) {
             fulfillProofRequestListener();
           } else {
+            wrongQrListener();
             presentationDetailsListener();
             credentialOfferListener();
           }
         }}
-        closeDialog={() => {
-          setScanResult('');
-          setIsLoadingDialogOpen(false);
-          setIsSendingProofRequest(false);
-        }}
+        closeDialog={closeLoadingScanDialog}
         usage={isSendingProofRequest ? 'presentation' : 'issuance'}
         scanError={scanError}
       />
