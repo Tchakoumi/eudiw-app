@@ -84,25 +84,23 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
         borderWidth: '4px',
         width: '100%',
         display: 'grid',
-        gridTemplateRows: 'auto 1fr',
+        gridTemplateRows: error ? 'auto 1fr' : '1fr',
       }}
     >
-      {error && (
-        <div
-          style={{
-            color: error instanceof NotFoundException ? 'inherit' : 'red',
-            textAlign: 'center',
-            fontWeight: 500,
-            width: '100%',
-          }}
-        >
-          {error instanceof NotFoundException ? (
-            <Loading message="🌀 Searching for Qr code" />
-          ) : (
-            error.message
-          )}
-        </div>
-      )}
+      <div
+        style={{
+          color: error instanceof NotFoundException ? 'inherit' : 'red',
+          textAlign: 'center',
+          fontWeight: 500,
+          width: '100%',
+        }}
+      >
+        {error instanceof NotFoundException || !error ? (
+          <Loading message="🌀 Searching for Qr code" />
+        ) : (
+          error.message
+        )}
+      </div>
       <video
         ref={videoRef}
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
