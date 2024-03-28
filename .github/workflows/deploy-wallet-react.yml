@@ -1,7 +1,7 @@
 name: Build and Deploy
 on:
   push:
-    branches: [develop]
+    branches: [feat/#53-1-integrate-scan-distinguish-service-layer]
 permissions:
   pages: write
   id-token: write
@@ -19,7 +19,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           npm ci
-          npx nx run wallet-react:build
+          npx nx run wallet-react:build --baseHref=/eudiw-app/
 
       - name: Setup Pages 📄🔧
         id: pages
