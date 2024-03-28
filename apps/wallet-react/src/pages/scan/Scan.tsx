@@ -1,6 +1,7 @@
 import { eventBus } from '@datev/event-bus';
 import {
   OID4VCIServiceEventChannel,
+  OID4VCService,
   PresentationExchange,
   SdJwtMatchingCredential,
   ServiceResponse,
@@ -26,10 +27,12 @@ export default function Scan() {
   const [isPresentationDetailsDialogOpen, setIsPresentationDetailsDialogOpen] =
     useState<boolean>(false);
 
+  const OIDVCI: OID4VCService = new OID4VCService(eventBus);
+
   function resolveCredentialOffer(result: string) {
     setIsLoadingDialogOpen(true);
     setScanResult(result);
-    //TODO: integrate service that figures out which scan(issuance/presentation) is made
+    OIDVCI.resolveOID4VCUri(result);
   }
 
   function credentialOfferListener() {
