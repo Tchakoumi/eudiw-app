@@ -118,8 +118,10 @@ export default function Scan() {
     eventBus.once(
       OID4VCServiceEventChannel.ResolveOID4VCUri,
       (data: ServiceResponse) => {
-        if (data.status === ServiceResponseStatus.Error) alert(data.payload);
-        push('/');
+        if (data.status === ServiceResponseStatus.Error) {
+          alert(data.payload);
+          push('/');
+        }
       }
     );
   }
