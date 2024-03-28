@@ -8,7 +8,7 @@ import {
   presentationDefinitionValue1,
   presentationExchangeObject,
   resolvedClientMetadata1,
-  sdJwtProcessedCredentialObjRef10
+  sdJwtProcessedCredentialObjRef10,
 } from '../../presentation/__tests__/fixtures';
 import { DIFPresentationExchangeService } from '../DifPresentationExchangeService';
 const UNIT_TEST_TIMEOUT = 30000;

@@ -18,4 +18,3 @@ export interface PresentationSubmission {
   definition_id: string;
   descriptor_map: Array<DescriptorMap>;
 }
-
