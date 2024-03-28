@@ -84,12 +84,13 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
         borderWidth: '4px',
         width: '100%',
         display: 'grid',
-        gridTemplateRows: error ? 'auto 1fr' : '1fr',
+        gridTemplateRows: 'auto 1fr',
       }}
     >
       <div
         style={{
-          color: error instanceof NotFoundException ? 'inherit' : 'red',
+          color:
+            error instanceof NotFoundException || !error ? 'inherit' : 'red',
           textAlign: 'center',
           fontWeight: 500,
           width: '100%',
