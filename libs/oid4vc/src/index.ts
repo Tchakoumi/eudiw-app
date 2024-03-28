@@ -1,4 +1,4 @@
-export * from './lib/types/OID4VCIInterface';
 export * from './lib/OID4VCIService';
-export * from './lib/types';
+export * from './lib/OID4VCService';
 export * from './lib/errors';
+export * from './lib/types';
