@@ -80,7 +80,7 @@ export default function ConfirmDeleteVCDialog({
                 You will lose your ability to prove the information on this
                 credential with this Wallet.
               </Typography>
-              <Accordion>
+              <Accordion defaultExpanded>
                 <AccordionSummary
                   sx={{ backgroundColor: '#E8ECEF' }}
                   expandIcon={<Icon icon={caret} fontSize={24} />}
@@ -107,7 +107,7 @@ export default function ConfirmDeleteVCDialog({
                 </AccordionDetails>
               </Accordion>
 
-              <Accordion>
+              <Accordion defaultExpanded>
                 <AccordionSummary
                   sx={{ backgroundColor: '#E8ECEF' }}
                   expandIcon={<Icon icon={caret} fontSize={24} />}
